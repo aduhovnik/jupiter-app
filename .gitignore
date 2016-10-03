@@ -91,3 +91,9 @@ ENV/
 
 # IDEA files
 .idea
+
+# Docker Compose
+docker-compose.override.yml
+
+
+

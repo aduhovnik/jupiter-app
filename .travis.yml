@@ -1,0 +1,9 @@
+sudo: required
+
+language: python
+
+script:
+  - echo "Process..."
+
+after_success:
+  - echo "Success"
