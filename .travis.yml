@@ -2,8 +2,27 @@ sudo: required
 
 language: python
 
+services:
+  - docker
+
+env:
+  DOCKER_COMPOSE_VERSION: 1.8.0
+
+before_install:
+  - sudo rm -rf /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+install:
+  - docker build --force-rm -t jupiterapp/backend ./backend
+  - docker build --force-rm -t jupiterapp/frontend ./frontend
+  - docker-compose -f docker-compose.dev.yml up -d backend
+
 script:
-  - echo "Process..."
+  - docker exec -ti $(docker-compose ps -q backend) ./manage.py test
 
 after_success:
-  - echo "Success"
+  - docker login -e 'cat.wants.meow@gmail.com' -u 'jupiterapp' -p 'nothingissomething'
+  - docker push jupiterapp/backend:latest
+  - docker push jupiterapp/frontend:latest
