@@ -13,6 +13,16 @@ backend:
     - "8000:8000"
   volumes:
     - ./backend:/backend
+  environment:
+    - DB_PASSWORD=jupiter
+    - DB_USER=jupiter
+    - DB_HOST=db
+    - DB_PORT=6000
+    - MIGRATE=true
+    - COLLECTSTATIC=true
+    - TEST=false
+    - RUNSERVER=false
+    - SLEEP=true
   links:
     - db:db
 
