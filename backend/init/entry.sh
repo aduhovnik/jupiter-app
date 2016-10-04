@@ -1,16 +1,14 @@
 #!/usr/bin/env bash
 
-
 run_command() {
     if [ "$1" = true ]; then
-        echo -e "\033[33mRunning $2 command...\033[0m"
+        echo -e "\033[34mRunning $2 command...\033[0m"
         $2
         echo -e "\033[32mCommand $2 complete\033[0m"
     else
-        echo -e "\033[32mCommand $2 skipped\033[0m"
+        echo -e "\033[33mCommand $2 skipped\033[0m"
     fi
 }
-
 
 ${BACKEND_PATH}/init/wait_for_db.sh
 run_command ${COLLECTSTATIC:-true} ${BACKEND_PATH}'/manage.py collectstatic --noinput'
