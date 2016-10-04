@@ -20,7 +20,7 @@ install:
   - docker-compose -f docker-compose.dev.yml up -d backend
 
 script:
-  - docker exec -ti $(docker-compose ps -q backend) ./manage.py test
+  - docker exec -ti $(docker-compose ps -q backend) ./init/run_tests.sh
 
 after_success:
   - docker login -e 'cat.wants.meow@gmail.com' -u 'jupiterapp' -p 'nothingissomething'

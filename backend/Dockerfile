@@ -1,7 +1,10 @@
 FROM jupiterapp/backend:initial
 
-COPY . /backend
-WORKDIR /backend
+ENV BACKEND_PATH /backend
+WORKDIR ${BACKEND_PATH}
+COPY . ${BACKEND_PATH}
+
+RUN apt-get -y install netcat libpq-dev
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
-CMD ./manage.py runserver 0.0.0.0:8000
+CMD ${BACKEND_PATH}/init/entry.sh
