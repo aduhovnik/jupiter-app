@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-echo -e "\033[33mWaiting for db connection...\033[0m"
+echo -e "\033[34mWaiting for db connection...\033[0m"
 for i in {0..10}
 do
     nc -z ${DB_HOST:-db} ${DB_PORT:-6000} >/dev/null 2>&1

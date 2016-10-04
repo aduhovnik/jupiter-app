@@ -21,6 +21,7 @@ install:
 
 script:
   - docker exec -ti $(docker-compose ps -q backend) ./init/run_tests.sh
+  - docker exec -ti $(docker-compose ps -q backend) ./init/run_lint.sh
 
 after_success:
   - docker login -e 'cat.wants.meow@gmail.com' -u 'jupiterapp' -p 'nothingissomething'
