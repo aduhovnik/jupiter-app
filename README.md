@@ -13,4 +13,5 @@
  
  4. **Run docker containers:** `docker-compose up`
 ###Kidaju ja kakto pull request, a on Farafonovu kak raz...
+###Ja obewaju ne pushit' v dev branchu
 
