@@ -1,0 +1,32 @@
+db:
+  image: postgres
+  environment:
+    - POSTGRES_PASSWORD=jupiter
+    - POSTGRES_USER=jupiter
+    - PGPORT=6000
+  ports:
+    - "6000:6000"
+
+backend:
+  image: jupiterapp/backend
+  ports:
+    - "8000:8000"
+  environment:
+    - DB_PASSWORD=jupiter
+    - DB_USER=jupiter
+    - DB_HOST=db
+    - DB_PORT=6000
+    - MIGRATE=true
+    - COLLECTSTATIC=true
+    - TEST=false
+    - RUNSERVER=true
+    - SLEEP=false
+  links:
+    - db:db
+
+frontend:
+  image: jupiterapp/frontend
+  ports:
+    - "80:80"
+  links:
+    - backend:backend

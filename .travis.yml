@@ -5,6 +5,10 @@ language: python
 services:
   - docker
 
+addons:
+  ssh_known_hosts:
+    - 13.67.223.53
+
 env:
   DOCKER_COMPOSE_VERSION: 1.8.0
 
@@ -27,3 +31,12 @@ after_success:
   - docker login -e 'cat.wants.meow@gmail.com' -u 'jupiterapp' -p 'nothingissomething'
   - docker push jupiterapp/backend:latest
   - docker push jupiterapp/frontend:latest
+
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: ci/deploy.sh
+  on:
+    branch: develop
+
+
