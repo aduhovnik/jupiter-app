@@ -12,3 +12,5 @@
  3. **Copy Docker configuration:** `cp docker-compose.dev.yml docker-compose.override.yml`
  
  4. **Run docker containers:** `docker-compose up`
+###Kidaju ja kakto pull request, a on Farafonovu kak raz...
+
