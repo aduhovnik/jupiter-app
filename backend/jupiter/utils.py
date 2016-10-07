@@ -17,6 +17,6 @@ def collect_applications():
 
 def collect_urls():
     return [
-        url(r'^', include(app))
+        url(r'^', include('{}.api.urls'.format(app)))
         for app in collect_applications()
     ]
