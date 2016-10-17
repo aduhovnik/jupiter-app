@@ -8,7 +8,7 @@ from ..utils import collect_applications
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'fa55uiv$$izc6=0%eu)aixt!2h#!#mjskw4^k=@u5uvdai-u3f'
 WSGI_APPLICATION = 'jupiter.wsgi.application'
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 ROOT_URLCONF = 'jupiter.urls'
 
 
@@ -17,7 +17,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-DEBUG = True
+DEBUG = os.environ.get('DJANGO_DEBUG', False)
 
 
 INSTALLED_APPS = [

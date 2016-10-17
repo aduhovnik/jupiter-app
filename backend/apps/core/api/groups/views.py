@@ -2,8 +2,8 @@
 from __future__ import absolute_import, unicode_literals
 
 from django.contrib.auth.models import Group
-from rest_framework.viewsets import ReadOnlyModelViewSet
 from .serializers import GroupSerializer
+from ..generic.views import ReadOnlyModelViewSet
 
 
 class GroupView(ReadOnlyModelViewSet):
