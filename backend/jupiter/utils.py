@@ -11,7 +11,7 @@ def collect_applications():
     apps = []
     for filename in os.listdir(apps_path):
         if os.path.isdir(os.path.join(apps_path, filename)):
-            apps.append('apps.{}'.format(filename))
+            apps.append('{}'.format(filename))
     return apps
 
 

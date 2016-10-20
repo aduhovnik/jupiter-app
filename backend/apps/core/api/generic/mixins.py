@@ -5,8 +5,8 @@ from rest_framework import status
 from rest_framework.decorators import list_route
 from rest_framework.response import Response
 
-from .filters import GenericFieldFilter, GenericOrderingFilter
-from .serializers import FieldInfoSerializer
+from core.api.generic.filters import GenericFieldFilter, GenericOrderingFilter
+from core.api.generic.serializers import FieldInfoSerializer
 
 
 class FieldsViewMixin(object):

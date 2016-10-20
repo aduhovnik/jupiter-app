@@ -2,14 +2,18 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+import sys
 from ..utils import collect_applications
 
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'fa55uiv$$izc6=0%eu)aixt!2h#!#mjskw4^k=@u5uvdai-u3f'
+BASE_DIR = os.environ.get('BACKEND_PATH', '..')
 WSGI_APPLICATION = 'jupiter.wsgi.application'
 ALLOWED_HOSTS = ['*']
 ROOT_URLCONF = 'jupiter.urls'
+
+APPS_ROOT = 'apps'
+sys.path.insert(0, os.path.join(BASE_DIR, APPS_ROOT))
 
 
 LANGUAGE_CODE = 'en-us'
