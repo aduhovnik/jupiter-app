@@ -5,13 +5,15 @@ from rest_framework.viewsets import ModelViewSet as BaseModelViewSet
 from rest_framework.viewsets import GenericViewSet as BaseGenericViewSet
 from rest_framework.viewsets import ReadOnlyModelViewSet as BaseReadOnlyModelViewSet
 from core.api.generic.mixins import FieldsViewMixin, OrderingViewMixin, FilteringViewMixin
+from core.api.generic.permissions import ViewPermission
 
 
 class GenericViewSet(FieldsViewMixin,
                      OrderingViewMixin,
                      FilteringViewMixin,
                      BaseGenericViewSet):
-    pass
+
+    permission_classes = (ViewPermission,)
 
 
 class ModelViewSet(BaseModelViewSet, GenericViewSet):

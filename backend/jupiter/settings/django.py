@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 import os
 import sys
-from ..utils import collect_applications
+from jupiter.utils import collect_applications
 
 
 SECRET_KEY = 'fa55uiv$$izc6=0%eu)aixt!2h#!#mjskw4^k=@u5uvdai-u3f'
@@ -15,13 +15,13 @@ ROOT_URLCONF = 'jupiter.urls'
 APPS_ROOT = 'apps'
 sys.path.insert(0, os.path.join(BASE_DIR, APPS_ROOT))
 
-
+AUTH_USER_MODEL = 'auth.User'
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-DEBUG = os.environ.get('DJANGO_DEBUG', False)
+DEBUG = os.environ.get('DJANGO_DEBUG', True)
 
 
 INSTALLED_APPS = [
@@ -32,6 +32,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
 ] + collect_applications()
 
 
