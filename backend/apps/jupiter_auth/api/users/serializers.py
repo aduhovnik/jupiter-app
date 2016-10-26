@@ -11,8 +11,8 @@ class UserProfileSerializer(ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = (
-            'age',
+        exclude = (
+            'user', 'id'
         )
 
 

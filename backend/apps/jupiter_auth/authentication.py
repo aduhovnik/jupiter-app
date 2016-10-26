@@ -9,7 +9,6 @@ from rest_framework.exceptions import ValidationError, AuthenticationFailed
 
 def sign_in(username, password):
     user = get_user_model().objects.filter(username=username).first()
-    print user.check_password(password), user.is_active
     if user and user.check_password(password) and user.is_active:
         token, created = Token.objects.get_or_create(user=user)
         return token

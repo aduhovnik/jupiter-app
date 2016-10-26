@@ -28,6 +28,6 @@ docker-restart:
 	@docker-compose up
 
 docker-recreate:
-	@docker-compose stop
-	@docker-compose rm -f
-	@docker-compose up
+	@docker-compose stop ${service}
+	@docker-compose rm -f ${service}
+	@docker-compose up ${service}
