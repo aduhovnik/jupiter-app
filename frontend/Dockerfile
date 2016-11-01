@@ -1,4 +1,4 @@
-FROM nginx
+FROM jupiterapp/frontend:initial
 
 COPY ./data /frontend/data
 COPY ./nginx/nginx.conf /etc/nginx/nginx.conf

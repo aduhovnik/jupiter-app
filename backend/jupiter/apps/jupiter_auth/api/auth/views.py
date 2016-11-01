@@ -5,8 +5,8 @@ from rest_framework import status
 from rest_framework.mixins import CreateModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
-from jupiter_auth.api.auth.serializers import SignInSerializer, SignUpSerializer
 from jupiter_auth.authentication import sign_in, sign_out, TokenAuthentication
+from jupiter_auth.api.auth.serializers import SignInSerializer, SignUpSerializer
 
 
 class SignInView(CreateModelMixin, GenericViewSet):

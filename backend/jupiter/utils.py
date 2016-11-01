@@ -7,7 +7,7 @@ from django.conf.urls import url, include
 
 def collect_applications():
     backend_path = os.environ.get('BACKEND_PATH', '..')
-    apps_path = os.path.join(backend_path, 'apps')
+    apps_path = os.path.join(backend_path, 'jupiter/apps')
     apps = []
     for filename in os.listdir(apps_path):
         if os.path.isdir(os.path.join(apps_path, filename)):

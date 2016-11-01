@@ -12,7 +12,7 @@ WSGI_APPLICATION = 'jupiter.wsgi.application'
 ALLOWED_HOSTS = ['*']
 ROOT_URLCONF = 'jupiter.urls'
 
-APPS_ROOT = 'apps'
+APPS_ROOT = 'jupiter/apps'
 sys.path.insert(0, os.path.join(BASE_DIR, APPS_ROOT))
 
 AUTH_USER_MODEL = 'auth.User'
@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 ] + collect_applications()
 
+print INSTALLED_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -44,10 +45,11 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'jupiter.cors.CrossOriginResourceSharing',
 ]
 
 
-STATIC_ROOT = os.path.join(BASE_DIR, '.static')
+STATIC_ROOT = os.path.join(os.path.join(BASE_DIR, 'jupiter'), '.static')
 STATIC_URL = '/static/'
 TEMPLATES = [
     {
