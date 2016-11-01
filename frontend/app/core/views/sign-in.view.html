@@ -1,0 +1,8 @@
+<div ng-app="jupiter.core" ng-controller="SignInController as c">
+    <form ng-submit="c.signIn()">
+        <input type="text" ng-model="c.credentials.username" size="40" placeholder="Username">
+        <input type="password" ng-model="c.credentials.password" size="40" placeholder="Password">
+        <input type="submit">
+    </form>
+    <div>{{c.errors}}</div>
+<div>

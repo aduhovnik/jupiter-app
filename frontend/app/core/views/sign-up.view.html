@@ -1,0 +1,11 @@
+<div ng-app="jupiter.core" ng-controller="SignUpController as c">
+    <form ng-submit="c.signUp()">
+        <input type="text" ng-model="c.data.username" size="40" placeholder="Username">
+        <input type="password" ng-model="c.data.password" size="40" placeholder="Password">
+        <input type="email" ng-model="c.data.email" size="40" placeholder="Email">
+        <input type="text" ng-model="c.data.first_name" size="40" placeholder="First name">
+        <input type="text" ng-model="c.data.last_name" size="40" placeholder="Last name">
+        <input type="submit">
+    </form>
+    <div>{{c.errors}}</div>
+<div>
