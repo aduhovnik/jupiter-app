@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
 ] + collect_applications()
 
-print INSTALLED_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
