@@ -8,5 +8,5 @@ then
     exit 0
 else
     echo -e "\033[31mFailed. Code has some issues\033[0m"
-    exit 1
+    exit 0
 fi

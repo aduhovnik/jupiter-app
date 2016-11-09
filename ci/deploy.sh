@@ -1,5 +1,12 @@
 #!/usr/bin/env bash
 
+nc -z ${HOST} 22 >/dev/null 2>&1
+if [ "$?" -ne 0 ]
+then
+    echo -e "\033[31mConnection to ${HOST} is failed. Deploy cancelled\033[0m"
+    exit 0
+fi
+
 echo -e "\033[34mEncrypting ssh identity file...\033[0m"
 openssl enc -d -aes-256-cbc -k ${DECRYPT_KEY_PASSWORD} -in ${SSH_IDENTITY_FILE} -out jupiter_key
 chmod 600 jupiter_key
