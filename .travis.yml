@@ -7,7 +7,7 @@ services:
 
 addons:
   ssh_known_hosts:
-    - 13.67.223.53
+    - 40.86.79.192
 
 env:
   DOCKER_COMPOSE_VERSION: 1.8.0
