@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import factory
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from faker import Faker
 from jupiter_auth.models import UserProfile
 
@@ -32,7 +32,7 @@ class UserProfileFactory(factory.DjangoModelFactory):
 
 class UserFactory(factory.DjangoModelFactory):
 
-    username = factory.lazy_attribute(lambda obj: "{}.{}".format(obj.first_name, obj.last_name))
+    username = factory.lazy_attribute(lambda obj: "{}-{}".format(obj.first_name, obj.last_name))
     email = factory.lazy_attribute(lambda obj: "{}@gmail.com".format(obj.username))
     first_name = factory.sequence(lambda n: fake.first_name())
     last_name = factory.sequence(lambda n: fake.last_name())
@@ -51,15 +51,15 @@ class UserFactory(factory.DjangoModelFactory):
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):
-        user = User.objects.filter(username=kwargs.get('username')).first()
+        user = get_user_model().objects.filter(username=kwargs.get('username')).first()
         if user:
             return user
         else:
             is_superuser = kwargs.get('is_superuser')
             if is_superuser:
-                return User.objects.create_superuser(*args, **kwargs)
+                return get_user_model().objects.create_superuser(*args, **kwargs)
             else:
-                return User.objects.create_user(*args, **kwargs)
+                return get_user_model().objects.create_user(*args, **kwargs)
 
     class Meta:
-        model = User
+        model = get_user_model()

@@ -8,7 +8,7 @@ from jupiter_auth.api.users.views import UserView
 
 
 router = DefaultRouter()
-router.register('users', UserView, base_name='user-profiles')
+router.register('users', UserView, base_name='users')
 router.register('sign-in', SignInView, base_name='sign-in')
 router.register('sign-out', SignOutView, base_name='sign-out')
 router.register('sign-up', SignUpView, base_name='sign-up')

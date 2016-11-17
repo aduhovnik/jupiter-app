@@ -15,7 +15,7 @@ ROOT_URLCONF = 'jupiter.urls'
 APPS_ROOT = 'jupiter/apps'
 sys.path.insert(0, os.path.join(BASE_DIR, APPS_ROOT))
 
-AUTH_USER_MODEL = 'auth.User'
+AUTH_USER_MODEL = 'jupiter_auth.User'
 LANGUAGE_CODE = 'en-us'
 TIME_ZONE = 'UTC'
 USE_I18N = True
