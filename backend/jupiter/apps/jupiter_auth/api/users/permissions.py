@@ -10,6 +10,7 @@ class ManageSelfPermission(ViewPermission):
 
     def has_permission(self, request, view):
         username = view.kwargs.get('username')
-        if username == request.user.username and request.user.has_perm(self.perm):
-            return True
+        if username == request.user.username or username == "me":
+            if request.user.has_perm(self.perm):
+                return True
         return super(ManageSelfPermission, self).has_permission(request, view)

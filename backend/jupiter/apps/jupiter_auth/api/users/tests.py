@@ -1,28 +1,20 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from rest_framework import status
+from django.contrib.auth.models import Permission
 from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from core.api.generic.utils import prettify_response
+from core.api.generic.tests import ReadOnlyModelTestMixin
 from jupiter_auth.factories import UserFactory
-from jupiter_auth.utils import get_or_create_default_group
 
 
-class UserTestCase(APITestCase):
+class UserTestCase(ReadOnlyModelTestMixin, APITestCase):
 
-    @classmethod
-    def setUpTestData(cls):
-        cls.user = UserFactory(groups=[get_or_create_default_group()])
+    base_name = 'users'
+    factory_class = UserFactory
 
     def test_client_can_view_himself(self):
-        self.client.force_authenticate(self.user)
-
-        url = reverse('users-detail', args=(self.user.username,))
-        r = self.client.get(url)
-        self.assertEqual(
-            r.status_code,
-            status.HTTP_200_OK,
-            prettify_response('User can view his profile', r)
-        )
+        url = reverse('users-detail', args=("me",))
+        perm = Permission.objects.get(codename='manage_himself')
+        self.check_permission(perm, url, 'get')

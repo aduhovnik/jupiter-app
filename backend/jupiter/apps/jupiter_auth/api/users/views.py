@@ -16,3 +16,8 @@ class UserView(ReadOnlyModelViewSet):
 
     authentication_classes = (TokenAuthentication,)
     permission_classes = (ManageSelfPermission,)
+
+    def retrieve(self, request, *args, **kwargs):
+        if self.kwargs[self.lookup_field] == 'me':
+            self.kwargs[self.lookup_field] = getattr(self.request.user, self.lookup_field)
+        return super(UserView, self).retrieve(request, *args, **kwargs)

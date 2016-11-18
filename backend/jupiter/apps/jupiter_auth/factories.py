@@ -16,7 +16,7 @@ class UserProfileFactory(factory.DjangoModelFactory):
     passport_number = factory.sequence(lambda n: fake.ssn())
     phone = factory.sequence(lambda n: fake.phone_number())
     address = factory.sequence(lambda n: fake.address())
-    age = factory.sequence(lambda n: fake.pydecimal(left_digits=2, right_digits=0, positive=True))
+    age = factory.sequence(lambda n: fake.pyint())
     passport_expires = factory.sequence(lambda n: fake.date())
     birth_date = factory.sequence(lambda n: fake.date())
     family_status = factory.sequence(lambda n: fake.sentence(nb_words=5))
