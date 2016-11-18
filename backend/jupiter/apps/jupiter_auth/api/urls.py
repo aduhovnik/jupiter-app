@@ -13,7 +13,6 @@ router.register('sign-in', SignInView, base_name='sign-in')
 router.register('sign-out', SignOutView, base_name='sign-out')
 router.register('sign-up', SignUpView, base_name='sign-up')
 
-
 urlpatterns = [
     url(r'^api/', include(router.urls))
 ]

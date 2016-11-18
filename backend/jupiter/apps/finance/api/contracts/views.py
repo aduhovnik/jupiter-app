@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from django.contrib.auth import get_user_model
 from core.api.generic.views import ReadOnlyModelViewSet
 from jupiter_auth.api.users.permissions import ManageSelfPermission
 from jupiter_auth.authentication import TokenAuthentication
-from jupiter_auth.api.users.serializers import UserSerializer
+import finance.api.contracts.serializers as serializers
+import finance.models as fin_models
 
 
-class UserView(ReadOnlyModelViewSet):
-
-    lookup_field = 'username'
-    queryset = get_user_model().objects.all()
-    serializer_class = UserSerializer
+class ContractView(ReadOnlyModelViewSet):
+    queryset = fin_models.Contract.objects.all()
+    serializer_class = serializers.ContractSerializer
 
     authentication_classes = (TokenAuthentication,)
-    permission_classes = (ManageSelfPermission,)

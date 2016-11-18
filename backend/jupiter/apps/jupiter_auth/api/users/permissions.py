@@ -4,7 +4,7 @@ from __future__ import absolute_import, unicode_literals
 from core.api.generic.permissions import ViewPermission
 
 
-class UserViewPermission(ViewPermission):
+class ManageSelfPermission(ViewPermission):
 
     perm = 'jupiter_auth.manage_himself'
 
@@ -12,4 +12,4 @@ class UserViewPermission(ViewPermission):
         username = view.kwargs.get('username')
         if username == request.user.username and request.user.has_perm(self.perm):
             return True
-        return super(UserViewPermission, self).has_permission(request, view)
+        return super(ManageSelfPermission, self).has_permission(request, view)
