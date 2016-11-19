@@ -95,5 +95,11 @@ ENV/
 # Docker Compose
 docker-compose.override.yml
 
+# NPM modules
+frontend/app/node_modules/
+
+# Mac shit
+.DS_Store
+
 
 

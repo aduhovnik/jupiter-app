@@ -1,5 +1,92 @@
 <div ng-app="jupiter.core" ng-controller="HomeController as c">
-    <a href="/sign-in">Sign in</a>
-    <a href="/sign-up">Sign up</a>
-    <a href="#" ng-if="c.isAuthenticated()" ng-click="c.signOut()">Sign out</a>
+
+  <div id="page-top" class="index">
+    <nav id="mainNav" class="navbar navbar-default navbar-custom navbar-fixed-top">
+      <div class="container">
+        <a href="/" class="navbar-brand" >Jupiter Credit System</a>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="#" class="navbar-link">Депозиты</a></li>
+          <li><a href="#" class="navbar-link">Кредиты</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <header>
+      <div class="container">
+        <div class="intro-text">
+          <div class="intro-lead-in">Сука, пиздец, как охуенно. Просто писос</div>
+          <div class="intro-heading">Жупитер кредит систем</div>
+          <a href="sign-in/" class="btn btn-info button header-button">Авторизация</a>
+          <a href="sign-up/" class="btn btn-info button header-button">Регистрация</a>
+        </div>
+      </div>
+    </header>
+
+    <section id="services" class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-12 text-center">
+            <h2 class="section-heading">
+              Физическим лицам
+              <hr class="primary">
+            </h2>
+          </div>
+        </div>
+
+        <div class="row text-center">
+          <div class="col-md-6">
+              <img src="core/assets/img/credits.icon.png" class="section-image">
+              <a href="#" class="section-subheading">Кредитование</a>
+              <p class="section-text">
+                Самый лучший в мире сервис по оформлению кредитов.
+                Без доширака и дырявых штанов.
+                Гарантия 100%
+              </p>
+          </div>
+
+          <div class="col-md-6">
+            <img src="core/assets/img/deposits.icon.png" class="section-image">
+            <a href="#" class="section-subheading">Создание вкладов</a>
+            <p class="section-text">
+              Много бабла? Некуда девать? Поделись с нами.
+              Лучшие вклады в нашей части галактики.
+              Поспеши, предложение ограничено
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+    <section id="contacts-section" class="section">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 col-lg-offset-2 text-center">
+            <h2 class="section-heading">Контакты</h2>
+            <p class="section-text">
+              Хотите поболтать? Отлично.
+              Звоните, пишите, все что угодно.
+              Мы всегда доступны в любое время года из любой точки вселенной
+            </p>
+          </div>
+
+          <div class="col-lg-4 col-lg-offset-2 text-center">
+            <img src="core/assets/img/phone.icon.png" class="section-image-small">
+            <p class="section-text">+375 (29) 4324433</p>
+          </div>
+
+          <div class="col-lg-4 text-center">
+            <img src="core/assets/img/email.icon.png" class="section-image-small">
+            <p class="section-text">
+              <a href="mailto:cat.wants.meow@gmail.com">cat.wants.meow@gmail.com</a>
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <p class="footer-text">Copyright © Jupiter Group 2016</p>
+    </footer>
+  </div>
 </div>
