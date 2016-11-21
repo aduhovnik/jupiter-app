@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-
+import django.contrib.postgres.fields.jsonb
 
 class Migration(migrations.Migration):
 
@@ -67,5 +67,23 @@ class Migration(migrations.Migration):
             name='name',
             field=models.CharField(default='default', max_length=100),
             preserve_default=False,
+        ),
+        migrations.RemoveField(
+            model_name='credittemplate',
+            name='percentage',
+        ),
+        migrations.RemoveField(
+            model_name='deposittemplate',
+            name='percentage',
+        ),
+         migrations.AddField(
+            model_name='credittemplate',
+            name='percentage',
+            field=django.contrib.postgres.fields.jsonb.JSONField(),
+        ),
+        migrations.AddField(
+            model_name='deposittemplate',
+            name='percentage',
+            field=django.contrib.postgres.fields.jsonb.JSONField(),
         ),
     ]

@@ -1,8 +1,10 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, unicode_literals
+
 from django.db import models
 from django.conf import settings
-
-from utils import money_field, percentage_field
-
+from django.contrib.postgres.fields import JSONField, ArrayField
+from finance.utils import money_field, percentage_field
 
 class Product(models.Model):
     client = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -88,13 +90,15 @@ class DepositTemplate(models.Model):
     ]
 
     name = models.CharField(max_length=100)
-    percentage = percentage_field()
-    indexing = models.IntegerField(choices=INDEXATIONS)
-    cancellation_condition = models.IntegerField(choices=CONCELLATION_CONDITIONS)
-    duration = models.DurationField()
+    description = models.CharField(max_length=1000, null=True)
+    percentage = JSONField() # here currency, duration and percents
+    indexing = models.IntegerField(choices=INDEXATIONS, default=YEARLY)
+    cancellation_condition = models.IntegerField(choices=CONCELLATION_CONDITIONS,default=ANYTIME_WITH_LOSSY)
     min_amount = money_field()
     max_amount = money_field()
-    prolongation = models.BooleanField()
+    prolongation = models.BooleanField(default=False)
+    additional_contributions = models.BooleanField(default=False)
+
 
     class Meta:
         verbose_name = 'Deposit templates'
@@ -124,16 +128,17 @@ class Deposit(Product):
 
 class CreditTemplate(models.Model):
     name = models.CharField(max_length=100)
-    percentage = percentage_field()
-    duration = models.DurationField()
-    min_amount = money_field()
-    max_amount = money_field()
-    monthly_payment = money_field()
+    description = models.CharField(max_length=1000, null=True)
+    annual_percentage_rate = percentage_field() #Our annual interest rate on the basis of its count the rest we need    min_amount = JSONField()
+    max_amount = JSONField() #calculated as max(FIXED, SUM(ANNUAL_PERCENT*DURATION/12, PURCHASE_SUM*PURCHASE_MAX_PERCENT) )
+    min_amount = JSONField() #calculated as max(FIXED, SUM(ANNUAL_PERCENT*DURATION/12, PURCHASE_SUM*PURCHASE_MIN_PERCENT) )
+    max_duration = models.IntegerField(default=12) #in months
     fine_percentage = percentage_field()
-    issue_online = models.BooleanField()
-
-    # TODO: Indexing?
-    # TODO: line of credit or a one-time issue?
+    issue_online = models.BooleanField(default=False)
+    allowed_methods_of_ensuring = ArrayField(models.IntegerField())
+    # FINE = 0 #{неустойка}
+    # PLEDGE = 1 #{залог}
+    # SURETY = 2 #{поручительство}.
 
     class Meta:
         verbose_name = 'Credit templates'
@@ -154,11 +159,23 @@ class Credit(Product):
         (CLOSED, 'Closed'),
     ]
 
+    FINE = 0 #{неустойка}
+    PLEDGE = 1 #{залог}, fine is also charged as long as you do not recognized as dodger, then confiscation
+    SURETY = 2 #{поручительство}. fine is also charged as you long as do not recognized as dodger, then debts will be called from the guarantor
+    ENSURINGS = [
+        (FINE, "Fine"),
+        (PLEDGE, "Plegde"),
+        (SURETY, "Surety"),
+    ]
+
     residue = money_field()
+    current_penalty = money_field()
+    next_payment_term = models.DateField()
     template = models.ForeignKey(CreditTemplate)
     status = models.IntegerField(choices=STATUSES)
-    # TODO: fine in percent?
     fine_percentage = percentage_field()
+    method_of_ensuring = models.IntegerField(choices=ENSURINGS)
+
 
     class Meta:
         verbose_name = 'Credit'
