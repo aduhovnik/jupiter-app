@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import logging
-from finance.utils_templates import init_deposit_templates, init_credit_templates
+from finance.fixtures import init_deposit_templates, init_credit_templates
 from django.core.management import BaseCommand
 
 

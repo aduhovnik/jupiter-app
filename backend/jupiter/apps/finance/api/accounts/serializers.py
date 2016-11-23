@@ -8,4 +8,3 @@ import finance.models as fin_models
 class AccountSerializer(ModelSerializer):
     class Meta:
         model = fin_models.Account
-

@@ -21,4 +21,6 @@ class ModelViewSet(BaseModelViewSet, GenericViewSet):
 
 
 class ReadOnlyModelViewSet(BaseReadOnlyModelViewSet, GenericViewSet):
-    pass
+
+    authentication_classes = []
+    permission_classes = []

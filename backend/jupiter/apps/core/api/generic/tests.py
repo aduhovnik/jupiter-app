@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from rest_framework import status
 from rest_framework.reverse import reverse
@@ -101,11 +100,13 @@ class ListModelTestMixin(APITestMixin):
 
 class RetrieveModelTestMixin(APITestMixin):
 
+    lookup_field = 'pk'
     detail_suffix = '-detail'
     check_view_pem = True
 
     def test_retrieve_endpoint(self):
-        url = reverse(self.base_name + self.detail_suffix, args=(self.object.username,))
+        lookup = getattr(self.object, self.lookup_field)
+        url = reverse(self.base_name + self.detail_suffix, args=(lookup,))
         self.client.force_authenticate(self.user)
         if self.check_view_perm:
             self.check_permission(self.get_permission('view'), url, 'get')
@@ -120,4 +121,3 @@ class RetrieveModelTestMixin(APITestMixin):
 
 class ReadOnlyModelTestMixin(ListModelTestMixin, RetrieveModelTestMixin, APITestMixin):
     pass
-
