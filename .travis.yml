@@ -19,9 +19,10 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
 
 install:
-  - docker build --force-rm -t jupiterapp/backend ./backend
-  - docker build --force-rm -t jupiterapp/frontend ./frontend
-  - docker-compose -f docker-compose.dev.yml up -d backend
+  - docker build --force-rm -t jupiterapp/backend ./services/backend
+  - docker build --force-rm -t jupiterapp/frontend ./services/frontend
+  - docker build --force-rm -t jupiterapp/scoring ./services/scoring
+  - docker-compose -f docker-compose.build.yml up -d backend
 
 script:
   - docker exec -ti $(docker-compose ps -q backend) ./init/run_tests.sh
@@ -31,6 +32,7 @@ after_success:
   - docker login -e 'cat.wants.meow@gmail.com' -u 'jupiterapp' -p 'nothingissomething'
   - docker push jupiterapp/backend:latest
   - docker push jupiterapp/frontend:latest
+  - docker push jupiterapp/scoring:latest
 
 deploy:
   provider: script

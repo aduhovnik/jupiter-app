@@ -1,27 +1,23 @@
-backend_host = 0.0.0.0
-backend_port = 8000
-
-db_container = $(shell docker-compose ps -q db)
-backend_container = $(shell docker-compose ps -q backend)
-frontend_container = $(shell docker-compose ps -q frontend)
-
 backend-bash:
-	@docker exec -ti ${backend_container} bash
+	@docker exec -ti $(shell docker-compose ps -q backend) bash
+
+scoring-bash:
+	@docker exec -ti $(shell docker-compose ps -q scoring) bash
 
 backend-migrate:
-	@docker exec -ti $(backend_container) ./manage.py migrate
+	@docker exec -ti $(shell docker-compose ps -q backend) ./manage.py migrate
 
 backend-runserver:
-	@docker exec -ti $(backend_container) ./manage.py runserver ${backend_host}:${backend_port}
+	@docker exec -ti $(shell docker-compose ps -q backend) ./manage.py runserver 0.0.0.0:8000
 
 frontend-bash:
-	@docker exec -ti ${frontend_container} bash
+	@docker exec -ti $(shell docker-compose ps -q frontend) bash
 
 frontend-reload:
-	@docker exec -ti ${frontend_container} nginx -s reload
+	@docker exec -ti ${$(shell docker-compose ps -q frontend)} nginx -s reload
 
 db-shell:
-	@docker exec -ti $(db_container) psql -U jupiter
+	@docker exec -ti $(shell docker-compose ps -q db) psql -U jupiter
 
 docker-restart:
 	@docker-compose stop

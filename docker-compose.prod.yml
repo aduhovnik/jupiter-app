@@ -1,0 +1,31 @@
+db:
+  image: postgres
+  environment:
+    - POSTGRES_PASSWORD=jupiter
+    - POSTGRES_USER=jupiter
+    - PGPORT=6000
+
+scoring:
+  image: jupiterapp/scoring
+
+backend:
+  image: jupiterapp/backend
+  ports:
+    - "8000:8000"
+  environment:
+    - DB_PASSWORD=jupiter
+    - DB_USER=jupiter
+    - DB_HOST=db
+    - DB_PORT=6000
+    - SCORING_HOST=scoring
+    - SCORING_PORT=8001
+  links:
+    - db:db
+    - scoring:scoring
+
+frontend:
+  image: jupiterapp/frontend
+  ports:
+    - "80:80"
+  links:
+    - backend:backend
