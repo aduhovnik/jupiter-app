@@ -1,0 +1,53 @@
+<div ng-app="jupiter.finance"
+     ng-controller="DepositTemplatesController as ctrl"
+     ng-init="ctrl.getDepositTemplates()">
+
+  <section class="section">
+    <div class="container list-container">
+      <div class="row">
+        <div class="col-lg-12 text-center">
+          <h2 class="section-heading">
+            Вклады
+            <hr class="primary">
+          </h2>
+        </div>
+      </div>
+
+      <div class='row list-item panel panel-default'
+           ng-repeat="dt in ctrl.data">
+        <div class="col-md-3">
+          <img src="src/core/assets/img/deposits.icon.png"
+               class="img-responsive list-item-image">
+        </div>
+
+        <div class="col-md-9">
+          <a class="link" href="/deposits/templates/{{dt.id}}/">
+            <h3>
+              {{dt.name}}
+            </h3>
+          </a>
+          <h4>
+            <span ng-if="dt.closing <= 1">Отзывной</span>
+            <span ng-if="dt.closing == 2">Безотзывной</span>
+            вклад
+          </h4>
+          <h4>
+            Валюта вклада:
+            <span ng-if="dt.currency.BYN">белорусский рубль (BYN)</span>
+            <span ng-if="dt.currency.USD">, доллар США (USD)</span>
+            <span ng-if="dt.currency.EUR">, евро (EUR)</span>
+            <span ng-if="dt.currency.RUB">, российский рубль (RUB)</span>
+          </h4>
+          <p>
+            {{dt.description}}
+          </p>
+          <a class="btn btn-info button"
+             href="/deposits/templates/{{dt.id}}/">
+            Детальная информация
+            <span class="glyphicon glyphicon-chevron-right"></span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

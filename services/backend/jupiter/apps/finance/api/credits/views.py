@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 import finance.api.credits.serializers as serializers
 import finance.models as fin_models
-from core.api.generic.views import ModelViewSet
+from core.api.generic.views import ModelViewSet, ReadOnlyModelViewSet
 from jupiter_auth.authentication import TokenAuthentication
 
 
@@ -14,6 +14,6 @@ class CreditView(ModelViewSet):
     authentication_classes = (TokenAuthentication,)
 
 
-class CreditTemplateView(ModelViewSet):
+class CreditTemplateView(ReadOnlyModelViewSet):
     queryset = fin_models.CreditTemplate.objects.all()
     serializer_class = serializers.CreditTemplateSerializer

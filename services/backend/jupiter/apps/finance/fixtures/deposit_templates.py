@@ -7,24 +7,42 @@ from finance.models import DepositTemplate
 DEPOSIT_TEMPLATES = [
     {
         "name": "Метида",
-        "description": "Разместить денежные средства можно на срок 3 месяца. "
-                       "Проценты начисляются ежемесячно на текущий счет. "
-                       "Фиксированная процентная ставка по вкладу.",
-        "percentage": {
+        "description": "Усовершенствованный сберегательный продукт, представляющий новые "
+                       "возможности и преимущества стандартной линейки вкладов",
+        "currency": {
             "BYN": {
-                "3": 5.0
-                },
+                "min_amount": 100,
+                "max_term": 3,
+                "percentage": [
+                    {
+                        "term": 3,
+                        "percentage": 5
+                    }
+                ]
+            },
             "USD": {
-                "3": 2.0
+                "min_amount": 50,
+                "max_term": 3,
+                "percentage": [
+                    {
+                        "term": 3,
+                        "percentage": 5,
+                    }
+                ]
             },
             "EUR": {
-                "3": 2.0
+                "min_amount": 30,
+                "max_term": 3,
+                "percentage": [
+                    {
+                        "term": 3,
+                        "percentage": 5,
+                    }
+                ]
             }
         },
-        "indexing": DepositTemplate.INDEXING_MONTHLY,
-        "min_amount": 10,
-        "max_amount": None,
-        "cancellation_condition": DepositTemplate.CLOSING_ANYTIME_WITH_LOSS,
+        "indexing": DepositTemplate.INDEXING_DAILY,
+        "closing": DepositTemplate.CLOSING_ANYTIME_WITH_LOSS,
         "prolongation": False,
         "additional_contributions": True,
     },
@@ -32,25 +50,64 @@ DEPOSIT_TEMPLATES = [
     {
         "name": "Карпо",
         "description": "Срочный безотзывный банковский вклад.",
-        "percentage": {
+        "currency": {
             "BYN": {
-                "24": 8.0,
-                "36": 9.0
+                "min_amount": 200,
+                "max_term": 36,
+                "percentage": [
+                    {
+                        "term": 12,
+                        "percentage": 6,
+                    },
+                    {
+                        "term": 24,
+                        "percentage": 8,
+                    },
+                    {
+                        "term": 36,
+                        "percentage": 10,
+                    }
+                ]
             },
-
             "USD": {
-                "24": 3.0,
-                "36": 3.5,
+                "min_amount": 50,
+                "max_term": 36,
+                "percentage": [
+                    {
+                        "term": 12,
+                        "percentage": 3
+                    },
+                    {
+                        "term": 24,
+                        "percentage": 3.5
+                    },
+                    {
+                        "term": 36,
+                        "percentage": 4
+                    },
+                ]
             },
             "EUR": {
-                "24": 3.0,
-                "36": 3.5,
-            },
+                "min_amount": 70,
+                "max_term": 36,
+                "percentage": [
+                    {
+                        "term": 12,
+                        "percentage": 3.5
+                    },
+                    {
+                        "term": 24,
+                        "percentage": 4
+                    },
+                    {
+                        "term": 36,
+                        "percentage": 4.5
+                    },
+                ]
+            }
         },
-        "indexing": DepositTemplate.INDEXING_MONTHLY,
-        "min_amount": 10,
-        "max_amount": None,
-        "cancellation_condition": DepositTemplate.CLOSING_IN_END,
+        "indexing": DepositTemplate.INDEXING_QUARTERLY,
+        "closing": DepositTemplate.CLOSING_IN_END,
         "prolongation": True,
         "additional_contributions": False,
     },
@@ -59,30 +116,76 @@ DEPOSIT_TEMPLATES = [
         "name": "Фива",
         "description": "Cнятие без потери процентов всей суммы вклада в любое время. "
                        "Проценты начисляются за уже прошедшие полные месяцы.",
-        "percentage": {
+        "currency": {
             "BYN": {
-                "3": 5.0,
-                "6": 6.0,
-                "12": 7.0,
-                "36": 8.0,
+                "min_amount": 100,
+                "max_term": 32,
+                "percentage": [
+                    {
+                        "term": 6,
+                        "percentage": 5,
+                    },
+                    {
+                        "term": 12,
+                        "percentage": 6,
+                    },
+                    {
+                        "term": 24,
+                        "percentage": 7,
+                    },
+                    {
+                        "term": 36,
+                        "percentage": 8,
+                    }
+                ]
             },
             "USD": {
-                "3": 1.0,
-                "6": 1.5,
-                "12": 2.0,
-                "36": 2.5,
+                "min_amount": 50,
+                "max_term": 36,
+                "percentage": [
+                    {
+                        "term": 6,
+                        "percentage": 2.5
+                    },
+                    {
+                        "term": 12,
+                        "percentage": 3
+                    },
+                    {
+                        "term": 24,
+                        "percentage": 3.5
+                    },
+                    {
+                        "term": 36,
+                        "percentage": 4
+                    },
+                ]
             },
             "EUR": {
-                "3": 1.0,
-                "6": 1.5,
-                "12": 2.0,
-                "36": 2.5,
-            },
+                "min_amount": 50,
+                "max_term": 36,
+                "percentage": [
+                    {
+                        "term": 6,
+                        "percentage": 3,
+                    },
+                    {
+                        "term": 12,
+                        "percentage": 3.5,
+                    },
+                    {
+                        "term": 24,
+                        "percentage": 4,
+                    },
+                    {
+                        "term": 36,
+                        "percentage": 4.5,
+                    },
+                ]
+            }
         },
         "indexing": DepositTemplate.INDEXING_MONTHLY,
-        "min_amount": 10,
-        "max_amount": None,
-        "cancellation_condition": DepositTemplate.CLOSING_IN_END,
+        "closing": DepositTemplate.CLOSING_IN_END,
         "prolongation": False,
         "additional_contributions": False,
     },
@@ -90,15 +193,28 @@ DEPOSIT_TEMPLATES = [
     {
         "name": "Лида",
         "description": "Срочный безотзывный банковский вклад.",
-        "percentage": {
+        "currency": {
             "BYN": {
-                "12": 18,
-            },
+                "min_amount": 100,
+                "max_term": 18,
+                "percentage": [
+                    {
+                        "term": 6,
+                        "percentage": 12,
+                    },
+                    {
+                        "term": 12,
+                        "percentage": 14,
+                    },
+                    {
+                        "term": 18,
+                        "percentage": 16,
+                    }
+                ]
+            }
         },
         "indexing": DepositTemplate.INDEXING_MONTHLY,
-        "min_amount": 100,
-        "max_amount": None,
-        "cancellation_condition": DepositTemplate.CLOSING_IN_END,
+        "closing": DepositTemplate.CLOSING_IN_END,
         "prolongation": True,
         "additional_contributions": False,
     },

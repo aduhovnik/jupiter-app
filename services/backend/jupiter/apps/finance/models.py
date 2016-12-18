@@ -99,11 +99,9 @@ class DepositTemplate(models.Model):
 
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000, null=True)
-    percentage = JSONField()
+    currency = JSONField()
     indexing = models.IntegerField(choices=INDEXING_CHOICES, default=INDEXING_YEARLY)
     closing = models.IntegerField(choices=CLOSING_CHOICES, default=CLOSING_ANYTIME_WITH_LOSS)
-    min_amount = money_field()
-    max_amount = money_field(null=True)
     prolongation = models.BooleanField(default=False)
     additional_contributions = models.BooleanField(default=False)
 

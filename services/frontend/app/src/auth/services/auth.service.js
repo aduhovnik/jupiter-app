@@ -1,4 +1,4 @@
-module = angular.module("jupiter.core");
+module = angular.module("jupiter.auth");
 module.service("$auth", AuthService);
 
 function AuthService($http, $localStorage) {

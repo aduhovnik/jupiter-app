@@ -1,4 +1,4 @@
-module = angular.module("jupiter.core");
+module = angular.module("jupiter.auth");
 module.controller('SignUpController', SignUpController);
 
 function SignUpController($http, $location) {
@@ -14,7 +14,7 @@ function SignUpController($http, $location) {
         var ctrl = this;
         $http.post('/api/sign-up/', this.data).then(
             function success() {
-                $location.path('/');
+                ctrl.success = true;
             },
             function error(response) {
                 ctrl.errors = response.data;

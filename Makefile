@@ -14,7 +14,7 @@ frontend-bash:
 	@docker exec -ti $(shell docker-compose ps -q frontend) bash
 
 frontend-reload:
-	@docker exec -ti ${$(shell docker-compose ps -q frontend)} nginx -s reload
+	@docker exec -ti $(shell docker-compose ps -q frontend) nginx -s reload
 
 db-shell:
 	@docker exec -ti $(shell docker-compose ps -q db) psql -U jupiter

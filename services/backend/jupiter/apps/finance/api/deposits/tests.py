@@ -9,6 +9,7 @@ from finance.factories import DepositTemplateFactory, DepositFactory
 
 class CreditTemplateTestCase(ReadOnlyModelTestMixin, APITestCase):
 
+    check_view_perm = False
     base_name = 'deposit-templates'
     factory_class = DepositTemplateFactory
 

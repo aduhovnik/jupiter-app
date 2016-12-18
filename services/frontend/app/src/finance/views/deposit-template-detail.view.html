@@ -1,0 +1,105 @@
+<div ng-app="jupiter.finance"
+     ng-controller="DepositTemplatesController as ctrl"
+     ng-init="ctrl.getDepositTemplate()">
+  <section class="section">
+    <div class="container">
+      <div class="row col-md-10 col-md-offset-1">
+        <div class="row text-center">
+          <h2 class="section-heading">
+            {{ctrl.data.name}}
+          </h2>
+        </div>
+        <hr class="primary">
+
+        <div class="row text-center">
+          <div class="col-md-4 row-bottom-1">
+            <h4>Условие закрытия:</h4>
+            <h3>
+              <span ng-if="ctrl.data.closing == 0">В любой момент</span>
+              <span ng-if="ctrl.data.closing == 1">В любой момент (с потерями)</span>
+              <span ng-if="ctrl.data.closing == 2">В конце срока</span>
+            </h3>
+          </div>
+          <div class="col-md-4 row-bottom-1">
+            <h4>Возможность продления:</h4>
+            <h3>
+              <span ng-if="ctrl.data.prolongation">Да</span>
+              <span ng-if="!ctrl.data.prolongation">Нет</span>
+            </h3>
+          </div>
+          <div class="col-md-4 row-bottom-1">
+            <h4>Возможность пополнения:</h4>
+            <h3>
+              <span ng-if="ctrl.data.additional_contributions">Да</span>
+              <span ng-if="!ctrl.data.additional_contributions">Нет</span>
+            </h3>
+          </div>
+        </div>
+        <hr class="primary">
+
+        <div class="row text-large">
+          <table class="table table-bordered">
+            <tr>
+              <th class="text-center">Валюта</th>
+              <th class="text-center">Минимальная сумма</th>
+              <th class="text-center">Максимальный срок</th>
+              <th class="text-center">Процентная ставка</th>
+            <tr>
+            <tr ng-repeat="(currency, data) in ctrl.data.currency">
+              <td>
+                {{ctrl.currencyNames[currency]}}
+              </td>
+              <td>
+                {{data.min_amount}} currency
+              </td>
+              <td>
+                {{data.max_term}}
+              </td>
+              <td class="cell sub-table">
+                <table class="table sub-table">
+                  <tr>
+                    <th ng-repeat="p in ctrl.currency_data[0].percentage">
+                      {{p.term}} месяцев
+                    </th>
+                  <tr>
+                  <tr>
+                    <td ng-repeat="p in data.percentage">
+                      {{p.percentage}} %
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </div>
+        <div class="row">
+          <h4>Описание:</h4>
+          <p class="text-large">
+            {{ctrl.data.description}}
+          </p>
+        </div>
+
+        <div class="row">
+          <h4>Дополнительная информация:</h4>
+          <p class="text-large">
+            {{ctrl.details}}
+          </p>
+        </div>
+        <hr class="primary">
+
+        <div class="row">
+          <div class="col-md-3 col-md-offset-3 row-bottom-1">
+            <a class="btn btn-info button button-stretch" href="#">
+              Перейти к оформлению
+            </a>
+          </div>
+          <div class="col-md-3 row-bottom-1">
+            <a class="btn btn-info button button-stretch" href="/deposits/templates/">
+              Назад к списку
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>

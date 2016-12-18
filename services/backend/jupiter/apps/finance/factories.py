@@ -64,11 +64,9 @@ class DepositTemplateFactory(factory.DjangoModelFactory):
 
     name = factory.sequence(lambda n: fake.sentence(nb_words=1))
     description = factory.sequence(lambda n: fake.sentence(nb_words=15))
-    percentage = factory.lazy_attribute(lambda n: '{}')
+    currency = factory.lazy_attribute(lambda n: '{}')
     indexing = FuzzyChoice(dict(DepositTemplate.INDEXING_CHOICES))
     closing = FuzzyChoice(dict(DepositTemplate.CLOSING_CHOICES))
-    min_amount = factory.sequence(lambda n: fake.pyint())
-    max_amount = factory.sequence(lambda n: fake.pyint())
     prolongation = factory.sequence(lambda n: fake.pybool())
     additional_contributions = factory.sequence(lambda n: fake.pybool())
 

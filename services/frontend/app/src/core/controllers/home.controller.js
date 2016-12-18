@@ -1,4 +1,4 @@
-module = angular.module("jupiter.core", ["ngStorage"]);
+module = angular.module("jupiter.core");
 module.controller('HomeController', HomeController);
 
 function HomeController($location, $auth) {
@@ -15,6 +15,5 @@ function HomeController($location, $auth) {
                 $location.path('/sign-in/');
             }
         );
-
     }
 }

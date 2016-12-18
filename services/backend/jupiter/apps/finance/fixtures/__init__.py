@@ -14,6 +14,8 @@ logger = logging.getLogger('jupiter')
 def init_deposit_templates():
     DepositTemplate.objects.exclude(name__in=[d['name'] for d in DEPOSIT_TEMPLATES]).delete()
     for data in DEPOSIT_TEMPLATES:
+
+
         DepositTemplate.objects.update_or_create(name=data['name'], defaults=data)
         logger.info('Initialized deposit template "{}"'.format(data['name']))
 
