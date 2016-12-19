@@ -40,6 +40,7 @@ frontend:
   image: jupiterapp/frontend
   ports:
     - "80:80"
+    - "443:443"
   volumes:
     - ./services/frontend/nginx/nginx.conf:/etc/nginx/nginx.conf
     - ./services/frontend/nginx/conf.d/:/etc/nginx/conf.d/

@@ -2,9 +2,9 @@
   <div class="row col-md-6 col-md-offset-3">
     <div class="text-center row-offset-6">
       <h1 class="heading-large text-red">
-        {{globalHTTPError.status}}
+        {{ctrl.getError().status}}
         <div class="subheading-large">
-          {{globalHTTPError.message}}
+          {{ctrl.getError().message}}
         </div>
       </h1>
     </div>

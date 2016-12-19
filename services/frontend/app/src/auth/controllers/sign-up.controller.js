@@ -1,7 +1,8 @@
 module = angular.module("jupiter.auth");
 module.controller('SignUpController', SignUpController);
 
-function SignUpController($http, $location) {
+function SignUpController($http, $error) {
+
     this.data = {
         username: "",
         password: "",
@@ -18,6 +19,7 @@ function SignUpController($http, $location) {
             },
             function error(response) {
                 ctrl.errors = response.data;
+                $error.onError(response);
             }
         );
     };

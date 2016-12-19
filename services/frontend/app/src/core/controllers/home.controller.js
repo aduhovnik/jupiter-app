@@ -1,7 +1,9 @@
 module = angular.module("jupiter.core");
 module.controller('HomeController', HomeController);
 
-function HomeController($location, $auth) {
+
+function HomeController($location, $auth, $error) {
+
     this.isAuthenticated = function () {
         return $auth.isAuthenticated();
     };
@@ -10,6 +12,7 @@ function HomeController($location, $auth) {
         $auth.signOut(
             function success() {
                 $location.path('/sign-in/');
+
             },
             function error() {
                 $location.path('/sign-in/');
