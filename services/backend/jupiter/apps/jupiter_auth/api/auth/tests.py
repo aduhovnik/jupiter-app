@@ -151,7 +151,7 @@ class SignUpTestCase(APITestCase):
         r = self.client.sign_in(self.data['username'])
         self.assertEqual(
             r.status_code,
-            status.HTTP_200_OK,
+            status.HTTP_400_BAD_REQUEST,
             prettify_response('Sign in failed', r)
         )
 
