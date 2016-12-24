@@ -7,6 +7,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import GenericViewSet
 from jupiter_auth.authentication import sign_in, sign_out, TokenAuthentication
 from jupiter_auth.api.auth.serializers import SignInSerializer, SignUpSerializer
+from jupiter_auth.api.users.serializers import UserSerializer
 
 
 class SignInView(CreateModelMixin, GenericViewSet):
@@ -17,8 +18,11 @@ class SignInView(CreateModelMixin, GenericViewSet):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        token = sign_in(**serializer.validated_data)
-        return Response({"token": token.key}, status.HTTP_200_OK)
+        user, token = sign_in(**serializer.validated_data)
+        return Response({
+            "token": token.key,
+            "user": UserSerializer(user).data,
+        }, status.HTTP_200_OK)
 
 
 class SignOutView(ListModelMixin, GenericViewSet):

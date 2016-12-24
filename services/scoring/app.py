@@ -51,8 +51,8 @@ def get_score(data_dict):
         'credit_limits': []  except real estate and car loans
     :return:
     """
-    data_dict['debtRatio'] = (sum(data_dict['credit_monthly_payments']))/ data_dict['MonthlyIncome']
-    data_dict['RevolvingUtilizationOfUnsecuredLines'] = data_dict['credits_residue']/sum(data_dict['credit_limits'])
+    data_dict['debtRatio'] = (sum(data_dict['credit_monthly_payments'])) / data_dict['MonthlyIncome']
+    data_dict['RevolvingUtilizationOfUnsecuredLines'] = data_dict['credits_residue'] / sum(data_dict['credit_limits'])
     del data_dict['credit_monthly_payments']
     del data_dict['credits_residue']
     del data_dict['credit_limits']

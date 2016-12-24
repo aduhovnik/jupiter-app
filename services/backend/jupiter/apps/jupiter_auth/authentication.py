@@ -11,7 +11,7 @@ def sign_in(username, password):
     user = get_user_model().objects.filter(username=username).first()
     if user and user.check_password(password) and user.is_active:
         token, created = Token.objects.get_or_create(user=user)
-        return token
+        return user, token
     else:
         raise ValidationError('Incorrect username or password')
 

@@ -20,6 +20,6 @@ def collect_urls():
     for app in collect_applications():
         try:
             urls.append(url(r'^', include('{}.api.urls'.format(app))))
-        except ImportError:
-            pass
+        except ImportError as e:
+            print e
     return urls
