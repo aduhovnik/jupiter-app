@@ -4,7 +4,7 @@ module.service("$auth", AuthService);
 function AuthService($http, $localStorage) {
     this.isAuthenticated = function() {
         var token = $localStorage.token;
-        return token ? true: false;
+        return !!token;
     };
 
     this.signIn = function(credentials, onSuccess, onError) {
@@ -32,5 +32,17 @@ function AuthService($http, $localStorage) {
                 }
             )
         }
+    };
+
+    this.signUp = function(userData, onSuccess, onError) {
+        $http.post('api/sign-up/', userData).then(
+            function success(response) {
+                $localStorage.token = response.data.token;
+                onSuccess(response);
+            },
+            function error(response) {
+                onError(response)
+            }
+        )
     }
 }

@@ -5,6 +5,7 @@ from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from jupiter_auth.utils import get_or_create_default_group
 from jupiter_auth.api.users.serializers import UserProfileSerializer
+from jupiter_auth.models import UserProfile
 
 
 class SignInSerializer(serializers.ModelSerializer):
@@ -19,12 +20,15 @@ class SignInSerializer(serializers.ModelSerializer):
 
 class SignUpSerializer(serializers.ModelSerializer):
 
+    profile = UserProfileSerializer()
     password = serializers.CharField(write_only=True)
 
     def create(self, validated_data):
         validated_data['is_active'] = False
+        profile_data = validated_data.pop('profile')
         instance = get_user_model().objects.create_user(**validated_data)
         instance.groups.add(get_or_create_default_group())
+        UserProfile.objects.create(user=instance, **profile_data)
         return instance
 
     class Meta:
@@ -33,6 +37,7 @@ class SignUpSerializer(serializers.ModelSerializer):
             'username',
             'password',
             'email',
+            'profile',
             'first_name',
             'last_name',
         )
