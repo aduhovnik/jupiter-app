@@ -12,7 +12,7 @@ from pandas import DataFrame
 app = Flask(__name__)
 
 data_path = 'data'
-file_name = 'classifier.pkl'
+file_name = 'model.pkl'
 
 
 zip_path = os.path.join(data_path, file_name + '.zip')
