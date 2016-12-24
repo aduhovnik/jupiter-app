@@ -41,8 +41,8 @@ DEPOSIT_TEMPLATES = [
                 ]
             }
         },
-        "indexing": DepositTemplate.INDEXING_DAILY,
-        "closing": DepositTemplate.CLOSING_ANYTIME_WITH_LOSS,
+        "capitalization": DepositTemplate.CAPITALIZATION_DAILY,
+        "closing": DepositTemplate.CLOSING_ANYTIME,
         "prolongation": False,
         "additional_contributions": True,
     },
@@ -106,7 +106,7 @@ DEPOSIT_TEMPLATES = [
                 ]
             }
         },
-        "indexing": DepositTemplate.INDEXING_QUARTERLY,
+        "capitalization": DepositTemplate.CAPITALIZATION_QUARTERLY,
         "closing": DepositTemplate.CLOSING_IN_END,
         "prolongation": True,
         "additional_contributions": False,
@@ -184,7 +184,7 @@ DEPOSIT_TEMPLATES = [
                 ]
             }
         },
-        "indexing": DepositTemplate.INDEXING_MONTHLY,
+        "capitalization": DepositTemplate.CAPITALIZATION_MONTHLY,
         "closing": DepositTemplate.CLOSING_IN_END,
         "prolongation": False,
         "additional_contributions": False,
@@ -213,7 +213,7 @@ DEPOSIT_TEMPLATES = [
                 ]
             }
         },
-        "indexing": DepositTemplate.INDEXING_MONTHLY,
+        "capitalization": DepositTemplate.CAPITALIZATION_MONTHLY,
         "closing": DepositTemplate.CLOSING_IN_END,
         "prolongation": True,
         "additional_contributions": False,
