@@ -12,6 +12,7 @@ from django.db import models
 
 from finance.utils import money_field, percentage_field
 from finance.bank_system_proxy import BankSystemProxy
+from jupiter_auth.models import User, UserProfile
 
 
 class Product(models.Model):
@@ -290,6 +291,7 @@ class DepositTemplate(models.Model):
     max_amount = money_field(null=True)
     prolongation = models.BooleanField(default=False)
     additional_contributions = models.BooleanField(default=False)
+    detailed_info = models.TextField()
 
     class Meta:
         verbose_name = 'Deposit templates'
@@ -552,6 +554,7 @@ class CreditTemplate(models.Model):
     fine_percentage = percentage_field()
     issue_online = models.BooleanField(default=False)
     allowed_ensuring = ArrayField(models.IntegerField(choices=ENSURING_CHOICES))
+    detailed_info = models.TextField()
 
     class Meta:
         verbose_name = 'Credit templates'
@@ -672,6 +675,9 @@ class Credit(Product):
         self.total_sum.amount += payment
         if self.status == Credit.STATUS_FINED:
             if self.current_penalty.amount <= payment:
+                days_late = (datetime.date.today() - self.next_payment_term).days
+                profile = User.objects.get(pk=self.id).profile
+                profile.treat_days_late(days_late)
                 payment, self.current_penalty.amount = payment - self.current_penalty.amount, 0
                 self.status = Credit.STATUS_OPENED
             else:

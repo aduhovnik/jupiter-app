@@ -32,6 +32,18 @@ class UserProfile(models.Model):
     income = models.TextField(null=True)
     realty = models.TextField(null=True)
     job = models.TextField(null=True)
+    number_of_times_90_more_days_late = models.IntegerField(default=0)
+    number_of_times_30_59_days_late = models.IntegerField(default=0)
+    number_of_times_60_89_days_late = models.IntegerField(default=0)
+
+    def treat_days_late(self, days_late):
+        if 30 <= days_late < 60:
+            self.number_of_times_30_59_days_late += 1
+        elif 60 <= days_late < 90:
+            self.number_of_times_60_89_days_late += 1
+        elif 90 <= days_late:
+            self.number_of_times_90_more_days_late += 1
+        self.save()
 
     class Meta:
         verbose_name = 'User profile'
