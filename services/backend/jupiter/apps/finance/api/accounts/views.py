@@ -36,13 +36,13 @@ class AccountView(ModelViewSet):
     def confirm_create_claim(self, request, *args, **kwargs):
         account = self.get_object()
         if account.status != fin_models.Account.STATUS_ACTIVE:
-            return Response('Операции со счетом невозможны', status=status.HTTP_200_OK)
+            return Response('Операции со счетом невозможны', status=status.HTTP_400_BAD_REQUEST)
         elif account.is_active:
-            return Response('Счет уже создан', status=status.HTTP_200_OK)
+            return Response('Счет уже создан', status=status.HTTP_400_BAD_REQUEST)
         else:
             if account.confirm():
                 return Response('Создание счета подтверждено', status=status.HTTP_200_OK)
-            return Response('Создание счета отклонено банком', status=status.HTTP_200_OK)
+            return Response('Создание счета отклонено банком', status=status.HTTP_400_BAD_REQUEST)
 
     @detail_route(methods=['PATCH'])
     def reject_create_claim(self, request, *args, **kwargs):
@@ -55,9 +55,9 @@ class AccountView(ModelViewSet):
         account = self.get_object()
         cause = request.data['cause']
         if account.status != fin_models.Account.STATUS_ACTIVE:
-            return Response('Операции со счетом невозможны', status=status.HTTP_200_OK)
+            return Response('Операции со счетом невозможны', status=status.HTTP_400_BAD_REQUEST)
         elif account.is_active:
-            return Response('Счет уже создан', status=status.HTTP_200_OK)
+            return Response('Счет уже создан', status=status.HTTP_400_BAD_REQUEST)
         else:
             account.reject(cause)
             return Response('Создание счета отклонено', status=status.HTTP_200_OK)
@@ -75,7 +75,7 @@ class AccountView(ModelViewSet):
         if account.leave_close_claim(target_account_id):
             return Response('Заявка на закрытие отправлена.', status=status.HTTP_200_OK)
         else:
-            return Response('Счет не может быть закрыт.', status=status.HTTP_200_OK)
+            return Response('Счет не может быть закрыт.', status=status.HTTP_400_BAD_REQUEST)
 
     @detail_route(methods=['PATCH'])
     def confirm_close_claim(self, request, *args, **kwargs):
@@ -83,7 +83,7 @@ class AccountView(ModelViewSet):
         if account.close_confirm():
             return Response('Закрытие подтверждено, деньги переведены.', status=status.HTTP_200_OK)
         else:
-            return Response('Заявка на закрытие не была подана.', status=status.HTTP_200_OK)
+            return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
 
     @detail_route(methods=['PATCH'])
     def reject_close_claim(self, request, *args, **kwargs):
@@ -98,7 +98,7 @@ class AccountView(ModelViewSet):
         if account.close_reject(cause):
             return Response('Закрытие отклонено.', status=status.HTTP_200_OK)
         else:
-            return Response('Заявка на закрытие не была подана.', status=status.HTTP_200_OK)
+            return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
 
     @list_route(methods=['POST'])
     def assign(self, request, *args, **kwargs):
@@ -111,4 +111,4 @@ class AccountView(ModelViewSet):
         client = request.user
         account_number = request.data['account_number']
         res, info = fin_models.Account.assign(client, account_number)
-        return Response(info, status=status.HTTP_200_OK)
+        return Response(info, status=status.HTTP_200_OK if res else status.HTTP_400_BAD_REQUEST)
