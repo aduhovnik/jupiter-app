@@ -8,3 +8,4 @@ factory_boy==2.7.*
 faker==0.7.*
 ipython==5.1.*
 django-money==0.9.*
+pycrypto==2.6.*

@@ -65,7 +65,7 @@ class DepositTemplateFactory(factory.DjangoModelFactory):
     name = factory.sequence(lambda n: fake.sentence(nb_words=1))
     description = factory.sequence(lambda n: fake.sentence(nb_words=15))
     currency = factory.lazy_attribute(lambda n: '{}')
-    indexing = FuzzyChoice(dict(DepositTemplate.INDEXING_CHOICES))
+    capitalization = FuzzyChoice(dict(DepositTemplate.CAPITALIZATION_CHOICES))
     closing = FuzzyChoice(dict(DepositTemplate.CLOSING_CHOICES))
     prolongation = factory.sequence(lambda n: fake.pybool())
     additional_contributions = factory.sequence(lambda n: fake.pybool())
@@ -78,6 +78,9 @@ class DepositFactory(ProductFactory):
 
     amount = factory.sequence(lambda n: fake.pyint())
     status = factory.fuzzy.FuzzyInteger(0, 2)
+    start_date = factory.sequence(lambda n: fake.date())
+    capitalization = FuzzyChoice(dict(DepositTemplate.CAPITALIZATION_CHOICES))
+    closing = FuzzyChoice(dict(DepositTemplate.CLOSING_CHOICES))
     template = factory.SubFactory('finance.factories.DepositTemplateFactory')
 
     class Meta:
@@ -105,9 +108,12 @@ class CreditFactory(ProductFactory):
     residue = FuzzyInteger(100, 100000)
     current_penalty = FuzzyInteger(100, 1000)
     next_payment_term = factory.sequence(lambda n: fake.date())
+    duration = factory.sequence(lambda n: fake.pyint())
+    start_date = factory.sequence(lambda n: fake.date())
     status = FuzzyInteger(100, 100000)
     fine_percentage = FuzzyFloat(100)
     method_of_ensuring = FuzzyChoice(dict(CreditTemplate.ENSURING_CHOICES))
+    money_destination = FuzzyChoice(dict(Credit.MONEY_DESTINATION))
     template = factory.SubFactory('finance.factories.CreditTemplateFactory')
 
     class Meta:
