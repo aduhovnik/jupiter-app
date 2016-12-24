@@ -138,6 +138,10 @@ class SignUpTestCase(APITestCase):
             "first_name": fake.first_name(),
             "last_name": fake.last_name(),
             "email": fake.email(),
+            "profile": {
+                "identification_number": fake.pystr(min_chars=14, max_chars=14),
+                "passport_number": fake.pystr(min_chars=9, max_chars=9)
+            }
         }
 
     def test_successful_sign_up(self):
