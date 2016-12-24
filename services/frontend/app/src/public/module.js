@@ -1,4 +1,4 @@
-module = angular.module("jupiter.finance", []);
+module = angular.module("jupiter.public", []);
 
 module.constant(
     'currencyNames',

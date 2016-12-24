@@ -13,6 +13,9 @@ GROUPS = [
     },
     {
         "name": ADMINS_GROUP,
-        "permissions": []
+        "permissions": [
+            'manage_himself',
+            'view_user'
+        ]
     }
 ]

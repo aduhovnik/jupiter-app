@@ -47,6 +47,7 @@ frontend:
     - ./services/frontend/nginx/conf.d/:/etc/nginx/conf.d/
     - ./services/frontend/app/src:/frontend/app/src
     - ./services/frontend/app/index.html:/frontend/app/index.html
+    - ./services/frontend/app/assets/:/frontend/app/assets/
     - ./services/frontend/app/package.json:/frontend/app/package.json
   links:
     - backend:backend

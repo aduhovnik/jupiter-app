@@ -1,14 +1,13 @@
-module = angular.module("jupiter.finance");
-module.controller('DepositTemplatesController', DepositTemplatesController);
+module = angular.module("jupiter.public");
+module.controller('CreditTemplatesController', CreditTemplatesController);
 
 
-function DepositTemplatesController($http, $routeParams, $error, currencyNames) {
+function CreditTemplatesController($http, $routeParams, $error) {
     var ctrl = this;
-    ctrl.currencyNames = currencyNames;
 
-    this.getDepositTemplates = function () {
+    this.getCreditTemplates = function () {
         ctrl.data = [];
-        $http.get('/api/deposits/templates/').then(
+        $http.get('/api/credits/templates/').then(
             function success(response) {
                 ctrl.data = response.data;
                 ctrl.errors = null;
@@ -20,13 +19,12 @@ function DepositTemplatesController($http, $routeParams, $error, currencyNames) 
         );
     };
 
-    this.getDepositTemplate = function () {
+    this.getCreditTemplate = function () {
         ctrl.data = {};
-        var url ='/api/deposits/templates/' + $routeParams["id"] + '/';
+        var url ='/api/credits/templates/' + $routeParams["id"] + '/';
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.currency_data = Object.values(ctrl.data.currency);
                 ctrl.errors = null;
             },
             $error.onError

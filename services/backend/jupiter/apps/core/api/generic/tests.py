@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import re, datetime
+import re
+import datetime
 from decimal import Decimal
 
 from django.contrib.auth.models import Permission
@@ -20,7 +21,7 @@ class APITestMixin(object):
 
     @classmethod
     def setUpClass(cls):
-        cls.user = UserFactory()
+        cls.user = UserFactory(is_superuser=True)
         cls.object = cls.factory_class.create()
         cls.model_cls = cls.object.__class__
 

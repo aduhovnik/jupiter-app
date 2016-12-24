@@ -21,7 +21,6 @@ class GroupSerializer(ModelSerializer):
     class Meta:
         model = Group
         fields = (
-            'id',
             'name',
         )
 
@@ -40,6 +39,5 @@ class UserSerializer(ModelSerializer):
             'first_name',
             'last_name',
             'profile',
-            'is_active',
             'groups',
         )

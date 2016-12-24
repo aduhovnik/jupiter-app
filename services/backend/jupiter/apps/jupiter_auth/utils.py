@@ -2,7 +2,7 @@
 from __future__ import absolute_import, unicode_literals
 
 import logging
-from jupiter_auth.settings import GROUPS, CLIENTS_GROUP
+from jupiter_auth.settings import GROUPS, CLIENTS_GROUP, ADMINS_GROUP
 
 from django.contrib.auth.models import Group, Permission
 
@@ -20,7 +20,13 @@ def init_groups():
         logger.info('Initialized group "{}"'.format(group_data['name']))
 
 
-def get_or_create_default_group():
+def get_or_create_clients_group():
     if not Group.objects.filter(name=CLIENTS_GROUP).exists():
         init_groups()
     return Group.objects.get(name=CLIENTS_GROUP)
+
+
+def get_or_create_admins_group():
+    if not Group.objects.filter(name=ADMINS_GROUP).exists():
+        init_groups()
+    return Group.objects.get(name=ADMINS_GROUP)

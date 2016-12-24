@@ -14,6 +14,8 @@ class UserTestCase(ReadOnlyModelTestMixin, APITestCase):
     base_name = 'users'
     factory_class = UserFactory
 
+    check_view_perm = False
+
     def test_client_can_view_himself(self):
         url = reverse('users-detail', args=("me",))
         perm = Permission.objects.get(codename='manage_himself')

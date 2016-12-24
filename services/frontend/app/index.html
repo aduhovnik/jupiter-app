@@ -6,7 +6,7 @@
   <base href="/">
 
   <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css"/>
-  <link rel="stylesheet/less" type="text/css" href="src/core/assets/less/main.less"/>
+  <link rel="stylesheet/less" type="text/css" href="assets/less/main.less"/>
 
   <script src="node_modules/jquery/dist/jquery.min.js"></script>
   <script src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
@@ -16,27 +16,30 @@
   <script src="node_modules/less/dist/less.js"></script>
 
   <script src="src/core/module.js"></script>
-  <script src="src/core/controllers/home.controller.js"></script>
+  <script src="src/core/controllers/landing.controller.js"></script>
   <script src="src/core/controllers/base.controller.js"></script>
   <script src="src/core/services/error.service.js"></script>
 
   <script src="src/auth/module.js"></script>
+  <script src="src/auth/services/user.service.js"></script>
   <script src="src/auth/services/auth.service.js"></script>
   <script src="src/auth/controllers/sign-in.controller.js"></script>
   <script src="src/auth/controllers/sign-up.controller.js"></script>
 
-  <script src="src/finance/module.js"></script>
-  <script src="src/finance/controllers/credit-templates.controller.js"></script>
-  <script src="src/finance/controllers/deposit-templates.controller.js"></script>
+  <script src="src/public/module.js"></script>
+  <script src="src/public/controllers/credit-templates.controller.js"></script>
+  <script src="src/public/controllers/deposit-templates.controller.js"></script>
+
+  <script src="src/admin/module.js"></script>
+  <script src="src/admin/controllers/clients.controller.js"></script>
 
   <script src="src/app.config.js"></script>
 </head>
 <body ng-app="jupiter">
-<div ng-controller="BaseController as ctrl">
+<div ng-controller="BaseController as baseCtrl">
   <div id="page-content">
     <div ng-include="'src/core/views/header.view.html'"></div>
-    <div ng-if="!ctrl.getError()" ng-view></div>
-    <div ng-if="ctrl.getError()" ng-include="'src/core/views/error.view.html'"></div>
+    <div ng-view></div>
   </div>
 </div>
 </body>

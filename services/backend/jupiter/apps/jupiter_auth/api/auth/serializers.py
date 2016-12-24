@@ -3,7 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from jupiter_auth.utils import get_or_create_default_group
+from jupiter_auth.utils import get_or_create_clients_group
 from jupiter_auth.api.users.serializers import UserProfileSerializer
 from jupiter_auth.models import UserProfile
 
@@ -27,7 +27,7 @@ class SignUpSerializer(serializers.ModelSerializer):
         validated_data['is_active'] = False
         profile_data = validated_data.pop('profile')
         instance = get_user_model().objects.create_user(**validated_data)
-        instance.groups.add(get_or_create_default_group())
+        instance.groups.add(get_or_create_clients_group())
         UserProfile.objects.create(user=instance, **profile_data)
         return instance
 

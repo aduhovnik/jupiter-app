@@ -23,17 +23,24 @@
             </a>
           </li>
 
-          <li>
+          <li ng-if="!user.isAuthenticated()">
             <a href="/sign-in/" class="navbar-link">
               <span class="glyphicon glyphicon-log-in"></span>
               Войти
             </a>
           </li>
 
-          <li>
+          <li ng-if="!user.isAuthenticated()">
             <a href="/sign-up/" class="navbar-link">
               <span class="glyphicon glyphicon-user"></span>
               Зарегистрироватся
+            </a>
+          </li>
+
+          <li ng-if="user.isAuthenticated()">
+            <a href="/" ng-click="auth.signOut()" class="navbar-link">
+              <span class="glyphicon glyphicon-log-out"></span>
+              Выйти
             </a>
           </li>
         </ul>

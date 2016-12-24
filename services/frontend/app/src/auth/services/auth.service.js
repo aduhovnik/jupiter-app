@@ -1,16 +1,13 @@
 module = angular.module("jupiter.auth");
 module.service("$auth", AuthService);
 
-function AuthService($http, $localStorage) {
-    this.isAuthenticated = function() {
-        var token = $localStorage.token;
-        return !!token;
-    };
 
+function AuthService($http, $localStorage, $rootScope) {
     this.signIn = function(credentials, onSuccess, onError) {
         $http.post('/api/sign-in/', credentials).then(
             function success(response) {
                 $localStorage.token = response.data.token;
+                $localStorage.user = response.data.user;
                 onSuccess(response);
             },
             function error(response) {
@@ -25,10 +22,15 @@ function AuthService($http, $localStorage) {
             $http.get('api/sign-out/?token=' + token).then(
                 function success(response) {
                     delete $localStorage.token;
-                    onSuccess(response);
+                    delete $localStorage.user;
+                    if (onSuccess) {
+                        onSuccess(response);
+                    }
                 },
                 function error(response) {
-                   onError(response);
+                   if (onError) {
+                       onError(response);
+                   }
                 }
             )
         }
@@ -44,5 +46,10 @@ function AuthService($http, $localStorage) {
                 onError(response)
             }
         )
-    }
+    };
+
+    this.addUrlAuth = function(url) {
+        var token = $localStorage.token;
+        return url + '?token=' + token;
+    };
 }

@@ -1,0 +1,27 @@
+<div ng-include="'src/admin/views/sidebar.view.html'"></div>
+<div ng-app="jupiter.admin"
+     ng-controller="ClientsController as ctrl"
+     ng-init="ctrl.getClients()">
+ <section>
+   <div class='admin-container'>
+      <h1>Клиенты</h1>
+      <table class="table table-bordered text-large">
+        <tr>
+          <th class="text-center">Имя</th>
+          <th class="text-center">Email</th>
+          <th class="text-center">Номер паспорта</th>
+          <th></th>
+        </tr>
+        <tr ng-repeat="client in ctrl.data">
+          <td>{{client.first_name}}</td>
+          <td>{{client.email}}</td>
+          <td>{{client.profile.passport_number}}</td>
+          <td>
+            <a href="#" class="button btn btn-info">Детальная информация</a>
+          </td>
+        </tr>
+      </table>
+      </div>
+   </div>
+ </section>
+</div>

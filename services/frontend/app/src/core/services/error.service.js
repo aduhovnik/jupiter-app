@@ -1,7 +1,7 @@
 module = angular.module("jupiter.core");
 module.service("$error", ErrorService);
 
-function ErrorService() {
+function ErrorService($location) {
     var self = this;
     this.onError = function (response) {
         if (response.status != 400) {
@@ -9,6 +9,8 @@ function ErrorService() {
                 status: response.status,
                 message: response.statusText
             };
+            $location.path('/error/');
+
         }
     };
 
@@ -17,6 +19,10 @@ function ErrorService() {
     };
 
     this.getError = function () {
-        return self.globalHTTPError
+        return self.globalHTTPError;
+    }
+
+    this.hasError = function () {
+        return self.globalHTTPError ? true : false;
     }
 }
