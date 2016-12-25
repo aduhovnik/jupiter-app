@@ -630,6 +630,11 @@ class Credit(Product):
 
         self.status = Credit.STATUS_CLOSED
         self.save()
+
+        Transaction.objects.create(client=self.client,
+                                   product=self,
+                                   info='Кредит закрыт.')
+
         return True
 
     def current_percents(self):
@@ -667,7 +672,7 @@ class Credit(Product):
         if self.status in Credit.INOPERABLE_STATUSES or not self.is_active:
             return False
 
-        bank_confirmation = BankSystemProxy.credit_pay(self.id, payment)
+        bank_confirmation = BankSystemProxy.credit_pay(self.id, float(payment))
         if not bank_confirmation:
             return False
 
@@ -676,7 +681,7 @@ class Credit(Product):
         if self.status == Credit.STATUS_FINED:
             if self.current_penalty.amount <= payment:
                 days_late = (datetime.date.today() - self.next_payment_term).days
-                profile = User.objects.get(pk=self.id).profile
+                profile = self.client.profile
                 profile.treat_days_late(days_late)
                 payment, self.current_penalty.amount = payment - self.current_penalty.amount, 0
                 self.status = Credit.STATUS_OPENED
@@ -705,7 +710,7 @@ class Credit(Product):
         # If the entire term of the loan left - then FINED anyway
         # PS: credit.next_payment_term - is NOT last day, client should pay before this date
         cur_date = datetime.date.today()
-        end_date = self.start_date + relativedelta(month=self.duration)
+        end_date = self.start_date + relativedelta(months=self.duration)
         if end_date <= cur_date:
             self.status = Credit.STATUS_FINED
         elif self.next_payment_term <= cur_date:
@@ -713,7 +718,7 @@ class Credit(Product):
                 self.status = Credit.STATUS_FINED
             else:
                 self.next_payment_term += relativedelta(months=1)
-                #  +0.1 - symbolic accrual, need if credit PAYED but NOT CLOSED
+                #  +0.1 - symbolic accrual, need if credit PAYED but NOT
                 self.current_month_percents = self.current_percents() + 0.1
                 self.current_month_pay.amount = 0
         self.save()
