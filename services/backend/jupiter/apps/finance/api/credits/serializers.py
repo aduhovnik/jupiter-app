@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 from rest_framework.serializers import ModelSerializer
 import finance.models as fin_models
+from jupiter_auth.api.users.serializers import UserSerializer
 
 
 class CreditTemplateSerializer(ModelSerializer):
@@ -11,5 +12,9 @@ class CreditTemplateSerializer(ModelSerializer):
 
 
 class CreditSerializer(ModelSerializer):
+
+    client = UserSerializer()
+    template = CreditTemplateSerializer()
+
     class Meta:
         model = fin_models.Credit

@@ -1,0 +1,21 @@
+<div ng-controller="DepositsControllerController as ctrl">
+ <section>
+    <h1>Вклады</h1>
+    <table class="table table-bordered text-large">
+    <tr>
+      <th class="text-center">Клиент</th>
+      <th class="text-center">План</th>
+      <th class="text-center">Остаток</th>
+      <th></th>
+    </tr>
+    <tr ng-repeat="deposit in ctrl.data">
+      <td>{{deposit.client.username}}</td>
+      <td>{{deposit.template.name}}</td>
+      <td>{{deposit.amount}}</td>
+      <td>
+        <a href="#" class="button btn btn-info">Детальная информация</a>
+      </td>
+    </tr>
+    </table>
+ </section>
+</div>

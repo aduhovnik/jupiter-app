@@ -1,0 +1,21 @@
+<div ng-controller="CreditsController as ctrl">
+ <section>
+    <h1>Кредиты</h1>
+    <table class="table table-bordered text-large">
+        <tr>
+        <th class="text-center">Клиент</th>
+        <th class="text-center">План</th>
+        <th class="text-center">Остаток</th>
+        <th></th>
+      </tr>
+      <tr ng-repeat="credit in ctrl.data">
+        <td>{{credit.client.username}}</td>
+        <td>{{credit.template.name}}</td>
+        <td>{{credit.residue}} {{credit.residue_currency}}</td>
+        <td>
+          <a href="#" class="button btn btn-info">Детальная информация</a>
+        </td>
+      </tr>
+    </table>
+ </section>
+</div>

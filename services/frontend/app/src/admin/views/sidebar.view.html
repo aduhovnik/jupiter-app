@@ -1,42 +1,11 @@
-<div class="admin-sidebar">
+<div class="admin-sidebar"
+     ng-controller="SidebarController as ctrl"
+     ng-init="ctrl.initItems()">
     <ul class="sidebar-nav">
-      <div ng-if="user.isClient()">
-        <li class="sidebar-elem">
-          <a href="#">Сводка</a>
+        <li ng-repeat="item in ctrl.items"
+            ng-class="ctrl.valueIfPath(item.url, 'active')"
+            class="sidebar-elem">
+            <a href="{{item.url}}">{{item.label}}</a>
         </li>
-        <li class="sidebar-elem">
-          <a href="/clients/me/">Мой профайл</a>
-        </li>
-        <li class="sidebar-elem">
-          <a href="#">Мои счета</a>
-        </li>
-        <li class="sidebar-elem">
-          <a href="#">Мои кредиты</a>
-        </li>
-        <li class="sidebar-elem">
-          <a href="#">Мои вклады</a>
-        </li>
-        <li class="sidebar-elem">
-          <a href="#">Мои транзакции</a>
-        </li>
-      </div>
-
-      <div ng-if="user.isAdmin()">
-        <li class="sidebar-elem">
-            <a href="#">Сводка</a>
-        </li>
-        <li class="sidebar-elem">
-            <a href="/clients/">Клиенты</a>
-        </li>
-        <li class="sidebar-elem">
-            <a href="#">Кредиты</a>
-        </li>
-        <li class="sidebar-elem">
-            <a href="#">Вклады</a>
-        </li>
-        <li class="sidebar-elem">
-            <a href="#">Транзакции</a>
-        </li>
-      </div>
     </ul>
 </div>

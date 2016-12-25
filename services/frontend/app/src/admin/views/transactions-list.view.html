@@ -1,0 +1,19 @@
+<div ng-controller="TransactionsController as ctrl">
+ <section>
+    <h1>Транзакции</h1>
+    <table class="table table-bordered text-large">
+    <tr>
+      <th class="text-center">Информация</th>
+      <th class="text-center">Дата создания</th>
+      <th></th>
+    </tr>
+    <tr ng-repeat="transaction in ctrl.data">
+      <td>{{transaction.info}}</td>
+      <td>{{transaction.created_on}}</td>
+      <td>
+        <a href="#" class="button btn btn-info">Детальная информация</a>
+      </td>
+    </tr>
+    </table>
+ </section>
+</div>

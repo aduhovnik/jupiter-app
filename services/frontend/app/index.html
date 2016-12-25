@@ -34,6 +34,10 @@
 
   <script src="src/admin/module.js"></script>
   <script src="src/admin/controllers/clients.controller.js"></script>
+  <script src="src/admin/controllers/sidebar.controller.js"></script>
+  <script src="src/admin/controllers/credits.controller.js"></script>
+  <script src="src/admin/controllers/deposits.controller.js"></script>
+  <script src="src/admin/controllers/transactions.controller.js"></script>
 
   <script src="src/app.config.js"></script>
 </head>
@@ -41,7 +45,12 @@
 <div ng-controller="BaseController as baseCtrl">
   <div id="page-content">
     <div ng-include="'src/core/views/header.view.html'"></div>
-    <div ng-view></div>
+    <div ng-if="user.isAuthenticated()"
+         ng-include="'src/admin/views/sidebar.view.html'">
+    </div>
+    <div ng-view
+         ng-class="user.isAuthenticated() ? 'admin-container' : ''">
+    </div>
   </div>
 </div>
 </body>

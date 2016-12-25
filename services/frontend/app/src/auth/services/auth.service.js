@@ -2,7 +2,9 @@ module = angular.module("jupiter.auth");
 module.service("$auth", AuthService);
 
 
-function AuthService($http, $localStorage, $rootScope) {
+function AuthService($http, $localStorage) {
+    var service = this;
+
     this.signIn = function(credentials, onSuccess, onError) {
         $http.post('/api/sign-in/', credentials).then(
             function success(response) {

@@ -25,6 +25,7 @@ function ClientsController($http, $error, $auth, $routeParams, $scope, $filter) 
                 ctrl.errors = null;
             },
             function error(response) {
+                ctrl.data = [];
                 ctrl.errors = response.data;
                 $error.onError(response);
             }

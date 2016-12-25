@@ -1,1 +1,1 @@
-module = angular.module("jupiter.core", ["jupiter.auth"]);
+module = angular.module("jupiter.core", ["jupiter.auth", "jupiter.admin"]);

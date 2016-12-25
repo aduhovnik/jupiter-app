@@ -10,8 +10,12 @@ urls = {
     '/deposits/templates/:id/': 'src/public/views/deposit-template-detail.view.html',
     '/deposits/templates/': 'src/public/views/deposit-template-list.view.html',
 
+    '/overview/': 'src/admin/views/overview.view.html',
     '/clients/': 'src/admin/views/clients-list.view.html',
-    '/clients/:id/': 'src/admin/views/clients-profile.view.html'
+    '/clients/:id/': 'src/admin/views/clients-profile.view.html',
+    '/credits/': 'src/admin/views/credits-list.view.html',
+    '/deposits/': 'src/admin/views/deposits-list.view.html',
+    '/transactions/': 'src/admin/views/transactions-list.view.html',
 };
 
 
