@@ -105,7 +105,7 @@ class APITestMixin(object):
 class ListModelTestMixin(APITestMixin):
 
     list_suffix = '-list'
-    check_view_perm = True
+    check_view_perm = False
 
     def test_list_endpoint(self):
         url = reverse(self.base_name + self.list_suffix)
@@ -125,7 +125,7 @@ class RetrieveModelTestMixin(APITestMixin):
 
     lookup_field = 'pk'
     detail_suffix = '-detail'
-    check_view_perm = True
+    check_view_perm = False
 
     def test_retrieve_endpoint(self):
         lookup = getattr(self.object, self.lookup_field)

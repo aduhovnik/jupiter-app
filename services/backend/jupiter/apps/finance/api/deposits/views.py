@@ -9,13 +9,23 @@ import finance.models as fin_models
 import finance.api.deposits.serializers as serializers
 from jupiter_auth.authentication import TokenAuthentication
 from core.api.generic.views import ModelViewSet, ReadOnlyModelViewSet
+from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
 
 
 class DepositView(ModelViewSet):
     queryset = fin_models.Deposit.objects.all()
     serializer_class = serializers.DepositSerializer
 
-    authentication_classes = (TokenAuthentication,)
+    def get_queryset(self):
+        queryset = super(DepositView, self).get_queryset()
+        if self.request.user.is_superuser:
+            return queryset
+        if get_or_create_admins_group() in self.request.user.groups.all():
+            return queryset
+        elif get_or_create_clients_group() in self.request.user.groups.all():
+            return queryset.filter(client=self.request.user)
+        else:
+            return queryset.none()
 
     @list_route(methods=['POST'])
     def leave_create_claim(self, request, *args, **kwargs):
