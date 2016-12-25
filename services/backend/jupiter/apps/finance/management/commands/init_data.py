@@ -1,16 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import logging, random, json, datetime, pytz
+import logging, random, datetime, pytz
 from dateutil.relativedelta import relativedelta
 from finance.models import Credit, CreditTemplate, Deposit, DepositTemplate, Account, Transaction
 from jupiter_auth.models import User, UserProfile
-from jupiter_auth.factories import UserProfileFactory, UserFactory
-from django.contrib.auth.models import Group
+from jupiter_auth.factories import UserFactory
 from django.core.management import BaseCommand
 from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
-from jupiter_auth.authentication import sign_in
 from finance.tasks import daily_tasks
 from finance.fixtures import init_deposit_templates, init_credit_templates
 from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
@@ -29,9 +27,9 @@ class Command(BaseCommand):
             init_credit_templates()
         del_everything()
         create_admins(5)
-        logger.info('Admins generated.\nTemplate username "^admin\d*$", password == username')
-        create_clients(100)
-        logger.info('Clients generated.\nTemplate username "^client\d*$", password == username')
+        logger.info('Admins generated.')
+        create_clients(30)
+        logger.info('Clients generated.')
         create_accounts()
         logger.info('Clients accounts generated.')
         create_credits()
@@ -77,6 +75,9 @@ class Command(BaseCommand):
                     format(all, closed, active))
 
 
+CLIENT_NAME_WITH_MANY_STUFF = 'max'
+
+
 def simple_event(probability):
     l, r = 0, 1e4
     cur = random.randint(l, r)
@@ -106,16 +107,21 @@ def create_admins(count=5):
     for i in range(count):
         admin = UserFactory(username='admin{}'.format(i), password='admin{}'.format(i))
         Token.objects.create(user=admin)
-        admin_group = Group.objects.get(name='Admins')
+        admin_group = get_or_create_admins_group()
         admin.groups.add(admin_group)
     admin = User.objects.get(username='admin0')
-    admin.is_superuser = True
     admin.save()
 
 
 def create_clients(count=50):
     for i in range(count):
         client = UserFactory(username='client{}'.format(i), password='client{}'.format(i))
+        Token.objects.create(user=client)
+        client_group = get_or_create_clients_group()
+        client.groups.add(client_group)
+    for i in range(2):
+        client = UserFactory(username='{}{}'.format(CLIENT_NAME_WITH_MANY_STUFF, i),
+                             password='{}{}'.format(CLIENT_NAME_WITH_MANY_STUFF, i))
         Token.objects.create(user=client)
         client_group = Group.objects.get(name='Clients')
         client.groups.add(client_group)
@@ -127,7 +133,9 @@ def create_accounts():
             accounts_count = 1
             have_several_accounts = simple_event(30)
             if have_several_accounts:
-                accounts_count += random.randint(0, 3)
+                accounts_count += random.randint(0, 5)
+                if CLIENT_NAME_WITH_MANY_STUFF in client.username:
+                    accounts_count = 50
             for i in range(accounts_count):
                 is_heavy_account = simple_event(10)
                 money_range = random.randint(3000, 15000) if is_heavy_account else \
@@ -156,9 +164,11 @@ def create_credits():
     for client in User.objects.all():
         if get_or_create_clients_group() in client.groups.all():
             credits_count = 1
-            have_several_credits = simple_event(20)
+            have_several_credits = simple_event(70)
             if have_several_credits:
-                credits_count = random.randint(0, 3)
+                credits_count = random.randint(2, 8)
+            if CLIENT_NAME_WITH_MANY_STUFF in client.username:
+                credits_count = 30
             for i in range(credits_count):
                 template_id = random_element(templates_ids)
                 template = CreditTemplate.objects.get(pk=template_id)
@@ -174,7 +184,8 @@ def create_credits():
                                              CreditTemplate.ENSURING_FINE,
                                              Credit.INTO_ACCOUNT,
                                              account.id)
-                credit.confirm()
+                if simple_event(70):
+                    credit.confirm()
 
 
 def create_deposits():
@@ -182,9 +193,11 @@ def create_deposits():
     for client in User.objects.all():
         if get_or_create_clients_group() in client.groups.all():
             deposits_count = 1
-            have_several_deposits = simple_event(15)
+            have_several_deposits = simple_event(80)
             if have_several_deposits:
-                deposits_count += random.randint(0, 2)
+                deposits_count += random.randint(2, 6)
+            if CLIENT_NAME_WITH_MANY_STUFF in client.username:
+                deposits_count = 20
             for i in range(deposits_count):
                 template_id = random_element(templates_ids)
                 template = DepositTemplate.objects.get(pk=template_id)
@@ -205,7 +218,7 @@ def create_deposits():
                                          term_percent['percentage'],
                                          currency,
                                          account.id)
-                if not deposit is None:
+                if not deposit is None and simple_event(70):
                     deposit.confirm()
 
 
@@ -241,6 +254,7 @@ def paid_off_and_close(credit):
     if credit.status != Credit.STATUS_PAID_OFF:
         credit.pay(credit.residue.amount)
     credit.close()
+
 
 def modify_credits():
     for_pay = []
@@ -282,7 +296,9 @@ def close_deposit(deposit):
     Transaction.objects.create(client=client,
                                product=deposit,
                                info='Депозит закрыт. Деньги в размере {} BYN переведены на счет {}'.
-                               format(money_in_byn, account.number))
+                               format(money_in_byn, account.number),
+                               type=Transaction.TYPE_DEPOSIT_CONFIRM_CLOSE)
+
 
 def modify_deposits():
     for_close = []
@@ -307,11 +323,11 @@ def set_fake_dates():
         t.created_on = when_happened
         t.save()
 
-    first_priority = [ 'Создан счет',
-                       'Подана заявка на депозит.',
-                       'Подана заявка на кредит.',
-                       'Заявка на кредит одобрена.',
-                       'Депозит открыт.']
+    first_priority = ['Создан счет',
+                      'Подана заявка на депозит.',
+                      'Подана заявка на кредит.',
+                      'Заявка на кредит одобрена.',
+                      'Депозит открыт.']
 
     days_offset = 180
     for sub_string in first_priority:

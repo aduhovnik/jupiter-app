@@ -32,10 +32,74 @@ class Product(models.Model):
 
 class Transaction(models.Model):
 
+    TYPE_CREDIT_CREATE = 101
+    TYPE_CREDIT_PAY = 102
+    TYPE_CREDIT_CLOSE = 103
+    TYPE_CREDIT_FINED = 104
+    TYPE_CREDIT_LEAVE_CREATE = 105
+    TYPE_CREDIT_CONFIRM_CREATE = 106
+    TYPE_CREDIT_REJECT_CREATE = 107
+    TYPE_CREDIT_OPENED_ONLINE = 108
+
+    TYPE_ACCOUNT_ASSIGNED = 201
+    TYPE_ACCOUNT_CREATED = 202
+    TYPE_ACCOUNT_LEAVE_CREATE = 203
+    TYPE_ACCOUNT_CONFIRM_CREATE = 204
+    TYPE_ACCOUNT_LEAVE_CLOSE = 205
+    TYPE_ACCOUNT_CONFIRM_CLOSE = 206
+    TYPE_ACCOUNT_REJECT_CREATE = 207
+    TYPE_ACCOUNT_REJECT_CLOSE = 208
+    TYPE_ACCOUNT_GET_MONEY = 209
+    TYPE_ACCOUNT_PUT_MONEY = 210
+
+    TYPE_DEPOSIT_ADD_MONEY = 301
+    TYPE_DEPOSIT_CREATED = 302
+    TYPE_DEPOSIT_LEAVE_CREATE = 303
+    TYPE_DEPOSIT_CONFIRM_CREATE = 304
+    TYPE_DEPOSIT_LEAVE_CLOSE = 305
+    TYPE_DEPOSIT_CONFIRM_CLOSE = 306
+    TYPE_DEPOSIT_REJECT_CREATE = 307
+    TYPE_DEPOSIT_REJECT_CLOSE = 308
+    TYPE_DEPOSIT_CAPITALIZE = 309
+    TYPE_DEPOSIT_LONGATION = 310
+
+    TYPE_DUMMY = 666
+
+    TYPES = [(TYPE_CREDIT_CREATE, ''),
+             (TYPE_CREDIT_PAY, ''),
+             (TYPE_CREDIT_CLOSE, ''),
+             (TYPE_CREDIT_FINED, ''),
+             (TYPE_CREDIT_LEAVE_CREATE, ''),
+             (TYPE_CREDIT_CONFIRM_CREATE, ''),
+             (TYPE_CREDIT_REJECT_CREATE, ''),
+             (TYPE_CREDIT_OPENED_ONLINE, ''),
+             (TYPE_ACCOUNT_ASSIGNED, ''),
+             (TYPE_ACCOUNT_CREATED, ''),
+             (TYPE_ACCOUNT_LEAVE_CREATE, ''),
+             (TYPE_ACCOUNT_CONFIRM_CREATE, ''),
+             (TYPE_ACCOUNT_LEAVE_CLOSE, ''),
+             (TYPE_ACCOUNT_CONFIRM_CLOSE, ''),
+             (TYPE_ACCOUNT_REJECT_CREATE, ''),
+             (TYPE_ACCOUNT_REJECT_CLOSE, ''),
+             (TYPE_ACCOUNT_GET_MONEY, ''),
+             (TYPE_ACCOUNT_PUT_MONEY, ''),
+             (TYPE_DEPOSIT_ADD_MONEY, ''),
+             (TYPE_DEPOSIT_CREATED, ''),
+             (TYPE_DEPOSIT_LEAVE_CREATE, ''),
+             (TYPE_DEPOSIT_CONFIRM_CREATE, ''),
+             (TYPE_DEPOSIT_LEAVE_CLOSE, ''),
+             (TYPE_DEPOSIT_CONFIRM_CLOSE, ''),
+             (TYPE_DEPOSIT_REJECT_CREATE, ''),
+             (TYPE_DEPOSIT_REJECT_CLOSE, ''),
+             (TYPE_DEPOSIT_CAPITALIZE, ''),
+             (TYPE_DEPOSIT_LONGATION, ''),
+             (TYPE_DUMMY, '')]
+
     client = models.ForeignKey(settings.AUTH_USER_MODEL)
     product = models.ForeignKey(Product)
     info = models.CharField(max_length=500)
     created_on = models.DateTimeField(auto_now_add=True)
+    type = models.IntegerField(choices=TYPES, default=TYPE_DUMMY)
 
     class Meta:
         verbose_name = 'Transaction'
@@ -113,9 +177,11 @@ class Account(Product):
         )
         account.save()
         info_text = 'Создан счет' if is_active else 'Подана заявка на создание счета'
+        t_type = Transaction.TYPE_ACCOUNT_CREATED if is_active else Transaction.TYPE_ACCOUNT_LEAVE_CREATE
         Transaction.objects.create(client=client,
                                    product=account,
-                                   info=info_text)
+                                   info=info_text,
+                                   type=t_type)
         return account
 
     @classmethod
@@ -139,7 +205,8 @@ class Account(Product):
         info_text = 'Счет успешно привязан.'
         Transaction.objects.create(client=client,
                                    product=account,
-                                   info=info_text)
+                                   info=info_text,
+                                   type=Transaction.TYPE_ACCOUNT_ASSIGNED)
         return True, info_text
 
     def confirm(self):
@@ -160,7 +227,8 @@ class Account(Product):
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Счет подтвержден.')
+                                   info='Счет подтвержден.',
+                                   type=Transaction.TYPE_ACCOUNT_CONFIRM_CREATE)
         Contract.objects.create(client=self.client,
                                 product=self)
         return True
@@ -172,7 +240,8 @@ class Account(Product):
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Заявка на создание счета отклонена. Причина: {}'.format(cause))
+                                   info='Заявка на создание счета отклонена. Причина: {}'.format(cause),
+                                   type=Transaction.TYPE_ACCOUNT_REJECT_CREATE)
         return True
 
     def put_money(self, contribution):
@@ -188,7 +257,8 @@ class Account(Product):
 
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Зачисление в размере {} BYN'.format(contribution))
+                                   info='Зачисление в размере {} BYN'.format(contribution),
+                                   type=Transaction.TYPE_ACCOUNT_PUT_MONEY)
         self.residue.amount += Decimal(contribution)
         self.save()
         return True
@@ -210,7 +280,8 @@ class Account(Product):
 
             Transaction.objects.create(client=self.client,
                                        product=self,
-                                       info='Снятие в размере {} BYN'.format(required_quantity))
+                                       info='Снятие в размере {} BYN'.format(required_quantity),
+                                       type=Transaction.TYPE_ACCOUNT_PUT_MONEY)
             return True
         return False
 
@@ -246,7 +317,8 @@ class Account(Product):
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Счет закрыт, деньги переведены на счет {}.'.format(self.target_account_id))
+                                   info='Счет закрыт, деньги переведены на счет {}.'.format(self.target_account_id),
+                                   type=Transaction.TYPE_ACCOUNT_CONFIRM_CLOSE)
         return True
 
     def close_reject(self, cause):
@@ -258,7 +330,8 @@ class Account(Product):
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Закрытие счета отклонено. Причина: {}.'.format(cause))
+                                   info='Закрытие счета отклонено. Причина: {}.'.format(cause),
+                                   type=Transaction.TYPE_ACCOUNT_REJECT_CLOSE)
         return True
 
 
@@ -306,10 +379,12 @@ class Deposit(Product):
     STATUS_ACTIVE = 0
     STATUS_CLOSED = 1
     STATUS_REJECTED = 2
+    STATUS_REQUESTED = 3
     STATUS_CHOICES = [
         (STATUS_ACTIVE, 'Active'),
         (STATUS_CLOSED, 'Closed'),
         (STATUS_REJECTED, 'Rejected'),
+        (STATUS_REQUESTED, 'Requested'),
     ]
 
     CAPITALIZATION_TIME_PERIOD = [
@@ -364,7 +439,7 @@ class Deposit(Product):
                 template=template,
                 amount=money_amount,
                 start_date=datetime.date.today() + relativedelta(days=1),
-                status=cls.STATUS_ACTIVE,
+                status=cls.STATUS_REQUESTED,
                 percentage=percentage,
                 currency=currency,
                 capitalization=template.capitalization,
@@ -380,7 +455,8 @@ class Deposit(Product):
             account.save()
             Transaction.objects.create(client=client,
                                        product=deposit,
-                                       info='Подана заявка на депозит.')
+                                       info='Подана заявка на депозит.',
+                                       type=Transaction.TYPE_DEPOSIT_LEAVE_CREATE)
             return deposit
         return None
 
@@ -410,7 +486,8 @@ class Deposit(Product):
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Депозит открыт.')
+                                   info='Депозит открыт.',
+                                   type=Transaction.TYPE_DEPOSIT_CONFIRM_CREATE)
         Contract.objects.create(client=self.client,
                                 product=self)
         return True
@@ -425,7 +502,8 @@ class Deposit(Product):
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Заявка на депозит отклонена. Причина: {}'.format(cause))
+                                   info='Заявка на депозит отклонена. Причина: {}'.format(cause),
+                                   type=Transaction.TYPE_DEPOSIT_REJECT_CREATE)
         return True
 
     def leave_close_claim(self, target_account_id):
@@ -476,7 +554,8 @@ class Deposit(Product):
         Transaction.objects.create(client=self.client,
                                    product=self,
                                    info='Депозит закрыт. Деньги в размере {} BYN переведены на счет {}'.
-                                   format(money_in_byn, self.target_account_id))
+                                   format(money_in_byn, self.target_account_id),
+                                   type=Transaction.TYPE_DEPOSIT_CONFIRM_CLOSE)
         return True
 
     def close_reject(self, cause):
@@ -488,7 +567,8 @@ class Deposit(Product):
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Отказано в закрытие депозита. Причина: {}.'.format(cause))
+                                   info='Отказано в закрытие депозита. Причина: {}.'.format(cause),
+                                   type=Transaction.TYPE_DEPOSIT_REJECT_CLOSE)
         return True
 
     def additional_contribution(self, money_amount):
@@ -501,7 +581,8 @@ class Deposit(Product):
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Начислены деньги на депозит.')
+                                   info='Начислены деньги на депозит.',
+                                   type=Transaction.TYPE_DEPOSIT_ADD_MONEY)
         return True
 
     def daily_update(self):
@@ -517,14 +598,16 @@ class Deposit(Product):
                 self.next_capitalize_term += Deposit.CAPITALIZATION_TIME_PERIOD[self.capitalization]
                 Transaction.objects.create(client=self.client,
                                            product=self,
-                                           info='Совершено пролонгирование депозита.')
+                                           info='Совершено пролонгирование депозита.',
+                                           type=Transaction.TYPE_DEPOSIT_LONGATION)
             else:
                 self.status = Deposit.STATUS_CLOSED
         elif self.next_capitalize_term <= cur_date:
             self._update_amount()
             Transaction.objects.create(client=self.client,
                                        product=self,
-                                       info='Начисление процентов. Новая сумма депозита: {}.'.format(self.amount))
+                                       info='Начисление процентов. Новая сумма депозита: {}.'.format(self.amount),
+                                       type=Transaction.TYPE_DEPOSIT_CAPITALIZE)
         self.save()
 
     def _update_amount(self):
@@ -571,12 +654,14 @@ class Credit(Product):
     STATUS_PAID_OFF = 2
     STATUS_CLOSED = 3
     STATUS_REJECTED = 4
+    STATUS_REQUESTED = 5
     STATUS_CHOICES = [
         (STATUS_OPENED, 'Opened'),
         (STATUS_FINED, 'Fined'),
         (STATUS_PAID_OFF, 'Paid off'),
         (STATUS_CLOSED, 'Closed'),
         (STATUS_REJECTED, 'Rejected'),
+        (STATUS_REQUESTED, 'Requested'),
     ]
 
     INOPERABLE_STATUSES = [
@@ -633,7 +718,8 @@ class Credit(Product):
 
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Кредит закрыт.')
+                                   info='Кредит закрыт.',
+                                   type=Transaction.TYPE_CREDIT_CLOSE)
 
         return True
 
@@ -651,7 +737,8 @@ class Credit(Product):
             self._update_penalty()
             Transaction.objects.create(client=self.client,
                                        product=self,
-                                       info='Начислен штраф. Текущий штраф: {}.'.format(self.current_penalty))
+                                       info='Начислен штраф. Текущий штраф: {}.'.format(self.current_penalty),
+                                       type=Transaction.TYPE_CREDIT_FINED)
         self.save()
 
     def pay(self, payment):
@@ -697,7 +784,8 @@ class Credit(Product):
             self.status = Credit.STATUS_PAID_OFF
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Внесен платеж по кредиту в размере: {}.'.format(payment))
+                                   info='Внесен платеж по кредиту в размере: {}.'.format(payment),
+                                   type=Transaction.TYPE_CREDIT_PAY)
         self.save()
         return True
 
@@ -755,7 +843,6 @@ class Credit(Product):
             return False, 'Ваша заявка отклонена кредитным скорингом'
 
         monthly_pay = cls._min_monthly_pay(money_amount, template.annual_percentage_rate, duration)
-        # Create account if need
         if account_id is None:
             account = Account.create(True, client, 0)
             account_id = account.id
@@ -787,7 +874,8 @@ class Credit(Product):
         info_text = 'Открыт онлайн кредит кредит.'
         Transaction.objects.create(client=client,
                                    product=credit,
-                                   info=info_text)
+                                   info=info_text,
+                                   type=Transaction.TYPE_CREDIT_OPENED_ONLINE)
         return True, credit
 
     @classmethod
@@ -815,7 +903,7 @@ class Credit(Product):
             start_date=datetime.date.today() + relativedelta(months=1),
             duration=duration,
             next_payment_term=datetime.date.today() + relativedelta(months=2),
-            status=cls.STATUS_OPENED,
+            status=cls.STATUS_REQUESTED,
             annual_percentage_rate=template.annual_percentage_rate,
             fine_percentage=template.fine_percentage,
             minimum_monthly_pay=monthly_pay,
@@ -829,7 +917,8 @@ class Credit(Product):
         info_text = 'Подана заявка на кредит.'
         Transaction.objects.create(client=client,
                                    product=credit,
-                                   info=info_text)
+                                   info=info_text,
+                                   type=Transaction.TYPE_CREDIT_LEAVE_CREATE)
         return credit
 
     def confirm(self):
@@ -854,11 +943,13 @@ class Credit(Product):
 
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Заявка на кредит одобрена.')
+                                   info='Заявка на кредит одобрена.',
+                                   type=Transaction.TYPE_CREDIT_CONFIRM_CREATE)
 
         Contract.objects.create(client=self.client,
                                 product=self)
         self.is_active = True
+        self.status = Credit.STATUS_OPENED
         self.save()
         return True
 
@@ -872,7 +963,8 @@ class Credit(Product):
             account.reject(cause)
         Transaction.objects.create(client=self.client,
                                    product=self,
-                                   info='Заявка на кредит отклонена. Причина: {}'.format(cause))
+                                   info='Заявка на кредит отклонена. Причина: {}'.format(cause),
+                                   type=Transaction.TYPE_CREDIT_REJECT_CREATE)
         return True
 
     @staticmethod
