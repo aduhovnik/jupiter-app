@@ -21,7 +21,7 @@ backend:
     - TEST=false
     - RUNSERVER=true
     - SLEEP=false
-    - SENDGRID_API_KEY=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
+    - SENDGRID_TOKEN=U0cuT0xoRXBNd3JSOGVJcVFJUG05MjItQS44RllmSWhnV19EbFRTUk4wRkw5QTZBUUMxWXFhbkF4eDA0ZW1DU25rc293
   links:
     - db:db
 

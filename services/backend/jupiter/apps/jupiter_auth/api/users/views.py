@@ -50,11 +50,25 @@ class UserView(ReadOnlyModelViewSet):
         user.is_active = True
         user.save()
 
-        context = {"link": "https://jupiter-group.tk/admin/"}
-        message = render_to_string('auth/accound_confirm_email.html', context=context)
-
+        message = render_to_string('auth/account_confirm_email.html')
         try:
             send_mail('no-reply@jupiter-group.com', user.email, 'Ваш аккаунт подтвержден', message)
+        except Exception as e:
+            raise ValidationError('Ошибка при отправке письма: {}'.format(e))
+        return Response(status=status.HTTP_200_OK)
+
+    @detail_route(methods=['GET'])
+    def deactivate(self, request, *args, **kwargs):
+        user = self.get_object()
+        if not user.is_active:
+            raise ValidationError('Пользователь уже деактивирован')
+
+        user.is_active = False
+        user.save()
+
+        message = render_to_string('auth/account_deactivate_email.html')
+        try:
+            send_mail('no-reply@jupiter-group.com', user.email, 'Ваш аккаунт отключен', message)
         except Exception as e:
             raise ValidationError('Ошибка при отправке письма: {}'.format(e))
         return Response(status=status.HTTP_200_OK)

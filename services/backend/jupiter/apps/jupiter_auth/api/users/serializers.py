@@ -40,4 +40,5 @@ class UserSerializer(ModelSerializer):
             'last_name',
             'profile',
             'groups',
+            'is_active',
         )

@@ -18,4 +18,32 @@ function ClientsController($http, $error, $auth) {
             }
         );
     };
+
+    this.activateClient = function(userId) {
+        console.log(userId);
+        $http.get($auth.addUrlAuth('/api/users/' + userId + '/activate/')).then(
+            function success(response) {
+                ctrl.getClients();
+                ctrl.errors = response.data;
+            },
+            function error(response) {
+                ctrl.errors = response.data;
+                $error.onError(response);
+            }
+        )
+    };
+
+    this.deactivateClient = function(userId) {
+        console.log(userId);
+        $http.get($auth.addUrlAuth('/api/users/' + userId + '/deactivate/')).then(
+            function success(response) {
+                ctrl.getClients();
+                ctrl.errors = response.data;
+            },
+            function error(response) {
+                ctrl.errors = response.data;
+                $error.onError(response);
+            }
+        )
+    };
 }

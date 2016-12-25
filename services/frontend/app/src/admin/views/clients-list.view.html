@@ -10,14 +10,34 @@
           <th class="text-center">Имя</th>
           <th class="text-center">Email</th>
           <th class="text-center">Номер паспорта</th>
+          <th class="text-center">Состояние</th>
           <th></th>
         </tr>
         <tr ng-repeat="client in ctrl.data">
-          <td>{{client.first_name}}</td>
-          <td>{{client.email}}</td>
-          <td>{{client.profile.passport_number}}</td>
+          <td class="text-center"><a href="#" class="link">{{client.first_name}}</a></td>
+          <td class="text-center">{{client.email}}</td>
+          <td class="text-center">{{client.profile.passport_number}}</td>
+          <td class="text-center">
+            <span ng-if="client.is_active">Активен</span>
+            <span ng-if="!client.is_active">Отключен</span>
+          </td>
           <td>
-            <a href="#" class="button btn btn-info">Детальная информация</a>
+            <a href="#"
+               class="button btn btn-info">
+              Редактировать
+            </a>
+
+            <a ng-if="!client.is_active"
+               class="button btn btn-info"
+               ng-click="ctrl.activateClient(client.id)">
+              Активировать
+            </a>
+
+            <a ng-if="client.is_active"
+               class="button btn btn-info"
+               ng-click="ctrl.deactivateClient(client.id)">
+              Отключить
+            </a>
           </td>
         </tr>
       </table>
