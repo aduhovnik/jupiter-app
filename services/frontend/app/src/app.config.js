@@ -5,17 +5,17 @@ urls = {
     "/sign-in/": "src/auth/views/sign-in.view.html",
     '/sign-up/': "src/auth/views/sign-up.view.html",
 
-    '/credits/templates/:id/': 'src/public/views/credit-template-detail.view.html',
-    '/credits/templates/': 'src/public/views/credit-template-list.view.html',
-    '/deposits/templates/:id/': 'src/public/views/deposit-template-detail.view.html',
-    '/deposits/templates/': 'src/public/views/deposit-template-list.view.html',
+    '/credit-templates/:id/': 'src/public/views/credit-template-detail.view.html',
+    '/credit-templates/': 'src/public/views/credit-template-list.view.html',
+    '/deposit-templates/:id/': 'src/public/views/deposit-template-detail.view.html',
+    '/deposit-templates/': 'src/public/views/deposit-template-list.view.html',
 
     '/overview/': 'src/admin/views/overview.view.html',
     '/clients/': 'src/admin/views/clients-list.view.html',
     '/clients/:id/': 'src/admin/views/clients-profile.view.html',
     '/credits/': 'src/admin/views/credits-list.view.html',
     '/deposits/': 'src/admin/views/deposits-list.view.html',
-    '/transactions/': 'src/admin/views/transactions-list.view.html',
+    '/transactions/': 'src/admin/views/transactions-list.view.html'
 };
 
 

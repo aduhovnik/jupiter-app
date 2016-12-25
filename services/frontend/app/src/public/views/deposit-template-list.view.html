@@ -1,15 +1,14 @@
 <div ng-app="jupiter.public"
      ng-controller="DepositTemplatesController as ctrl"
      ng-init="ctrl.getDepositTemplates()">
-
-  <section class="section">
-    <div class="container list-container">
+  <section class="padding-1">
+    <div class="list-container">
       <div class="row">
         <div class="col-lg-12 text-center">
-          <h2 class="section-heading">
+          <h1>
             Вклады
             <hr class="primary">
-          </h2>
+          </h1>
         </div>
       </div>
 
@@ -21,7 +20,7 @@
         </div>
 
         <div class="col-md-9">
-          <a class="link" href="/deposits/templates/{{dt.id}}/">
+          <a class="link" href="/deposit-templates/{{dt.id}}/">
             <h3>
               {{dt.name}}
             </h3>
@@ -42,7 +41,7 @@
             {{dt.description}}
           </p>
           <a class="btn btn-info button"
-             href="/deposits/templates/{{dt.id}}/">
+             href="/deposit-templates/{{dt.id}}/">
             Детальная информация
             <span class="glyphicon glyphicon-chevron-right"></span>
           </a>

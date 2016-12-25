@@ -1,103 +1,101 @@
 <div ng-app="jupiter.public"
      ng-controller="CreditTemplatesController as ctrl"
      ng-init="ctrl.getCreditTemplate()">
-  <section class="section">
-    <div class="container">
-      <div class="row col-md-10 col-md-offset-1">
-        <div class="row text-center">
-          <h2 class="section-heading">
-            {{ctrl.data.name}}
-          </h2>
-        </div>
-        <hr class="primary">
+  <section class="padding-1">
+    <div class="row col-md-10 col-md-offset-1">
+      <div class="row text-center">
+        <h1>
+          {{ctrl.data.name}}
+        </h1>
+      </div>
+      <hr class="primary">
 
-        <div class="row text-center">
-          <div class="col-md-4 row-bottom-1">
-            <h4>Минимальная сумма:</h4>
-            <h3>
-              <div ng-if="ctrl.data.min_amount.fixed">
-                {{ctrl.data.min_amount.fixed}} BYN
-              </div>
-              <div ng-if="ctrl.data.min_amount.annual_income_mul">
-                {{ctrl.data.min_amount.annual_income_mul}} месячного дохода
-              </div>
-              <div ng-if="ctrl.data.min_amount.percent_of_purchase">
-                {{ctrl.data.min_amount.percent_of_purchase}} % от суммы покупки
-              </div>
-            </h3>
-          </div>
-          <div class="col-md-4 row-bottom-1">
-            <h4>Максимальная сумма:</h4>
-            <h3>
-              <div ng-if="ctrl.data.min_amount.fixed">
-                {{ctrl.data.max_amount.fixed}} BYN
-              </div>
-              <div ng-if="ctrl.data.min_amount.annual_income_mul">
-                {{ctrl.data.max_amount.annual_income_mul}} месячного дохода
-              </div>
-              <div ng-if="ctrl.data.min_amount.percent_of_purchase">
-                {{ctrl.data.max_amount.percent_of_purchase}} % от суммы покупки
-              </div>
-            </h3>
-          </div>
-          <div class="col-md-4 row-bottom-1">
-            <h4>Процентная ставка:</h4>
-            <h3>{{ctrl.data.annual_percentage_rate}}%</h3>
-          </div>
+      <div class="row text-center">
+        <div class="col-md-4 row-bottom-1">
+          <h4>Минимальная сумма:</h4>
+          <h3>
+            <div ng-if="ctrl.data.min_amount.fixed">
+              {{ctrl.data.min_amount.fixed}} BYN
+            </div>
+            <div ng-if="ctrl.data.min_amount.annual_income_mul">
+              {{ctrl.data.min_amount.annual_income_mul}} месячного дохода
+            </div>
+            <div ng-if="ctrl.data.min_amount.percent_of_purchase">
+              {{ctrl.data.min_amount.percent_of_purchase}} % от суммы покупки
+            </div>
+          </h3>
         </div>
-        <hr class="primary">
-
-        <div class="row text-center">
-          <div class="col-md-4 row-bottom-1">
-            <h4>Срок</h4>
-            <h3>{{ctrl.data.max_duration / 12}} лет</h3>
-          </div>
-          <div class="col-md-4 row-bottom-1">
-            <h4>Обеспечение:</h4>
-            <h3>
-              <div ng-repeat="e in ctrl.data.allowed_ensuring">
-                <span ng-if="e == 0">Штраф</span>
-                <span ng-if="e == 1">Залог</span>
-                <span ng-if="e == 2">Поручительство</span>
-              </div>
-            </h3>
-          </div>
-          <div>
-            <h4>Оформление:</h4>
-            <h3>
-              <span ng-if="ctrl.data.issue_online">Онлайн</span>
-              <span ng-if="!ctrl.data.issue_online">В отделении банка</span>
-            </h3>
-          </div>
+        <div class="col-md-4 row-bottom-1">
+          <h4>Максимальная сумма:</h4>
+          <h3>
+            <div ng-if="ctrl.data.min_amount.fixed">
+              {{ctrl.data.max_amount.fixed}} BYN
+            </div>
+            <div ng-if="ctrl.data.min_amount.annual_income_mul">
+              {{ctrl.data.max_amount.annual_income_mul}} месячного дохода
+            </div>
+            <div ng-if="ctrl.data.min_amount.percent_of_purchase">
+              {{ctrl.data.max_amount.percent_of_purchase}} % от суммы покупки
+            </div>
+          </h3>
         </div>
-        <hr class="primary">
-
-        <div class="row">
-          <h4>Описание:</h4>
-          <p class="text-large">
-            {{ctrl.data.description}}
-          </p>
+        <div class="col-md-4 row-bottom-1">
+          <h4>Процентная ставка:</h4>
+          <h3>{{ctrl.data.annual_percentage_rate}}%</h3>
         </div>
+      </div>
+      <hr class="primary">
 
-        <div class="row">
-          <h4>Дополнительная информация:</h4>
-          <p class="text-large">
-            {{ctrl.details}}
-          </p>
+      <div class="row text-center">
+        <div class="col-md-4 row-bottom-1">
+          <h4>Срок</h4>
+          <h3>{{ctrl.data.max_duration / 12}} лет</h3>
         </div>
-        <hr class="primary">
+        <div class="col-md-4 row-bottom-1">
+          <h4>Обеспечение:</h4>
+          <h3>
+            <div ng-repeat="e in ctrl.data.allowed_ensuring">
+              <span ng-if="e == 0">Штраф</span>
+              <span ng-if="e == 1">Залог</span>
+              <span ng-if="e == 2">Поручительство</span>
+            </div>
+          </h3>
+        </div>
+        <div>
+          <h4>Оформление:</h4>
+          <h3>
+            <span ng-if="ctrl.data.issue_online">Онлайн</span>
+            <span ng-if="!ctrl.data.issue_online">В отделении банка</span>
+          </h3>
+        </div>
+      </div>
+      <hr class="primary">
 
-        <div class="row">
-          <div class="col-md-3 col-md-offset-3 row-bottom-1">
-            <a class="btn btn-info button button-stretch" href="#">
-              Перейти к оформлению
-            </a>
-          </div>
-          <div class="col-md-3 row-bottom-1">
-            <a class="btn btn-info button button-stretch" href="/credits/templates/">
-              Назад к списку
-            </a>
-          </div>
+      <div class="row">
+        <h4>Описание:</h4>
+        <p class="text-large">
+          {{ctrl.data.description}}
+        </p>
+      </div>
+
+      <div class="row">
+        <h4>Дополнительная информация:</h4>
+        <p class="text-large">
+          {{ctrl.details}}
+        </p>
+      </div>
+      <hr class="primary">
+
+      <div class="row">
+        <div class="col-md-3 col-md-offset-3 row-bottom-1">
+          <a class="btn btn-info button button-stretch" href="#">
+            Перейти к оформлению
+          </a>
+        </div>
+        <div class="col-md-3 row-bottom-1">
+          <a class="btn btn-info button button-stretch" href="/credit-templates/">
+            Назад к списку
+          </a>
         </div>
       </div>
     </div>
