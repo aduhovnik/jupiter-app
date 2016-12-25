@@ -4,44 +4,54 @@
      ng-init="ctrl.getClients()">
  <section>
    <div class='admin-container'>
-      <h1>Клиенты</h1>
-      <table class="table table-bordered text-large">
-        <tr>
-          <th class="text-center">Имя</th>
-          <th class="text-center">Email</th>
-          <th class="text-center">Номер паспорта</th>
-          <th class="text-center">Состояние</th>
-          <th></th>
-        </tr>
-        <tr ng-repeat="client in ctrl.data">
-          <td class="text-center"><a href="#" class="link">{{client.first_name}}</a></td>
-          <td class="text-center">{{client.email}}</td>
-          <td class="text-center">{{client.profile.passport_number}}</td>
-          <td class="text-center">
-            <span ng-if="client.is_active">Активен</span>
-            <span ng-if="!client.is_active">Отключен</span>
-          </td>
-          <td>
-            <a href="#"
-               class="button btn btn-info">
-              Редактировать
-            </a>
+    <h1>Клиенты</h1>
+    <table class="row-offset-0 table table-bordered text-large">
+      <tr>
+        <th class="text-center">Имя</th>
+        <th class="text-center">Email</th>
+        <th class="text-center">Номер паспорта</th>
+        <th class="text-center">Состояние</th>
+        <th class="text-center">Редактировать</th>
+        <th class="text-center">Изменить статус</th>
+      </tr>
+      <tr ng-repeat="client in ctrl.data">
+        <td class="text-center">
+          <a href="/clients/{{client.id}}/"
+              class="link">
+            {{client.first_name}}
+          </a>
+        </td>
+        <td class="text-center">
+          {{client.email}}
+        </td>
+        <td class="text-center">
+          {{client.profile.passport_number}}
+        </td>
+        <td class="text-center">
+          <span ng-if="client.is_active">Активен</span>
+          <span ng-if="!client.is_active">Отключен</span>
+        </td>
+        <td>
+          <a href="/clients/{{client.id}}/"
+             class="col-md-12 button btn btn-info">
+            Редактировать
+          </a>
+        </td>
+        <td>
+          <a ng-if="!client.is_active"
+             class="col-md-12 button btn btn-info"
+             ng-click="ctrl.activateClient(client.id)">
+            Активировать
+          </a>
 
-            <a ng-if="!client.is_active"
-               class="button btn btn-info"
-               ng-click="ctrl.activateClient(client.id)">
-              Активировать
-            </a>
-
-            <a ng-if="client.is_active"
-               class="button btn btn-info"
-               ng-click="ctrl.deactivateClient(client.id)">
-              Отключить
-            </a>
-          </td>
-        </tr>
-      </table>
-      </div>
+          <a ng-if="client.is_active"
+             class="col-md-12 button btn btn-info"
+             ng-click="ctrl.deactivateClient(client.id)">
+            Отключить
+          </a>
+        </td>
+      </tr>
+    </table>
    </div>
  </section>
 </div>

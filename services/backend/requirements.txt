@@ -10,3 +10,5 @@ ipython==5.1.*
 django-money==0.9.*
 pycrypto==2.6.*
 sendgrid==3.6.*
+pytz
+pudb

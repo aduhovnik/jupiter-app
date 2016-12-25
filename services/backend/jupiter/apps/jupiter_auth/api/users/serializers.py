@@ -3,6 +3,8 @@ from __future__ import absolute_import, unicode_literals
 
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
+
 from jupiter_auth.models import UserProfile
 from rest_framework.serializers import ModelSerializer
 
@@ -12,7 +14,11 @@ class UserProfileSerializer(ModelSerializer):
     class Meta:
         model = UserProfile
         exclude = (
-            'user', 'id'
+            'id',
+            'user',
+            'number_of_times_90_more_days_late',
+            'number_of_times_30_59_days_late',
+            'number_of_times_60_89_days_late',
         )
 
 
@@ -28,7 +34,14 @@ class GroupSerializer(ModelSerializer):
 class UserSerializer(ModelSerializer):
 
     profile = UserProfileSerializer()
-    groups = GroupSerializer(many=True)
+    groups = GroupSerializer(many=True, read_only=True)
+
+    def update(self, obj, validated_data):
+        profile_data = validated_data.pop('profile')
+        serializer = UserProfileSerializer(instance=obj.profile, data=profile_data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return super(UserSerializer, self).update(obj, validated_data)
 
     class Meta:
         model = get_user_model()

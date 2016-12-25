@@ -28,9 +28,11 @@ function AuthService($http, $localStorage, $rootScope) {
                     }
                 },
                 function error(response) {
-                   if (onError) {
+                    delete $localStorage.token;
+                    delete $localStorage.user;
+                    if (onError) {
                        onError(response);
-                   }
+                    }
                 }
             )
         }

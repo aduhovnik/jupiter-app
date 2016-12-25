@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from django.template import Context
 from django.contrib.auth import get_user_model
 from django.template.loader import render_to_string
 from rest_framework import status
@@ -9,19 +8,16 @@ from rest_framework.response import Response
 from rest_framework.decorators import detail_route
 from rest_framework.exceptions import ValidationError
 from core.utils import send_mail
-from core.api.generic.views import ReadOnlyModelViewSet
+from core.api.generic.views import ModelViewSet
 from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
 from jupiter_auth.api.users.permissions import ManageSelfPermission
-from jupiter_auth.authentication import TokenAuthentication
 from jupiter_auth.api.users.serializers import UserSerializer
 
 
-class UserView(ReadOnlyModelViewSet):
+class UserView(ModelViewSet):
 
     queryset = get_user_model().objects.all()
     serializer_class = UserSerializer
-
-    authentication_classes = (TokenAuthentication,)
     permission_classes = (ManageSelfPermission,)
 
     def get_queryset(self):

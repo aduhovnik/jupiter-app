@@ -10,11 +10,22 @@ urls = {
     '/deposits/templates/:id/': 'src/public/views/deposit-template-detail.view.html',
     '/deposits/templates/': 'src/public/views/deposit-template-list.view.html',
 
-    '/clients/': 'src/admin/views/clients-list.view.html'
+    '/clients/': 'src/admin/views/clients-list.view.html',
+    '/clients/:id/': 'src/admin/views/clients-profile.view.html'
 };
 
 
-var app = angular.module("jupiter", ["ngRoute", "jupiter.core", "jupiter.auth", "jupiter.public", "jupiter.admin"]);
+var app = angular.module(
+    "jupiter",
+    [
+        "ngRoute",
+        "ui.bootstrap",
+        "jupiter.core",
+        "jupiter.auth",
+        "jupiter.public",
+        "jupiter.admin"
+    ]
+);
 app.config(function ($routeProvider, $locationProvider) {
     var routes = $routeProvider;
     for (var url in urls) {
