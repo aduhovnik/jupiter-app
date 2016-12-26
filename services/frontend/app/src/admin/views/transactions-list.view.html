@@ -11,13 +11,13 @@
             <div class="input-group" id="startDateInput">
               <input type="text"
                      class="form-control"
-                     ng-model="ctrl.filterParams.startDate"
-                     datepicker-popup="dd.MM.yyyy"
-                     show-weeks="false"
-                     is-open="startDateOpened"
-                     ng-required="true"
                      placeholder="Начальная дата"
-                     ng-change="ctrl.updateFilterParams(13)">
+                     datepicker-popup="dd.MM.yyyy"
+                     is-open="startDateOpened"
+                     ng-model="ctrl.filterParams.startDate"
+                     ng-required="true"
+                     ng-change="ctrl.updateFilterParams(13)"
+                     ng-keypress="ctrl.updateFilterParams($event.keyCode)">
               <span class="input-group-btn">
                 <button type="button"
                         class="btn btn-default"
@@ -37,11 +37,11 @@
                      class="form-control"
                      ng-model="ctrl.filterParams.endDate"
                      datepicker-popup="dd.MM.yyyy"
-                     show-weeks="false"
                      is-open="endDateOpened"
                      ng-required="true"
                      placeholder="Конечная дата"
-                     ng-change="ctrl.updateFilterParams(13)">
+                     ng-change="ctrl.updateFilterParams(13)"
+                     ng-keypress="ctrl.updateFilterParams($event.keyCode)">
               <span class="input-group-btn">
                 <button type="button"
                         class="btn btn-default"
@@ -64,8 +64,8 @@
                   ng-change="ctrl.updateFilterParams(13)">
             <option label="Тип: Любой"></option>
             <option ng-repeat="(code, type) in ctrl.transactionTypes"
-                    label="Тип: {{type}}">
-              {{code}}
+                    label="Тип: {{type}}"
+                    value="{{code}}">
             </option>
           </select>
         </div>
@@ -75,7 +75,7 @@
         <input type="text"
                class="form-control"
                placeholder="Клиент"
-               ng-model="ctrl.filterParams.client"
+               ng-model="ctrl.filterParams.client_name"
                ng-keypress="ctrl.updateFilterParams($event.keyCode)">
       </th>
       <th class="text-center" width="20%">Проведена</th>

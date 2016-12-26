@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 
 import factory
 from django.contrib.auth import get_user_model
+from factory.fuzzy import FuzzyInteger
 from faker import Faker
 from jupiter_auth.models import UserProfile
 
@@ -16,15 +17,19 @@ class UserProfileFactory(factory.DjangoModelFactory):
     passport_number = factory.sequence(lambda n: fake.ssn())
     phone = factory.sequence(lambda n: fake.phone_number())
     address = factory.sequence(lambda n: fake.address())
-    age = factory.sequence(lambda n: fake.pyint())
+    age = FuzzyInteger(20, 70)
     passport_expires = factory.sequence(lambda n: fake.date())
     birth_date = factory.sequence(lambda n: fake.date())
     family_status = factory.sequence(lambda n: fake.sentence(nb_words=5))
-    dependants = factory.sequence(lambda n: fake.sentence(nb_words=10))
-    income = factory.sequence(lambda n: fake.sentence(nb_words=4))
+    dependants = FuzzyInteger(0, 5)
+    income = FuzzyInteger(100, 100000)
     realty = factory.sequence(lambda n: fake.sentence(nb_words=15))
     job = factory.sequence(lambda n: "{}, {}".format(fake.company(), fake.job()))
     user = factory.SubFactory('jupiter_auth.factories.UserFactory', profile=None)
+
+    number_of_times_90_more_days_late = FuzzyInteger(0, 8)
+    number_of_times_30_59_days_late = FuzzyInteger(0, 5)
+    number_of_times_60_89_days_late = FuzzyInteger(0, 2)
 
     class Meta:
         model = UserProfile

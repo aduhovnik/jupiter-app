@@ -105,7 +105,7 @@ class CreditTemplateFactory(factory.DjangoModelFactory):
 
 class CreditFactory(ProductFactory):
 
-    residue = FuzzyInteger(100, 100000)
+    residue = FuzzyInteger(1000, 100000)
     current_penalty = FuzzyInteger(100, 1000)
     next_payment_term = factory.sequence(lambda n: fake.date())
     duration = factory.sequence(lambda n: fake.pyint())

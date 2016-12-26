@@ -172,6 +172,7 @@ class DepositView(ModelViewSet):
         else:
             return Response('Недостаточно средств на счете', status=status.HTTP_400_BAD_REQUEST)
 
+
 class DepositTemplateView(ReadOnlyModelViewSet):
     queryset = fin_models.DepositTemplate.objects.all()
     serializer_class = serializers.DepositTemplateSerializer

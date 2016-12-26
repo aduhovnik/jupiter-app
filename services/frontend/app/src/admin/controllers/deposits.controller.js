@@ -1,16 +1,11 @@
 module = angular.module("jupiter.admin");
 module.controller("DepositsController", DepositsController);
 
-function DepositsController($http, $auth, $error, $location, $url) {
+function DepositsController($http, $auth, $error, $location, $url, depositStatuses) {
     var ctrl = this;
     ctrl.data = [];
     ctrl.filterParams = $location.search();
-    ctrl.depositStatuses = {
-        0: "Открыт",
-        1: "Закрыт",
-        2: "Отклонен",
-        3: "Заявка"
-    };
+    ctrl.depositStatuses = depositStatuses;
 
     this.updateFilterParams = function(keyCode) {
         if (keyCode === 13) {
@@ -20,9 +15,10 @@ function DepositsController($http, $auth, $error, $location, $url) {
 
     this.getTransactions = function () {
         ctrl.queryParams = {
-            "client__first_name__icontains": ctrl.filterParams.client,
+            "client__first_name__icontains": ctrl.filterParams.client_name,
             "template__exact": ctrl.filterParams.template,
-            "status__exact": ctrl.filterParams.status
+            "status__exact": ctrl.filterParams.status,
+            "client__exact": ctrl.filterParams.client_id
         };
 
         var url = $auth.addUrlAuth('/api/deposits/');

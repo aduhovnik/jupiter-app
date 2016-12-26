@@ -4,6 +4,8 @@ from __future__ import absolute_import, unicode_literals
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from finance.utils import money_field
+
 
 class User(AbstractUser):
 
@@ -28,8 +30,8 @@ class UserProfile(models.Model):
     passport_expires = models.DateField(null=True)
     birth_date = models.DateField(null=True)
     family_status = models.TextField(null=True)
-    dependants = models.TextField(null=True)
-    income = models.TextField(null=True)
+    dependants = models.IntegerField(null=True)
+    income = money_field(null=True)
     realty = models.TextField(null=True)
     job = models.TextField(null=True)
     number_of_times_90_more_days_late = models.IntegerField(default=0)

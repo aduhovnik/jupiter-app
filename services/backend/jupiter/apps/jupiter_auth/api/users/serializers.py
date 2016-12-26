@@ -15,10 +15,7 @@ class UserProfileSerializer(ModelSerializer):
         model = UserProfile
         exclude = (
             'id',
-            'user',
-            'number_of_times_90_more_days_late',
-            'number_of_times_30_59_days_late',
-            'number_of_times_60_89_days_late',
+            'user'
         )
 
 

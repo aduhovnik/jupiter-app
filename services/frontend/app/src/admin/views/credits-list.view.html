@@ -20,7 +20,7 @@
           <input type="text"
                  class="form-control"
                  placeholder="Клиент"
-                 ng-model="ctrl.filterParams.client"
+                 ng-model="ctrl.filterParams.client_name"
                  ng-keypress="ctrl.updateFilterParams($event.keyCode)">
         </th>
         <th width="15%" class="text-center">
@@ -30,8 +30,8 @@
                     ng-change="ctrl.updateFilterParams(13)">
               <option label="Статус: Любой"></option>
               <option ng-repeat="(code, status) in ctrl.creditStatuses"
-                      label="Статус: {{status}}">
-                {{code}}
+                      label="Статус: {{status}}"
+                      value="{{code}}">
               </option>
             </select>
           </div>

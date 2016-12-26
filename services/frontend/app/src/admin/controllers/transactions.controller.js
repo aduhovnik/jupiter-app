@@ -2,43 +2,12 @@ module = angular.module("jupiter.admin");
 module.controller('TransactionsController', TransactionsController);
 
 
-function TransactionsController($http, $error, $auth, $location, $url, $scope, $filter) {
+function TransactionsController($http, $error, $auth, $location,
+                                $url, $scope, $filter, transactionTypes) {
     var ctrl = this;
     ctrl.data = [];
     ctrl.filterParams = $location.search();
-    ctrl.transactionTypes = {
-        101: "Создание кредита",
-        102: "Оплата по кредиту",
-        103: "Закрытие кредита",
-        104: "Начисление штрафа по кредиту",
-        105: "Запрос на окрытие кредита",
-        106: "Подтверждение открытия кредита",
-        107: "Отклонение открытия кредита",
-        108: "Открытие онлайн кредита",
-
-        201: "Привязка счета",
-        202: "Создание счета",
-        203: "Запрос на создание счета",
-        204: "Подтверждение создание счета",
-        205: "Запрос на закрытие счета",
-        206: "Подтверждение закрытия счета",
-        207: "Отклонение открытия счета",
-        208: "Отклонение закрытия счета",
-        209: "Снятие средста со счета",
-        210: "Зачисление средств на счет",
-
-        301: "Добавление средств на вклад",
-        302: "Создание вклада",
-        303: "Заявка на открытие вклада",
-        304: "Подтверждение открытия вклада",
-        305: "Заявка на закрытие вклада",
-        306: "Подтверждение закрытия вклада",
-        307: "Отклонение открытия вклада",
-        308: "Отклонение закрытия вклада",
-        309: "Капитализация вклада",
-        310: "Продление вклада",
-        666: "Транзакция"
-    };
+    ctrl.transactionTypes = transactionTypes;
 
     this.updateFilterParams = function(keyCode) {
         if (keyCode === 13) {
@@ -65,12 +34,16 @@ function TransactionsController($http, $error, $auth, $location, $url, $scope, $
             ctrl.filterParams.startDate = previousMonth;
         }
 
+        ctrl.filterParams.startDate = new Date(ctrl.filterParams.startDate);
+        ctrl.filterParams.endDate = new Date(ctrl.filterParams.endDate || new Date);
+
         ctrl.queryParams = {
-            "client__first_name__icontains": ctrl.filterParams.client,
+            "client__first_name__icontains": ctrl.filterParams.client_name,
+            "client__exact": ctrl.filterParams.client_id,
             "product__name__istartswith": ctrl.filterParams.product,
             "type__exact": ctrl.filterParams.type,
             "created_on__gt": $filter('date')(ctrl.filterParams.startDate, 'yyyy-MM-dd 00:00'),
-            "created_on__lt": $filter('date')(ctrl.filterParams.endDate, 'yyyy-MM-dd 00:00'),
+            "created_on__lt": $filter('date')(ctrl.filterParams.endDate, 'yyyy-MM-dd 23:59'),
             "ordering": "-created_on"
         };
 
@@ -92,11 +65,5 @@ function TransactionsController($http, $error, $auth, $location, $url, $scope, $
                 $error.onError(response);
             }
         );
-
-        var startDate = ctrl.filterParams.startDate;
-        ctrl.filterParams.startDate = $filter('date')(startDate, 'dd.MM.yyyy');
-
-        var endDate = ctrl.filterParams.endDate;
-        ctrl.filterParams.endDate = $filter('date')(endDate, 'dd.MM.yyyy');
     };
 }

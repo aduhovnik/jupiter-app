@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import json
+from os import environ
+from urllib2 import urlopen
+from rest_framework.exceptions import ValidationError
 import finance.models as fin_models
 import finance.api.credits.serializers as serializers
 from rest_framework import status

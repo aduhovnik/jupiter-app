@@ -2,8 +2,13 @@ module = angular.module("jupiter.admin");
 module.controller('ClientsController', ClientsController);
 
 
-function ClientsController($http, $error, $auth, $routeParams, $scope, $filter, $location, $url) {
+function ClientsController($http, $error, $auth, $routeParams,
+                           $scope, $filter, $location, $url,
+                           creditStatuses, depositStatuses, transactionTypes) {
     var ctrl = this;
+    ctrl.creditStatuses = creditStatuses;
+    ctrl.depositStatuses = depositStatuses;
+    ctrl.transactionTypes = transactionTypes;
 
     $scope.toogleBirthDatePicker = function($event) {
         $event.preventDefault();
@@ -16,6 +21,11 @@ function ClientsController($http, $error, $auth, $routeParams, $scope, $filter, 
         $event.stopPropagation();
         $scope.passportExpiresPickerOpened = !$scope.passportExpiresPickerOpened;
     };
+
+    $('#tabsHeader li a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show')
+    });
 
     ctrl.filterParams = $location.search();
     this.updateFilterParams = function(keyCode) {
@@ -94,16 +104,42 @@ function ClientsController($http, $error, $auth, $routeParams, $scope, $filter, 
         )
     };
 
-    this.updateClient = function(userId) {
+    this.updateClient = function() {
         var birthDate = ctrl.data.profile.birth_date;
         ctrl.data.profile.birth_date = $filter('date')(birthDate, 'yyyy-MM-dd');
 
         var passportExpires = ctrl.data.profile.passport_expires;
         ctrl.data.profile.passport_expires = $filter('date')(passportExpires, 'yyyy-MM-dd');
 
-        $http.patch($auth.addUrlAuth('/api/users/' + userId + '/'), ctrl.data).then(
+        $http.patch($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/'), ctrl.data).then(
             function success(response) {
                 ctrl.getClient();
+                ctrl.errors = null;
+            },
+            function error(response) {
+                ctrl.errors = response.data;
+                $error.onError(response);
+            }
+        )
+    };
+
+    this.getScoringValue = function () {
+        $http.get($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/scoring/')).then(
+            function success(response) {
+                ctrl.scoringValue = response.data['scoring_result'];
+                ctrl.errors = null;
+            },
+            function error(response) {
+                ctrl.errors = response.data;
+                $error.onError(response);
+            }
+        )
+    };
+
+    this.getClientStatistics = function () {
+        $http.get($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/statistics/')).then(
+            function success(response) {
+                ctrl.statistics = response.data;
                 ctrl.errors = null;
             },
             function error(response) {
