@@ -131,17 +131,22 @@ class Account(Product):
     STATUS_CLOSED = 1
     STATUS_DISABLED = 2
     STATUS_REJECTED = 3
+    STATUS_REQUESTED_CREATING = 4
+    STATUS_REQUESTED_CLOSING = 5
     STATUS_CHOICES = [
         (STATUS_ACTIVE, 'Active'),
         (STATUS_CLOSED, 'Closed'),
         (STATUS_DISABLED, 'Disabled'),
         (STATUS_REJECTED, 'Rejected'),
+        (STATUS_REQUESTED_CREATING, 'Create claim leaved'),
+        (STATUS_REQUESTED_CLOSING, 'Close claim leaved'),
     ]
 
     INOPERABLE_STATUSES = [
         STATUS_DISABLED,
         STATUS_REJECTED,
-        STATUS_CLOSED
+        STATUS_CLOSED,
+        STATUS_REQUESTED_CREATING,
     ]
 
     number = models.CharField(max_length=13, default='0' * 13)
@@ -170,11 +175,12 @@ class Account(Product):
         account created already with money - dummy
         Also, if credit opened, then money can be puted into created account
         """
+        status = Account.STATUS_ACTIVE if is_active else Account.STATUS_REQUESTED_CREATING
         account = Account.objects.create(
             is_active=is_active,
             number=cls._create_new_number(),
             residue=first_contribution,
-            status=Account.STATUS_ACTIVE,
+            status=status,
             client=client
         )
         account.save()
@@ -215,7 +221,7 @@ class Account(Product):
         """
         Confirm account
         """
-        if self.is_active:
+        if self.status != self.STATUS_REQUESTED_CREATING:
             return False
 
         bank_confirmation = BankSystemProxy.account_creation(self.number,
@@ -226,6 +232,7 @@ class Account(Product):
             return False
 
         self.is_active = True
+        self.status = Account.STATUS_ACTIVE
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
@@ -236,7 +243,7 @@ class Account(Product):
         return True
 
     def reject(self, cause):
-        if self.is_active:
+        if self.status != self.STATUS_REQUESTED_CREATING:
             return False
         self.status = Account.STATUS_REJECTED
         self.save()
@@ -250,7 +257,7 @@ class Account(Product):
         """
         In BYN only
         """
-        if not self.is_active or self.status in Account.INOPERABLE_STATUSES:
+        if self.status in Account.INOPERABLE_STATUSES:
             return False
 
         bank_confirmation = BankSystemProxy.account_put_money(self.id, float(contribution))
@@ -269,7 +276,7 @@ class Account(Product):
         """
         In BYN only
         """
-        if not self.is_active or self.status in Account.INOPERABLE_STATUSES:
+        if self.status in Account.INOPERABLE_STATUSES:
             return False
         if self.residue.amount >= required_quantity:
             self.residue.amount -= Decimal(required_quantity)
@@ -292,16 +299,17 @@ class Account(Product):
         :param target_account_id:
         account_id, where money will be sent
         """
-        if not self.is_active or self.status in Account.INOPERABLE_STATUSES:
+        if self.status in Account.INOPERABLE_STATUSES:
             return False
         if not (target_account_id is None):
             self.target_account_id = target_account_id
         self.close_claim = True
+        self.STATUS_ACTIVE = Account.STATUS_REQUESTED_CLOSING
         self.save()
         return True
 
     def close_confirm(self):
-        if not self.is_active or self.status in Account.INOPERABLE_STATUSES:
+        if self.status != self.STATUS_REQUESTED_CLOSING:
             return False
         if not self.close_claim:
             return False
@@ -324,11 +332,12 @@ class Account(Product):
         return True
 
     def close_reject(self, cause):
-        if not self.is_active or self.status in Account.INOPERABLE_STATUSES:
+        if self.status != self.STATUS_REQUESTED_CLOSING:
             return False
         if not self.close_claim:
             return False
         self.close_claim = False
+        self.status = Account.STATUS_ACTIVE
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
@@ -381,12 +390,20 @@ class Deposit(Product):
     STATUS_ACTIVE = 0
     STATUS_CLOSED = 1
     STATUS_REJECTED = 2
-    STATUS_REQUESTED = 3
+    STATUS_REQUESTED_CREATING = 3
+    STATUS_REQUESTED_CLOSING = 4
     STATUS_CHOICES = [
         (STATUS_ACTIVE, 'Active'),
         (STATUS_CLOSED, 'Closed'),
         (STATUS_REJECTED, 'Rejected'),
-        (STATUS_REQUESTED, 'Requested'),
+        (STATUS_REQUESTED_CREATING, 'Requested creating'),
+        (STATUS_REQUESTED_CLOSING, 'Requested closing'),
+    ]
+
+    INOPERABLE_STATUSES = [
+        STATUS_CLOSED,
+        STATUS_REJECTED,
+        STATUS_REQUESTED_CREATING,
     ]
 
     CAPITALIZATION_TIME_PERIOD = [
@@ -441,7 +458,7 @@ class Deposit(Product):
                 template=template,
                 amount=money_amount,
                 start_date=datetime.date.today() + relativedelta(days=1),
-                status=cls.STATUS_REQUESTED,
+                status=cls.STATUS_REQUESTED_CREATING,
                 percentage=percentage,
                 currency=currency,
                 capitalization=template.capitalization,
@@ -466,7 +483,7 @@ class Deposit(Product):
         """
         Confirm deposit, defreeze account and transfer money
         """
-        if self.status in Credit.INOPERABLE_STATUSES or self.is_active:
+        if self.status != Deposit.STATUS_REQUESTED_CREATING:
             return False
 
         bank_confirmation = BankSystemProxy.deposit_creation(self.client.id,
@@ -480,6 +497,7 @@ class Deposit(Product):
             return False
 
         self.is_active = True
+        self.status = Deposit.STATUS_ACTIVE
         account = Account.objects.get(pk=self.source_account_id)
         money_in_byn = BankSystemProxy.get_currency_rate()[self.currency] * float(self.amount.amount)
         account.status = Account.STATUS_ACTIVE
@@ -495,7 +513,7 @@ class Deposit(Product):
         return True
 
     def reject(self, cause):
-        if self.status in Credit.INOPERABLE_STATUSES:
+        if self.status != self.STATUS_REQUESTED_CREATING:
             return False
         self.status = Deposit.STATUS_REJECTED
         account = Account.objects.get(pk=self.source_account_id)
@@ -515,7 +533,7 @@ class Deposit(Product):
         if deposit.closing = CLOSING_IN_END then
         deposit can be closed in period +-1 week about and date
         """
-        if self.status in Credit.INOPERABLE_STATUSES or not self.is_active:
+        if self.status in Deposit.INOPERABLE_STATUSES:
             return False, 'Операции с кредитом невозможны.'
         if self.closing == DepositTemplate.CLOSING_IN_END:
             cur_date = datetime.date.today()
@@ -523,27 +541,25 @@ class Deposit(Product):
             if end_date + relativedelta(days=-7) < cur_date < end_date + relativedelta(days=7):
                 self.close_claim = True
                 self.target_account_id = target_account_id
+                self.status = Deposit.STATUS_REQUESTED_CLOSING
                 self.save()
                 return True, 'Ваша заявка будет рассмотрена'
             return False, 'Вы можете забрать депозит только начиная с {}'.\
                 format(str(end_date + relativedelta(days=-7)))
         else:
             self.close_claim = True
+            self.status = Deposit.STATUS_REQUESTED_CLOSING
             self.target_account_id = target_account_id
             self.save()
             return True, 'Вы можете забрать депозит в данный момент. Ваша заявка будет рассмотрена'
 
     def close_confirm(self):
-        if not self.close_claim:
+        if self.status != self.STATUS_REQUESTED_CLOSING:
             return False
-        if self.status in Credit.INOPERABLE_STATUSES or not self.is_active:
-            return False
-
         bank_confirmation = BankSystemProxy.deposit_closing(self.id)
         if not bank_confirmation:
             self.reject('Отказано банком.')
             return False
-
         cur_date = datetime.date.today()
         end_date = self.start_date + relativedelta(months=self.duration)
         if self.next_capitalize_term < min(end_date, cur_date):  # last capitalize, if need
@@ -561,11 +577,10 @@ class Deposit(Product):
         return True
 
     def close_reject(self, cause):
-        if not self.close_claim:
-            return False
-        if self.status in Credit.INOPERABLE_STATUSES or not self.is_active:
+        if self.status != Deposit.STATUS_REQUESTED_CLOSING:
             return False
         self.close_claim = False
+        self.status = self.STATUS_ACTIVE
         self.save()
         Transaction.objects.create(client=self.client,
                                    product=self,
@@ -574,7 +589,7 @@ class Deposit(Product):
         return True
 
     def additional_contribution(self, money_amount):
-        if self.status in Credit.INOPERABLE_STATUSES or not self.is_active:
+        if self.status in Credit.INOPERABLE_STATUSES:
             return False
         if not self.additional_contributions:
             return False
@@ -668,7 +683,8 @@ class Credit(Product):
 
     INOPERABLE_STATUSES = [
         STATUS_CLOSED,
-        STATUS_REJECTED
+        STATUS_REJECTED,
+        STATUS_REQUESTED,
     ]
 
     INTO_ACCOUNT = 0  # Your account or seller account
@@ -732,7 +748,7 @@ class Credit(Product):
         """
         Updates the state of the model. Should be called daily
         """
-        if self.status in Credit.INOPERABLE_STATUSES or not self.is_active:
+        if self.status in Credit.INOPERABLE_STATUSES:
             return
         self._check_overdue()
         if self.status == Credit.STATUS_FINED:
@@ -758,7 +774,7 @@ class Credit(Product):
                 c. Inc current_month_pay
         We can multiple payments during one month.
         """
-        if self.status in Credit.INOPERABLE_STATUSES or not self.is_active:
+        if self.status in Credit.INOPERABLE_STATUSES:
             return False
 
         bank_confirmation = BankSystemProxy.credit_pay(self.id, float(payment))
@@ -924,9 +940,7 @@ class Credit(Product):
         return credit
 
     def confirm(self):
-        if self.is_active:
-            return False
-        if self.status in Credit.INOPERABLE_STATUSES:
+        if self.status != self.STATUS_REQUESTED:
             return False
         bank_confirmation = BankSystemProxy.credit_create(self.client.id,
                                                           self.template.id,
@@ -956,7 +970,7 @@ class Credit(Product):
         return True
 
     def reject(self, cause):
-        if self.status in Credit.INOPERABLE_STATUSES or not self.is_active:
+        if self.status != self.STATUS_REQUESTED:
             return False
         self.status = Credit.STATUS_REJECTED
         self.save()
