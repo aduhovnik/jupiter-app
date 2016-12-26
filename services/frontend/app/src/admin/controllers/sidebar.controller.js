@@ -14,10 +14,10 @@ function SidebarController($location, $scope) {
         if ($scope.user.isAdmin()) {
             ctrl._addItem('/overview/', 'Сводка');
             ctrl._addItem('/clients/', 'Клиенты');
-            ctrl._addItem('/credit-templates/', 'Типы кредитов');
-            ctrl._addItem('/credits/', 'Открытые кредиты');
-            ctrl._addItem('/deposit-templates/', 'Типы вкладов');
-            ctrl._addItem('/deposits/', 'Открытые вклады');
+            ctrl._addItem('/credit-templates/', 'Планы кредитов');
+            ctrl._addItem('/deposit-templates/', 'Планы депозитов');
+            ctrl._addItem('/credits/', 'Кредиты');
+            ctrl._addItem('/deposits/', 'Вклады');
             ctrl._addItem('/transactions/', 'Транзакции');
         }
         if ($scope.user.isClient()) {

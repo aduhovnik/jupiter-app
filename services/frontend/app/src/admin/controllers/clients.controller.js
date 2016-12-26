@@ -2,7 +2,7 @@ module = angular.module("jupiter.admin");
 module.controller('ClientsController', ClientsController);
 
 
-function ClientsController($http, $error, $auth, $routeParams, $scope, $filter) {
+function ClientsController($http, $error, $auth, $routeParams, $scope, $filter, $location, $url) {
     var ctrl = this;
 
     $scope.toogleBirthDatePicker = function($event) {
@@ -17,9 +17,31 @@ function ClientsController($http, $error, $auth, $routeParams, $scope, $filter) 
         $scope.passportExpiresPickerOpened = !$scope.passportExpiresPickerOpened;
     };
 
+    ctrl.filterParams = $location.search();
+    this.updateFilterParams = function(keyCode) {
+        if (keyCode === 13) {
+            $location.search(ctrl.filterParams);
+        }
+    };
+
     this.getClients = function () {
         ctrl.data = [];
-        $http.get($auth.addUrlAuth('/api/users/')).then(
+
+        ctrl.queryParams = {
+            "first_name__istartswith": ctrl.filterParams.name,
+            "profile__identification_number__icontains": ctrl.filterParams.in,
+            "profile__passport_number__istartswith": ctrl.filterParams.pn,
+            "is_active": ctrl.filterParams.state
+        };
+
+        var url = $auth.addUrlAuth('/api/users/');
+        for (key in ctrl.queryParams) {
+            if (ctrl.queryParams.hasOwnProperty(key) && ctrl.queryParams[key]) {
+                url = $url.query(url, key, ctrl.queryParams[key]);
+            }
+        }
+
+        $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
                 ctrl.errors = null;

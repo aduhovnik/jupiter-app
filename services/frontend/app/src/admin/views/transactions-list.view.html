@@ -1,17 +1,100 @@
-<div ng-controller="TransactionsController as ctrl">
+<div ng-controller="TransactionsController as ctrl"
+     ng-init="ctrl.getTransactions()">
  <section>
     <h1>Транзакции</h1>
+
+    <table class="row-offset-0" width="100%" cellpadding="10">
+      <tr>
+        <td style="padding-right: 10px">
+          <div class="form-group">
+            <label for="startDateInput">Начальная дата:</label>
+            <div class="input-group" id="startDateInput">
+              <input type="text"
+                     class="form-control"
+                     ng-model="ctrl.filterParams.startDate"
+                     datepicker-popup="dd.MM.yyyy"
+                     show-weeks="false"
+                     is-open="startDateOpened"
+                     ng-required="true"
+                     placeholder="Начальная дата"
+                     ng-change="ctrl.updateFilterParams(13)">
+              <span class="input-group-btn">
+                <button type="button"
+                        class="btn btn-default"
+                        ng-click="toogleStartDatePicker($event)">
+                  <i class="glyphicon glyphicon-calendar"></i>
+                </button>
+              </span>
+            </div>
+          </div>
+        </td>
+
+        <td>
+          <div class="form-group">
+            <label for="endDateInput">Конечная дата:</label>
+            <div class="input-group" id="endDateInput">
+              <input type="text"
+                     class="form-control"
+                     ng-model="ctrl.filterParams.endDate"
+                     datepicker-popup="dd.MM.yyyy"
+                     show-weeks="false"
+                     is-open="endDateOpened"
+                     ng-required="true"
+                     placeholder="Конечная дата"
+                     ng-change="ctrl.updateFilterParams(13)">
+              <span class="input-group-btn">
+                <button type="button"
+                        class="btn btn-default"
+                        ng-click="toogleEndDatePicker($event)">
+                  <i class="glyphicon glyphicon-calendar"></i>
+                </button>
+              </span>
+            </div>
+          </div>
+        </td>
+      </tr>
+    </table>
+
     <table class="table table-bordered text-large">
-    <tr>
-      <th class="text-center">Информация</th>
-      <th class="text-center">Дата создания</th>
-      <th></th>
+     <tr>
+      <th width="25%" class="text-center">
+        <div class="dropdown">
+          <select class="form-control"
+                  ng-model="ctrl.filterParams.type"
+                  ng-change="ctrl.updateFilterParams(13)">
+            <option label="Тип: Любой"></option>
+            <option ng-repeat="(code, type) in ctrl.transactionTypes"
+                    label="Тип: {{type}}">
+              {{code}}
+            </option>
+          </select>
+        </div>
+      </th>
+
+      <th width="28%" class="text-center">
+        <input type="text"
+               class="form-control"
+               placeholder="Клиент"
+               ng-model="ctrl.filterParams.client"
+               ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+      </th>
+      <th class="text-center" width="20%">Проведена</th>
+      <th class="text-center" width="27%">Информация</th>
     </tr>
     <tr ng-repeat="transaction in ctrl.data">
-      <td>{{transaction.info}}</td>
-      <td>{{transaction.created_on}}</td>
       <td>
-        <a href="#" class="button btn btn-info">Детальная информация</a>
+        {{ctrl.transactionTypes[transaction.type]}}
+      </td>
+      <td>
+        <a href="/clients/{{transaction.client.id}}">
+          {{transaction.client.first_name}}
+        </a>
+      </td>
+      <td>
+        {{transaction.created_on | date : 'dd.MM.yyyy HH:mm:ss'}}
+      </td>
+      <td>
+        {{transaction.info}}
       </td>
     </tr>
     </table>

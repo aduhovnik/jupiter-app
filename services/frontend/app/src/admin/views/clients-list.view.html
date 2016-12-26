@@ -3,14 +3,43 @@
      ng-init="ctrl.getClients()">
  <section>
   <h1>Клиенты</h1>
-  <table class="row-offset-0 table table-bordered text-large">
+
+  <table class="row-offset-0 table table-bordered text-large"
+         align="center">
     <tr>
-      <th class="text-center">Имя</th>
-      <th class="text-center">Email</th>
-      <th class="text-center">Номер паспорта</th>
-      <th class="text-center">Состояние</th>
-      <th class="text-center">Редактировать</th>
-      <th class="text-center">Изменить статус</th>
+      <th width="28%" class="text-center">
+        <input type="text"
+               class="form-control"
+               placeholder="Имя"
+               ng-model="ctrl.filterParams.name"
+               ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+      </th>
+      <th width="20%" class="text-center">
+        <input type="text"
+               class="form-control"
+               placeholder="Личный номер"
+               ng-model="ctrl.filterParams.in"
+               ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+      </th>
+      <th width="20%" class="text-center">
+        <input type="text"
+               class="form-control"
+               placeholder="Номер паспорта"
+               ng-model="ctrl.filterParams.pn"
+               ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+      </th>
+      <th width="12%" class="text-center">
+        <div class="dropdown">
+          <select class="form-control"
+                  ng-model="ctrl.filterParams.state"
+                  ng-change="ctrl.updateFilterParams(13)">
+            <option label="Любой" ></option>
+            <option label="Активен">True</option>
+            <option label="Отключен">False</option>
+          </select>
+        </div>
+      </th>
+      <th width="10%" class="text-center"></th>
     </tr>
     <tr ng-repeat="client in ctrl.data">
       <td class="text-center">
@@ -20,7 +49,7 @@
         </a>
       </td>
       <td class="text-center">
-        {{client.email}}
+        {{client.profile.identification_number}}
       </td>
       <td class="text-center">
         {{client.profile.passport_number}}
@@ -30,20 +59,13 @@
         <span ng-if="!client.is_active">Отключен</span>
       </td>
       <td>
-        <a href="/clients/{{client.id}}/"
-           class="col-md-12 button btn btn-info">
-          Редактировать
-        </a>
-      </td>
-      <td>
         <a ng-if="!client.is_active"
-           class="col-md-12 button btn btn-info"
+           class="col-md-12 button btn btn-info text-small"
            ng-click="ctrl.activateClient(client.id)">
           Активировать
         </a>
-
         <a ng-if="client.is_active"
-           class="col-md-12 button btn btn-info"
+           class="col-md-12 button btn btn-info text-small"
            ng-click="ctrl.deactivateClient(client.id)">
           Отключить
         </a>

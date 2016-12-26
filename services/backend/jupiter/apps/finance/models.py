@@ -36,64 +36,66 @@ class Transaction(models.Model):
     TYPE_CREDIT_PAY = 102
     TYPE_CREDIT_CLOSE = 103
     TYPE_CREDIT_FINED = 104
-    TYPE_CREDIT_LEAVE_CREATE = 105
-    TYPE_CREDIT_CONFIRM_CREATE = 106
-    TYPE_CREDIT_REJECT_CREATE = 107
-    TYPE_CREDIT_OPENED_ONLINE = 108
+    TYPE_CREDIT_REQUEST = 105
+    TYPE_CREDIT_CONFIRM = 106
+    TYPE_CREDIT_REJECT = 107
+    TYPE_CREDIT_OPENED = 108
 
     TYPE_ACCOUNT_ASSIGNED = 201
     TYPE_ACCOUNT_CREATED = 202
-    TYPE_ACCOUNT_LEAVE_CREATE = 203
+    TYPE_ACCOUNT_REQUEST_CREATE = 203
     TYPE_ACCOUNT_CONFIRM_CREATE = 204
-    TYPE_ACCOUNT_LEAVE_CLOSE = 205
-    TYPE_ACCOUNT_CONFIRM_CLOSE = 206
     TYPE_ACCOUNT_REJECT_CREATE = 207
+    TYPE_ACCOUNT_REQUEST_CLOSE = 205
+    TYPE_ACCOUNT_CONFIRM_CLOSE = 206
     TYPE_ACCOUNT_REJECT_CLOSE = 208
     TYPE_ACCOUNT_GET_MONEY = 209
     TYPE_ACCOUNT_PUT_MONEY = 210
 
     TYPE_DEPOSIT_ADD_MONEY = 301
     TYPE_DEPOSIT_CREATED = 302
-    TYPE_DEPOSIT_LEAVE_CREATE = 303
+    TYPE_DEPOSIT_REQUEST_CREATE = 303
     TYPE_DEPOSIT_CONFIRM_CREATE = 304
-    TYPE_DEPOSIT_LEAVE_CLOSE = 305
-    TYPE_DEPOSIT_CONFIRM_CLOSE = 306
     TYPE_DEPOSIT_REJECT_CREATE = 307
+    TYPE_DEPOSIT_REQUEST_CLOSE = 305
+    TYPE_DEPOSIT_CONFIRM_CLOSE = 306
     TYPE_DEPOSIT_REJECT_CLOSE = 308
     TYPE_DEPOSIT_CAPITALIZE = 309
-    TYPE_DEPOSIT_LONGATION = 310
+    TYPE_DEPOSIT_PROLONGATION = 310
 
     TYPE_DUMMY = 666
 
-    TYPES = [(TYPE_CREDIT_CREATE, ''),
-             (TYPE_CREDIT_PAY, ''),
-             (TYPE_CREDIT_CLOSE, ''),
-             (TYPE_CREDIT_FINED, ''),
-             (TYPE_CREDIT_LEAVE_CREATE, ''),
-             (TYPE_CREDIT_CONFIRM_CREATE, ''),
-             (TYPE_CREDIT_REJECT_CREATE, ''),
-             (TYPE_CREDIT_OPENED_ONLINE, ''),
-             (TYPE_ACCOUNT_ASSIGNED, ''),
-             (TYPE_ACCOUNT_CREATED, ''),
-             (TYPE_ACCOUNT_LEAVE_CREATE, ''),
-             (TYPE_ACCOUNT_CONFIRM_CREATE, ''),
-             (TYPE_ACCOUNT_LEAVE_CLOSE, ''),
-             (TYPE_ACCOUNT_CONFIRM_CLOSE, ''),
-             (TYPE_ACCOUNT_REJECT_CREATE, ''),
-             (TYPE_ACCOUNT_REJECT_CLOSE, ''),
-             (TYPE_ACCOUNT_GET_MONEY, ''),
-             (TYPE_ACCOUNT_PUT_MONEY, ''),
-             (TYPE_DEPOSIT_ADD_MONEY, ''),
-             (TYPE_DEPOSIT_CREATED, ''),
-             (TYPE_DEPOSIT_LEAVE_CREATE, ''),
-             (TYPE_DEPOSIT_CONFIRM_CREATE, ''),
-             (TYPE_DEPOSIT_LEAVE_CLOSE, ''),
-             (TYPE_DEPOSIT_CONFIRM_CLOSE, ''),
-             (TYPE_DEPOSIT_REJECT_CREATE, ''),
-             (TYPE_DEPOSIT_REJECT_CLOSE, ''),
-             (TYPE_DEPOSIT_CAPITALIZE, ''),
-             (TYPE_DEPOSIT_LONGATION, ''),
-             (TYPE_DUMMY, '')]
+    TYPES = [
+        (TYPE_CREDIT_CREATE, ''),
+         (TYPE_CREDIT_PAY, ''),
+         (TYPE_CREDIT_CLOSE, ''),
+         (TYPE_CREDIT_FINED, ''),
+         (TYPE_CREDIT_REQUEST, ''),
+         (TYPE_CREDIT_CONFIRM, ''),
+         (TYPE_CREDIT_REJECT, ''),
+         (TYPE_CREDIT_OPENED, ''),
+         (TYPE_ACCOUNT_ASSIGNED, ''),
+         (TYPE_ACCOUNT_CREATED, ''),
+         (TYPE_ACCOUNT_REQUEST_CREATE, ''),
+         (TYPE_ACCOUNT_CONFIRM_CREATE, ''),
+         (TYPE_ACCOUNT_REQUEST_CLOSE, ''),
+         (TYPE_ACCOUNT_CONFIRM_CLOSE, ''),
+         (TYPE_ACCOUNT_REJECT_CREATE, ''),
+         (TYPE_ACCOUNT_REJECT_CLOSE, ''),
+         (TYPE_ACCOUNT_GET_MONEY, ''),
+         (TYPE_ACCOUNT_PUT_MONEY, ''),
+         (TYPE_DEPOSIT_ADD_MONEY, ''),
+         (TYPE_DEPOSIT_CREATED, ''),
+         (TYPE_DEPOSIT_REQUEST_CREATE, ''),
+         (TYPE_DEPOSIT_CONFIRM_CREATE, ''),
+         (TYPE_DEPOSIT_REQUEST_CLOSE, ''),
+         (TYPE_DEPOSIT_CONFIRM_CLOSE, ''),
+         (TYPE_DEPOSIT_REJECT_CREATE, ''),
+         (TYPE_DEPOSIT_REJECT_CLOSE, ''),
+         (TYPE_DEPOSIT_CAPITALIZE, ''),
+         (TYPE_DEPOSIT_PROLONGATION, ''),
+         (TYPE_DUMMY, '')
+    ]
 
     client = models.ForeignKey(settings.AUTH_USER_MODEL)
     product = models.ForeignKey(Product)
@@ -177,7 +179,7 @@ class Account(Product):
         )
         account.save()
         info_text = 'Создан счет' if is_active else 'Подана заявка на создание счета'
-        t_type = Transaction.TYPE_ACCOUNT_CREATED if is_active else Transaction.TYPE_ACCOUNT_LEAVE_CREATE
+        t_type = Transaction.TYPE_ACCOUNT_CREATED if is_active else Transaction.TYPE_ACCOUNT_REQUEST_CREATE
         Transaction.objects.create(client=client,
                                    product=account,
                                    info=info_text,
@@ -456,7 +458,7 @@ class Deposit(Product):
             Transaction.objects.create(client=client,
                                        product=deposit,
                                        info='Подана заявка на депозит.',
-                                       type=Transaction.TYPE_DEPOSIT_LEAVE_CREATE)
+                                       type=Transaction.TYPE_DEPOSIT_REQUEST_CREATE)
             return deposit
         return None
 
@@ -599,7 +601,7 @@ class Deposit(Product):
                 Transaction.objects.create(client=self.client,
                                            product=self,
                                            info='Совершено пролонгирование депозита.',
-                                           type=Transaction.TYPE_DEPOSIT_LONGATION)
+                                           type=Transaction.TYPE_DEPOSIT_PROLONGATION)
             else:
                 self.status = Deposit.STATUS_CLOSED
         elif self.next_capitalize_term <= cur_date:
@@ -875,7 +877,7 @@ class Credit(Product):
         Transaction.objects.create(client=client,
                                    product=credit,
                                    info=info_text,
-                                   type=Transaction.TYPE_CREDIT_OPENED_ONLINE)
+                                   type=Transaction.TYPE_CREDIT_OPENED)
         return True, credit
 
     @classmethod
@@ -918,7 +920,7 @@ class Credit(Product):
         Transaction.objects.create(client=client,
                                    product=credit,
                                    info=info_text,
-                                   type=Transaction.TYPE_CREDIT_LEAVE_CREATE)
+                                   type=Transaction.TYPE_CREDIT_REQUEST)
         return credit
 
     def confirm(self):
@@ -944,7 +946,7 @@ class Credit(Product):
         Transaction.objects.create(client=self.client,
                                    product=self,
                                    info='Заявка на кредит одобрена.',
-                                   type=Transaction.TYPE_CREDIT_CONFIRM_CREATE)
+                                   type=Transaction.TYPE_CREDIT_CONFIRM)
 
         Contract.objects.create(client=self.client,
                                 product=self)
@@ -964,7 +966,7 @@ class Credit(Product):
         Transaction.objects.create(client=self.client,
                                    product=self,
                                    info='Заявка на кредит отклонена. Причина: {}'.format(cause),
-                                   type=Transaction.TYPE_CREDIT_REJECT_CREATE)
+                                   type=Transaction.TYPE_CREDIT_REJECT)
         return True
 
     @staticmethod

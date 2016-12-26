@@ -2,7 +2,7 @@ module = angular.module("jupiter.auth");
 module.service("$auth", AuthService);
 
 
-function AuthService($http, $localStorage) {
+function AuthService($http, $url, $localStorage) {
     var service = this;
 
     this.signIn = function(credentials, onSuccess, onError) {
@@ -54,6 +54,6 @@ function AuthService($http, $localStorage) {
 
     this.addUrlAuth = function(url) {
         var token = $localStorage.token;
-        return url + '?token=' + token;
+        return $url.query(url, 'token', token);
     };
 }

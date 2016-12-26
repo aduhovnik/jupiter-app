@@ -1,19 +1,61 @@
-<div ng-controller="CreditsController as ctrl">
+<div ng-controller="CreditsController as ctrl"
+     ng-init="ctrl.getTransactions()">
  <section>
     <h1>Кредиты</h1>
     <table class="table table-bordered text-large">
-        <tr>
-        <th class="text-center">Клиент</th>
-        <th class="text-center">План</th>
-        <th class="text-center">Остаток</th>
-        <th></th>
+      <tr>
+        <th width="20%" class="text-center">
+          <select class="form-control"
+                  ng-model="ctrl.filterParams.template"
+                  ng-change="ctrl.updateFilterParams(13)"
+                  ng-init="ctrl.getCreditTemplates()">
+            <option label="План: Любой"></option>
+            <option ng-repeat="template in ctrl.templates"
+                    label="План: {{template.name}}">
+              {{template.id}}
+            </option>
+          </select>
+        </th>
+        <th width="28%" class="text-center">
+          <input type="text"
+                 class="form-control"
+                 placeholder="Клиент"
+                 ng-model="ctrl.filterParams.client"
+                 ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+        </th>
+        <th width="15%" class="text-center">
+          <div class="dropdown">
+            <select class="form-control"
+                    ng-model="ctrl.filterParams.status"
+                    ng-change="ctrl.updateFilterParams(13)">
+              <option label="Статус: Любой"></option>
+              <option ng-repeat="(code, status) in ctrl.creditStatuses"
+                      label="Статус: {{status}}">
+                {{code}}
+              </option>
+            </select>
+          </div>
+        </th>
+        <th width="15%"></th>
       </tr>
       <tr ng-repeat="credit in ctrl.data">
-        <td>{{credit.client.username}}</td>
-        <td>{{credit.template.name}}</td>
-        <td>{{credit.residue}} {{credit.residue_currency}}</td>
         <td>
-          <a href="#" class="button btn btn-info">Детальная информация</a>
+          <a class="link"
+             href="/credit-templates/{{credit.template.id}}/">
+             {{credit.template.name}}
+          </a>
+        </td>
+        <td>
+          <a class="link"
+             href="/clients/{{credit.client.id}}/">
+             {{credit.client.first_name}}
+          </a>
+        </td>
+        <td>
+          {{ctrl.creditStatuses[credit.status]}}
+        </td>
+        <td>
+          <a href="#" class="col-md-12 text-small btn btn-info button">Детальная информация</a>
         </td>
       </tr>
     </table>
