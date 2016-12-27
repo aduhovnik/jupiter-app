@@ -1,0 +1,51 @@
+<div ng-controller="AccountsController as ctrl"
+     ng-init="ctrl.getAccounts()">
+ <section>
+    <h1>Счета</h1>
+    <table class="table table-bordered text-large">
+      <tr>
+        <th width="25%">Номер</th>
+        <th width="25%">Остаток</th>
+        <th width="15%">Статус</th>
+        <th></th>
+      </tr>
+
+      <tr>
+          <th>
+              <input type="text"
+                     class="form-control"
+                     ng-model="ctrl.filterParams.number"
+                     ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+          </th>
+          <th>
+              <!--<input type="text"-->
+                     <!--class="form-control"-->
+                     <!--ng-model="ctrl.filterParams.residue"-->
+                     <!--ng-keypress="ctrl.updateFilterParams($event.keyCode)">-->
+          </th>
+          <th>
+              <div class="'dropdown">
+                  <select class="form-control"
+                          ng-model="ctrl.filterParams.status"
+                          ng-change="ctrl.updateFilterParams(13)">
+                      <option></option>
+                      <option ng-repeat="(code, status) in ctrl.accountStatuses"
+                              value="{{code}}">
+                          {{status}}
+                      </option>
+                  </select>
+              </div>
+          </th>
+      </tr>
+
+      <tr ng-repeat="account in ctrl.data">
+        <td>{{account.number}}</td>
+        <td>{{account.residue}}</td>
+        <td>{{ctrl.accountStatuses[account.status]}}</td>
+        <td>
+          <a href="#" class="button btn btn-info">Детальная информация</a>
+        </td>
+      </tr>
+    </table>
+ </section>
+</div>

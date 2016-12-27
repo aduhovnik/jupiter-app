@@ -56,36 +56,41 @@
     </table>
 
     <table class="table table-bordered text-large">
+      <tr>
+          <th width="25%">Тип</th>
+          <th width="28%" ng-if="user.isAdmin()">Клиент</th>
+          <th width="20%">Проведена</th>
+          <th width="27%">Информация</th>
+      </tr>
      <tr>
-      <th width="25%" class="text-center">
+      <th>
         <div class="dropdown">
           <select class="form-control"
                   ng-model="ctrl.filterParams.type"
                   ng-change="ctrl.updateFilterParams(13)">
-            <option label="Тип: Любой"></option>
+            <option></option>
             <option ng-repeat="(code, type) in ctrl.transactionTypes"
-                    label="Тип: {{type}}"
                     value="{{code}}">
+              {{type}}
             </option>
           </select>
         </div>
       </th>
 
-      <th width="28%" class="text-center">
+      <th ng-if="user.isAdmin()">
         <input type="text"
                class="form-control"
-               placeholder="Клиент"
                ng-model="ctrl.filterParams.client_name"
                ng-keypress="ctrl.updateFilterParams($event.keyCode)">
       </th>
-      <th class="text-center" width="20%">Проведена</th>
-      <th class="text-center" width="27%">Информация</th>
+      <th></th>
+      <th></th>
     </tr>
     <tr ng-repeat="transaction in ctrl.data">
       <td>
         {{ctrl.transactionTypes[transaction.type]}}
       </td>
-      <td>
+      <td ng-if="user.isAdmin()">
         <a href="/clients/{{transaction.client.id}}">
           {{transaction.client.first_name}}
         </a>

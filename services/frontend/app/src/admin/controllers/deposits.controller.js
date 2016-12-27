@@ -7,13 +7,15 @@ function DepositsController($http, $auth, $error, $location, $url, depositStatus
     ctrl.filterParams = $location.search();
     ctrl.depositStatuses = depositStatuses;
 
+    // TODO: extract common logic from controllers
+
     this.updateFilterParams = function(keyCode) {
         if (keyCode === 13) {
             $location.search(ctrl.filterParams);
         }
     };
 
-    this.getTransactions = function () {
+    this.getDeposits = function () {
         ctrl.queryParams = {
             "client__first_name__icontains": ctrl.filterParams.client_name,
             "template__exact": ctrl.filterParams.template,
@@ -22,7 +24,7 @@ function DepositsController($http, $auth, $error, $location, $url, depositStatus
         };
 
         var url = $auth.addUrlAuth('/api/deposits/');
-        for (key in ctrl.queryParams) {
+        for (var key in ctrl.queryParams) {
             if (ctrl.queryParams.hasOwnProperty(key) && ctrl.queryParams[key]) {
                 url = $url.query(url, key, ctrl.queryParams[key]);
             }

@@ -13,7 +13,7 @@ function CreditsController($http, $auth, $error, $location, $url, creditStatuses
         }
     };
 
-    this.getTransactions = function () {
+    this.getCredits = function () {
         ctrl.queryParams = {
             "client__first_name__icontains": ctrl.filterParams.client_name,
             "template__exact": ctrl.filterParams.template,
@@ -22,7 +22,7 @@ function CreditsController($http, $auth, $error, $location, $url, creditStatuses
         };
 
         var url = $auth.addUrlAuth('/api/credits/');
-        for (key in ctrl.queryParams) {
+        for (var key in ctrl.queryParams) {
             if (ctrl.queryParams.hasOwnProperty(key) && ctrl.queryParams[key]) {
                 url = $url.query(url, key, ctrl.queryParams[key]);
             }

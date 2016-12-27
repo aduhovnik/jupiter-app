@@ -18,7 +18,7 @@
               {{ctrl.data.min_amount.fixed}} BYN
             </div>
             <div ng-if="ctrl.data.min_amount.annual_income_mul">
-              {{ctrl.data.min_amount.annual_income_mul}} месячного дохода
+              {{ctrl.data.min_amount.annual_income_mul}} % месячного дохода
             </div>
             <div ng-if="ctrl.data.min_amount.percent_of_purchase">
               {{ctrl.data.min_amount.percent_of_purchase}} % от суммы покупки
@@ -32,7 +32,7 @@
               {{ctrl.data.max_amount.fixed}} BYN
             </div>
             <div ng-if="ctrl.data.min_amount.annual_income_mul">
-              {{ctrl.data.max_amount.annual_income_mul}} месячного дохода
+              {{ctrl.data.max_amount.annual_income_mul}} % месячного дохода
             </div>
             <div ng-if="ctrl.data.min_amount.percent_of_purchase">
               {{ctrl.data.max_amount.percent_of_purchase}} % от суммы покупки
@@ -64,8 +64,7 @@
         <div>
           <h4>Оформление:</h4>
           <h3>
-            <span ng-if="ctrl.data.issue_online">Онлайн</span>
-            <span ng-if="!ctrl.data.issue_online">В отделении банка</span>
+            <span>{{ctrl.data.issue_online ? 'Онлайн' : 'В отделении банка'}}</span>
           </h3>
         </div>
       </div>
@@ -78,7 +77,7 @@
         </p>
       </div>
 
-      <div class="row">
+      <div class="row" ng-if="ctrl.details">
         <h4>Дополнительная информация:</h4>
         <p class="text-large">
           {{ctrl.details}}

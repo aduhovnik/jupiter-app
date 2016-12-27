@@ -10,13 +10,13 @@ function ClientsController($http, $error, $auth, $routeParams,
     ctrl.depositStatuses = depositStatuses;
     ctrl.transactionTypes = transactionTypes;
 
-    $scope.toogleBirthDatePicker = function($event) {
+    $scope.toggleBirthDatePicker = function($event) {
         $event.preventDefault();
         $event.stopPropagation();
         $scope.birthDatePickerOpened = !$scope.birthDatePickerOpened;
     };
 
-    $scope.tooglePassportExpiresPicker = function($event) {
+    $scope.togglePassportExpiresPicker = function($event) {
         $event.preventDefault();
         $event.stopPropagation();
         $scope.passportExpiresPickerOpened = !$scope.passportExpiresPickerOpened;
@@ -45,7 +45,7 @@ function ClientsController($http, $error, $auth, $routeParams,
         };
 
         var url = $auth.addUrlAuth('/api/users/');
-        for (key in ctrl.queryParams) {
+        for (var key in ctrl.queryParams) {
             if (ctrl.queryParams.hasOwnProperty(key) && ctrl.queryParams[key]) {
                 url = $url.query(url, key, ctrl.queryParams[key]);
             }

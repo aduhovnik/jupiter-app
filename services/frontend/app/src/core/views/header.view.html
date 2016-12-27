@@ -9,14 +9,14 @@
 
       <div style="margin-right: 30px;">
         <ul class="nav navbar-nav navbar-right">
-          <li>
+          <li ng-if="!user.isAuthenticated()">
             <a href="/deposit-templates/" class="navbar-link">
               <span class="glyphicon glyphicon-piggy-bank"></span>
               Вклады
             </a>
           </li>
 
-          <li>
+          <li ng-if="!user.isAuthenticated()">
             <a href="/credit-templates/" class="navbar-link">
               <span class="glyphicon glyphicon-credit-card"></span>
               Кредиты

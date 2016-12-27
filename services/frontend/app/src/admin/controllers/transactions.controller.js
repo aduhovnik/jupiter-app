@@ -48,7 +48,7 @@ function TransactionsController($http, $error, $auth, $location,
         };
 
         var url = $auth.addUrlAuth('/api/transactions/');
-        for (key in ctrl.queryParams) {
+        for (var key in ctrl.queryParams) {
             if (ctrl.queryParams.hasOwnProperty(key) && ctrl.queryParams[key]) {
                 url = $url.query(url, key, ctrl.queryParams[key]);
             }

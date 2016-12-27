@@ -1,42 +1,46 @@
 <div ng-controller="CreditsController as ctrl"
-     ng-init="ctrl.getTransactions()">
+     ng-init="ctrl.getCredits()">
  <section>
     <h1>Кредиты</h1>
     <table class="table table-bordered text-large">
       <tr>
-        <th width="20%" class="text-center">
+        <th width="20%">План</th>
+        <th width="28%" ng-if="user.isAdmin()">Клиент</th>
+        <th width="15%">Статус</th>
+        <th  width="15%"></th>
+      </tr>
+      <tr>
+        <th>
           <select class="form-control"
                   ng-model="ctrl.filterParams.template"
                   ng-change="ctrl.updateFilterParams(13)"
                   ng-init="ctrl.getCreditTemplates()">
-            <option label="План: Любой"></option>
+            <option></option>
             <option ng-repeat="template in ctrl.templates"
-                    label="План: {{template.name}}">
-              {{template.id}}
+                    value="{{template.id}}">
+              {{template.name}}
             </option>
           </select>
         </th>
-        <th width="28%" class="text-center">
+        <th ng-if="user.isAdmin()">
           <input type="text"
                  class="form-control"
-                 placeholder="Клиент"
                  ng-model="ctrl.filterParams.client_name"
                  ng-keypress="ctrl.updateFilterParams($event.keyCode)">
         </th>
-        <th width="15%" class="text-center">
+        <th>
           <div class="dropdown">
             <select class="form-control"
                     ng-model="ctrl.filterParams.status"
                     ng-change="ctrl.updateFilterParams(13)">
-              <option label="Статус: Любой"></option>
+              <option></option>
               <option ng-repeat="(code, status) in ctrl.creditStatuses"
-                      label="Статус: {{status}}"
                       value="{{code}}">
+                {{status}}
               </option>
             </select>
           </div>
         </th>
-        <th width="15%"></th>
       </tr>
       <tr ng-repeat="credit in ctrl.data">
         <td>
@@ -45,7 +49,7 @@
              {{credit.template.name}}
           </a>
         </td>
-        <td>
+        <td ng-if="user.isAdmin()">
           <a class="link"
              href="/clients/{{credit.client.id}}/">
              {{credit.client.first_name}}

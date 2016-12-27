@@ -1,5 +1,6 @@
 urls = {
     "/": "src/core/views/main.view.html",
+    "/landing/": "src/core/views/landing.view.html",
     "/error/": "src/core/views/error.view.html",
 
     "/sign-in/": "src/auth/views/sign-in.view.html",
@@ -11,6 +12,7 @@ urls = {
     '/deposit-templates/': 'src/public/views/deposit-template-list.view.html',
 
     '/overview/': 'src/admin/views/overview.view.html',
+    '/accounts/': 'src/admin/views/accounts-list.view.html',
     '/clients/': 'src/admin/views/clients-list.view.html',
     '/clients/:id/': 'src/admin/views/clients-profile.view.html',
     '/credits/': 'src/admin/views/credits-list.view.html',
