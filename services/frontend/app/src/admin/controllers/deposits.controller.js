@@ -18,6 +18,7 @@ function DepositsController($http, $auth, $error, $location, $url, depositStatus
     this.getDeposits = function () {
         ctrl.queryParams = {
             "client__first_name__icontains": ctrl.filterParams.client_name,
+            "amount__gt": ctrl.filterParams.amount,
             "template__exact": ctrl.filterParams.template,
             "status__exact": ctrl.filterParams.status,
             "client__exact": ctrl.filterParams.client_id

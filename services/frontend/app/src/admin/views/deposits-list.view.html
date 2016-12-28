@@ -4,12 +4,27 @@
     <h1>Вклады</h1>
     <table class="table table-bordered text-large">
     <tr>
-        <th width="20%" >План</th>
-        <th width="28%" ng-if="user.isAdmin()">Клиент</th>
-        <th width="15%">Статус</th>
-        <th width="15%"></th>
+      <th width="28%" ng-if="user.isAdmin()">Клиент</th>
+      <th width="15%">Остаток</th>
+      <th width="20%" >План</th>
+      <th width="15%">Статус</th>
+      <th width="15%"></th>
     </tr>
     <tr>
+      <th ng-if="user.isAdmin()">
+        <input type="text"
+               class="form-control"
+               ng-model="ctrl.filterParams.client_name"
+               ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+      </th>
+
+      <th>
+        <input type="text"
+               class="form-control"
+               ng-model="ctrl.filterParams.amount"
+               ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+      </th>
+
       <th>
         <select class="form-control"
                 ng-model="ctrl.filterParams.template"
@@ -23,12 +38,6 @@
         </select>
       </th>
 
-      <th ng-if="user.isAdmin()">
-        <input type="text"
-               class="form-control"
-               ng-model="ctrl.filterParams.client_name"
-               ng-keypress="ctrl.updateFilterParams($event.keyCode)">
-      </th>
 
       <th>
         <div class="dropdown">
@@ -46,16 +55,19 @@
       <th></th>
     </tr>
     <tr ng-repeat="deposit in ctrl.data">
+      <td ng-if="user.isAdmin()">
+        <a class="link"
+           href="/clients/{{deposit.client.id}}/">
+          {{deposit.client.first_name}}
+        </a>
+      </td>
+      <td>
+        {{deposit.amount}} {{deposit.amount_currency}}
+      </td>
       <td>
           <a class="link"
              href="/deposit-templates/{{deposit.template.id}}/">
              {{deposit.template.name}}
-          </a>
-        </td>
-        <td ng-if="user.isAdmin()">
-          <a class="link"
-             href="/clients/{{deposit.client.id}}/">
-             {{deposit.client.first_name}}
           </a>
         </td>
         <td>

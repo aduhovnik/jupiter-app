@@ -18,7 +18,8 @@ function AccountsController($http, $auth, $error, $location, $url, accountStatus
     this.getAccounts = function () {
         ctrl.queryParams = {
             "number__startswith": ctrl.filterParams.number,
-            "residue__amount__equals": ctrl.filterParams.residue,
+            "client__first_name__istartswith": ctrl.filterParams.name,
+            "residue__gt": ctrl.filterParams.residue,
             "status__exact": ctrl.filterParams.status
         };
 

@@ -17,6 +17,7 @@ function CreditsController($http, $auth, $error, $location, $url, creditStatuses
         ctrl.queryParams = {
             "client__first_name__icontains": ctrl.filterParams.client_name,
             "template__exact": ctrl.filterParams.template,
+            "residue__gt": ctrl.filterParams.residue,
             "status__exact": ctrl.filterParams.status,
             "client__exact": ctrl.filterParams.client_id
         };
