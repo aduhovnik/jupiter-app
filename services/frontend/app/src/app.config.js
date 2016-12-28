@@ -7,8 +7,10 @@ urls = {
     '/sign-up/': "src/auth/views/sign-up.view.html",
 
     '/credit-templates/:id/': 'src/public/views/credit-template-detail.view.html',
+    '/credit-templates/:id/apply/': 'src/public/views/credit-apply.view.html',
     '/credit-templates/': 'src/public/views/credit-template-list.view.html',
     '/deposit-templates/:id/': 'src/public/views/deposit-template-detail.view.html',
+    '/deposit-templates/:id/apply/': 'src/public/views/deposit-apply.view.html',
     '/deposit-templates/': 'src/public/views/deposit-template-list.view.html',
 
     '/overview/': 'src/admin/views/overview.view.html',

@@ -68,3 +68,30 @@ module.constant(
         3: 'Отклонен'
     }
 );
+
+module.constant(
+    "ensuringMethods",
+    {
+        0: 'Пеня',
+        1: 'Залог',
+        2: 'Поручительство'
+    }
+);
+
+module.constant(
+    "moneyDestinations",
+    {
+        0: "На аккаунт",
+        1: "Наличными"
+    }
+);
+
+
+module.constant(
+    "currencies",
+    {
+        "BYN": "Белорусский рубль",
+        "USD": "Доллар США",
+        "EUR": "Евро"
+    }
+);
