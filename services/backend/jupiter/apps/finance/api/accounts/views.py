@@ -4,6 +4,9 @@ from __future__ import absolute_import, unicode_literals
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
 from rest_framework import status
+from core.utils import send_mail
+from django.template.loader import render_to_string
+from rest_framework.exceptions import ValidationError
 
 import finance.api.accounts.serializers as serializers
 import finance.models as fin_models
@@ -52,6 +55,12 @@ class AccountView(ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
         else:
             if account.confirm():
+                message = render_to_string('account/create_confirm_email.html')
+                try:
+                    send_mail('no-reply@jupiter-group.com', account.client.email,
+                              'Ваша заявка на создание счета одобрена.', message)
+                except Exception as e:
+                    raise ValidationError('Ошибка при отправке письма: {}'.format(e))
                 return Response('Создание счета подтверждено', status=status.HTTP_200_OK)
             return Response('Создание счета отклонено банком', status=status.HTTP_400_BAD_REQUEST)
 
@@ -68,6 +77,12 @@ class AccountView(ModelViewSet):
         if account.status != account.STATUS_REQUESTED_CREATING:
             return Response('Заявка на создание счета была обработана ранее.', status=status.HTTP_400_BAD_REQUEST)
         else:
+            message = render_to_string('account/create_reject_email.html')
+            try:
+                send_mail('no-reply@jupiter-group.com', account.client.email,
+                          'Ваша заявка на создание счета отклонена.', message)
+            except Exception as e:
+                raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             account.reject(cause)
             return Response('Создание счета отклонено', status=status.HTTP_200_OK)
 
@@ -98,6 +113,12 @@ class AccountView(ModelViewSet):
         if account.status != account.STATUS_REQUESTED_CLOSING:
             return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
         if account.close_confirm():
+            message = render_to_string('account/close_confirm_email.html')
+            try:
+                send_mail('no-reply@jupiter-group.com', account.client.email,
+                          'Ваша заявка на закрытие счета подтверждена.', message)
+            except Exception as e:
+                raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             return Response('Закрытие подтверждено, деньги переведены.', status=status.HTTP_200_OK)
         else:
             return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
@@ -117,6 +138,12 @@ class AccountView(ModelViewSet):
         if account.status != account.STATUS_REQUESTED_CLOSING:
             return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
         if account.close_reject(cause):
+            message = render_to_string('account/close_reject_email.html')
+            try:
+                send_mail('no-reply@jupiter-group.com', account.client.email,
+                          'Ваша заявка на закрытие счета отклонена.', message)
+            except Exception as e:
+                raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             return Response('Закрытие отклонено.', status=status.HTTP_200_OK)
         else:
             return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)

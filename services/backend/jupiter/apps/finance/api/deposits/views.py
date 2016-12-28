@@ -4,6 +4,9 @@ from __future__ import absolute_import, unicode_literals
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
+from core.utils import send_mail
+from django.template.loader import render_to_string
+from rest_framework.exceptions import ValidationError
 
 import finance.models as fin_models
 import finance.api.deposits.serializers as serializers
@@ -67,6 +70,12 @@ class DepositView(ModelViewSet):
             return Response('Заявка на создание депозита уже была обработана.', status=status.HTTP_400_BAD_REQUEST)
         else:
             if deposit.confirm():
+                message = render_to_string('deposit/create_confirm_email.html')
+                try:
+                    send_mail('no-reply@jupiter-group.com', deposit.client.email,
+                              'Ваша заявка на создание депозита одобрена.', message)
+                except Exception as e:
+                    raise ValidationError('Ошибка при отправке письма: {}'.format(e))
                 return Response('Создание депозита подтверждено', status=status.HTTP_200_OK)
             else:
                 return Response('Отклонено банком.', status=status.HTTP_400_BAD_REQUEST)
@@ -84,6 +93,12 @@ class DepositView(ModelViewSet):
         if deposit.status != deposit.STATUS_REQUESTED_CREATING:
             return Response('Заявка на создание депозита уже была обработана.', status=status.HTTP_400_BAD_REQUEST)
         else:
+            message = render_to_string('deposit/create_reject_email.html')
+            try:
+                send_mail('no-reply@jupiter-group.com', deposit.client.email,
+                          'Ваша заявка на создание депозита отклонена.', message)
+            except Exception as e:
+                raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             deposit.reject(cause)
             return Response('Создание депозита отклонено', status=status.HTTP_200_OK)
 
@@ -115,6 +130,12 @@ class DepositView(ModelViewSet):
         if deposit.status != deposit.STATUS_REQUESTED_CLOSING:
             return Response('Заявка на закрытие депозита не подана.', status=status.HTTP_400_BAD_REQUEST)
         if deposit.close_confirm():
+            message = render_to_string('deposit/create_confirm_email.html')
+            try:
+                send_mail('no-reply@jupiter-group.com', deposit.client.email,
+                          'Ваша заявка на закрытие депозита одобрена.', message)
+            except Exception as e:
+                raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             return Response('Закрытие подтверждено, деньги переведены.', status=status.HTTP_200_OK)
         else:
             return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
@@ -132,6 +153,12 @@ class DepositView(ModelViewSet):
             return Response('Заявка на закрытие депозита не подана.', status=status.HTTP_400_BAD_REQUEST)
         cause = request.data['cause']
         if deposit.close_reject(cause):
+            message = render_to_string('deposit/close_reject_email.html')
+            try:
+                send_mail('no-reply@jupiter-group.com', deposit.client.email,
+                          'Ваша заявка на закрытие депозита отклонена.', message)
+            except Exception as e:
+                raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             return Response('Закрытие отклонено.', status=status.HTTP_200_OK)
         else:
             return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)

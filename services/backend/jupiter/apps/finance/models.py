@@ -149,7 +149,7 @@ class Account(Product):
         STATUS_REQUESTED_CREATING,
     ]
 
-    number = models.CharField(max_length=13, default='0' * 13)
+    number = models.CharField(max_length=30, default='0' * 13)
     residue = money_field()
     status = models.IntegerField(choices=STATUS_CHOICES)
     close_claim = models.BooleanField(default=False)
@@ -163,10 +163,22 @@ class Account(Product):
         )
 
     @classmethod
+    def get_last_digit(cls, twelve_digits):
+        weight_coefs = [713, 371, 371, 371, 371, 3]
+        number = '111' + twelve_digits + '0'
+        sum = 0
+        for i in range(0, len(number), 3):
+            piece = int(number[i: min(i+3, len(number))])
+            sum += (piece*weight_coefs[i/3]) % 10
+        return str((sum * 3) % 10)
+
+    @classmethod
     def _create_new_number(cls):
-        new_number = '301400' + str(random.randrange(1000000, 9999999))
+        new_number = '3014' + str(random.randrange(10000000, 99999999))
+        new_number += cls.get_last_digit(new_number)
         while cls.objects.filter(number=new_number):
-            new_number = '301400' + str(random.randrange(1000000, 9999999))
+            new_number = '3014' + str(random.randrange(10000000, 99999999))
+            new_number += cls.get_last_digit(new_number)
         return new_number
 
     @classmethod

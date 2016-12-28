@@ -4,12 +4,15 @@ from __future__ import absolute_import, unicode_literals
 import json
 from os import environ
 from urllib2 import urlopen
-from rest_framework.exceptions import ValidationError
-import finance.models as fin_models
-import finance.api.credits.serializers as serializers
 from rest_framework import status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
+from rest_framework.exceptions import ValidationError
+from core.utils import send_mail
+from django.template.loader import render_to_string
+
+import finance.models as fin_models
+import finance.api.credits.serializers as serializers
 from core.api.generic.views import ModelViewSet, ReadOnlyModelViewSet
 from jupiter_auth.authentication import TokenAuthentication
 from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
@@ -134,6 +137,12 @@ class CreditView(ModelViewSet):
             return Response('Заявка на создание кредита была обработана ранее.', status=status.HTTP_400_BAD_REQUEST)
         else:
             if credit.confirm():
+                message = render_to_string('credit/create_confirm_email.html')
+                try:
+                    send_mail('no-reply@jupiter-group.com', credit.client.email,
+                              'Ваша заявка на создание кредита одобрена.', message)
+                except Exception as e:
+                    raise ValidationError('Ошибка при отправке письма: {}'.format(e))
                 return Response('Создание кредита подтверждено', status=status.HTTP_200_OK)
             else:
                 return Response('Отклонено банком', status=status.HTTP_400_BAD_REQUEST)
@@ -151,6 +160,12 @@ class CreditView(ModelViewSet):
         if credit.status != credit.STATUS_REQUESTED:
             return Response('Заявка на создание кредита была обработана ранее.', status=status.HTTP_400_BAD_REQUEST)
         else:
+            message = render_to_string('credit/create_reject_email.html')
+            try:
+                send_mail('no-reply@jupiter-group.com', credit.client.email,
+                          'Ваша заявка на создание кредита отклонена.', message)
+            except Exception as e:
+                raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             credit.reject(cause)
             return Response('Создание кредита отклонено', status=status.HTTP_200_OK)
 
