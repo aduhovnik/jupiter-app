@@ -51,7 +51,7 @@ class DepositView(ModelViewSet):
         if not fin_models.Account.objects.filter(pk=account_id):
             return Response('Указанного счета не существует.', status=status.HTTP_400_BAD_REQUEST)
         account = fin_models.Account.objects.get(pk=account_id)
-        if not account.is_active or account.status in fin_models.Account.INOPERABLE_STATUSES:
+        if account.status in fin_models.Account.INOPERABLE_STATUSES:
             return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
         deposit = fin_models.Deposit.create(client, template, money_amount, duration,
                                             percentage, currency, account_id)
@@ -63,10 +63,8 @@ class DepositView(ModelViewSet):
     @detail_route(methods=['PATCH'])
     def confirm_create_claim(self, request, *args, **kwargs):
         deposit = self.get_object()
-        if deposit.status != fin_models.Deposit.STATUS_ACTIVE:
-            return Response('Операции с депозитом невозможны', status=status.HTTP_400_BAD_REQUEST)
-        elif deposit.is_active:
-            return Response('Депозит уже создан', status=status.HTTP_400_BAD_REQUEST)
+        if deposit.status != deposit.STATUS_REQUESTED_CREATING:
+            return Response('Заявка на создание депозита уже была обработана.', status=status.HTTP_400_BAD_REQUEST)
         else:
             if deposit.confirm():
                 return Response('Создание депозита подтверждено', status=status.HTTP_200_OK)
@@ -83,10 +81,8 @@ class DepositView(ModelViewSet):
         """
         deposit = self.get_object()
         cause = request.data['cause']
-        if deposit.status != fin_models.Deposit.STATUS_ACTIVE:
-            return Response('Операции с депозитом невозможны', status=status.HTTP_400_BAD_REQUEST)
-        elif deposit.is_active:
-            return Response('Депозит уже создан', status=status.HTTP_400_BAD_REQUEST)
+        if deposit.status != deposit.STATUS_REQUESTED_CREATING:
+            return Response('Заявка на создание депозита уже была обработана.', status=status.HTTP_400_BAD_REQUEST)
         else:
             deposit.reject(cause)
             return Response('Создание депозита отклонено', status=status.HTTP_200_OK)
@@ -100,13 +96,15 @@ class DepositView(ModelViewSet):
         }
         """
         deposit = self.get_object()
-        if deposit.status != fin_models.Deposit.STATUS_ACTIVE:
+        if deposit.status in deposit.INOPERABLE_STATUSES:
             return Response('Операции с депозитом невозможны', status=status.HTTP_400_BAD_REQUEST)
+        if deposit.status == deposit.STATUS_REQUESTED_CLOSING:
+            return Response('Заявка на закрытие депозита уже подана.', status=status.HTTP_400_BAD_REQUEST)
         target_account_id = request.data['target_account_id']
         if not fin_models.Account.objects.filter(pk=target_account_id):
             return Response('Указанного счета не существует.', status=status.HTTP_400_BAD_REQUEST)
         account = fin_models.Account.objects.get(pk=target_account_id)
-        if not account.is_active or account.status in fin_models.Account.INOPERABLE_STATUSES:
+        if account.status in fin_models.Account.INOPERABLE_STATUSES:
             return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
         res, info = deposit.leave_close_claim(target_account_id)
         return Response(info, status=status.HTTP_200_OK if res else status.HTTP_400_BAD_REQUEST)
@@ -114,8 +112,8 @@ class DepositView(ModelViewSet):
     @detail_route(methods=['PATCH'])
     def confirm_close_claim(self, request, *args, **kwargs):
         deposit = self.get_object()
-        if deposit.status != fin_models.Deposit.STATUS_ACTIVE:
-            return Response('Операции с депозитом невозможны', status=status.HTTP_400_BAD_REQUEST)
+        if deposit.status != deposit.STATUS_REQUESTED_CLOSING:
+            return Response('Заявка на закрытие депозита не подана.', status=status.HTTP_400_BAD_REQUEST)
         if deposit.close_confirm():
             return Response('Закрытие подтверждено, деньги переведены.', status=status.HTTP_200_OK)
         else:
@@ -130,8 +128,8 @@ class DepositView(ModelViewSet):
         }
         """
         deposit = self.get_object()
-        if deposit.status != fin_models.Deposit.STATUS_ACTIVE:
-            return Response('Операции с депозитом невозможны', status=status.HTTP_400_BAD_REQUEST)
+        if deposit.status != deposit.STATUS_REQUESTED_CLOSING:
+            return Response('Заявка на закрытие депозита не подана.', status=status.HTTP_400_BAD_REQUEST)
         cause = request.data['cause']
         if deposit.close_reject(cause):
             return Response('Закрытие отклонено.', status=status.HTTP_200_OK)
@@ -148,7 +146,7 @@ class DepositView(ModelViewSet):
         Add money to deposit
         """
         deposit = self.get_object()
-        if deposit.status != fin_models.Deposit.STATUS_ACTIVE:
+        if deposit.status != deposit.STATUS_ACTIVE:
             return Response('Операции с депозитом невозможны', status=status.HTTP_400_BAD_REQUEST)
         if not deposit.additional_contributions:
             return Response('Данный депозит не позволяет дополнительных начислений.')
@@ -159,7 +157,7 @@ class DepositView(ModelViewSet):
         account = fin_models.Account.objects.get(pk=account_id)
         if request.user != account.client:
             return Response('Невозможно использование чужого счета.', status.HTTP_400_BAD_REQUEST)
-        if not account.is_active or account.status in fin_models.Account.INOPERABLE_STATUSES:
+        if account.status in fin_models.Account.INOPERABLE_STATUSES:
             return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
         if account.get_money(amount):
             if deposit.additional_contribution(amount):
