@@ -129,6 +129,7 @@ class AccountView(ModelViewSet):
             'account_number': 13digits
         }
         """
+        self.serializer_class.assign_validate(request.data)
         client = request.user
         account_number = request.data['account_number']
         res, info = fin_models.Account.assign(client, account_number)

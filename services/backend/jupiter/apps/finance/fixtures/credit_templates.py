@@ -7,6 +7,7 @@ from finance.models import CreditTemplate
 CREDIT_TEMPLATES = [
     {
         "name": "Европа",
+        "type": CreditTemplate.TYPE_CONSUMER,
         "description": "Потребительский кредит на длительный срок.",
         "annual_percentage_rate": 29.2,
         "max_amount": {
@@ -39,6 +40,7 @@ CREDIT_TEMPLATES = [
 
     {
         "name": "Калисто",
+        "type": CreditTemplate.TYPE_CONSUMER,
         "description": "Потребительский кредит на небольшую сумму.",
         "annual_percentage_rate": 23.7,
         "max_amount": {
@@ -71,6 +73,7 @@ CREDIT_TEMPLATES = [
 
     {
         "name": "Ио",
+        "type": CreditTemplate.TYPE_CONSUMER,
         "description": "Потребительский экспресс кредит. ",
         "annual_percentage_rate": 33,
         "max_amount": {
@@ -97,15 +100,16 @@ CREDIT_TEMPLATES = [
 
     {
         "name": "Адреаста",
+        "type": CreditTemplate.TYPE_SELLER,
         "description": "Кредит на автомобиль.",
         "annual_percentage_rate": 33,
         "max_amount": {
-            "fixed": None,
+            "fixed": 100000,
             "annual_income_mul": None,
             "percent_of_purchase": 90,
         },
         "min_amount": {
-            "fixed": None,
+            "fixed": 20000,
             "annual_income_mul": None,
             "percent_of_purchase": 40,
         },
@@ -130,15 +134,16 @@ CREDIT_TEMPLATES = [
 
     {
         "name": "Ганимед",
+        "type": CreditTemplate.TYPE_SELLER,
         "description": "Кредит на приобретение уже построенной недвижимости.",
         "annual_percentage_rate": 27,
         "max_amount": {
-            "fixed": None,
+            "fixed": 200000,
             "annual_income_mul": None,
             "percent_of_purchase": 80,
         },
         "min_amount": {
-            "fixed": None,
+            "fixed": 40000,
             "annual_income_mul": None,
             "percent_of_purchase": 50,
         },
@@ -159,15 +164,16 @@ CREDIT_TEMPLATES = [
 
     {
         "name": "Ганимед+",
+        "type": CreditTemplate.TYPE_SELLER,
         "description": "Кредит на приобретение строящейся недвижимости.",
         "annual_percentage_rate": 27,
         "max_amount": {
-            "fixed": None,
+            "fixed": 200000,
             "annual_income_mul": None,
             "percent_of_purchase": 90,
         },
         "min_amount": {
-            "fixed": None,
+            "fixed": 40000,
             "annual_income_mul": None,
             "percent_of_purchase": 30,
         },

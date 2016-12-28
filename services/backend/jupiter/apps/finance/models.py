@@ -645,6 +645,13 @@ class CreditTemplate(models.Model):
         (ENSURING_SURETY, "Surety"),
     ]
 
+    TYPE_CONSUMER = 0
+    TYPE_SELLER = 1
+    TYPE_CHOICES = [
+        (TYPE_CONSUMER, 'For own needs'),
+        (TYPE_SELLER, "On the seller's account"),
+    ]
+
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=1000, null=True)
     annual_percentage_rate = percentage_field()
@@ -655,6 +662,7 @@ class CreditTemplate(models.Model):
     issue_online = models.BooleanField(default=False)
     allowed_ensuring = ArrayField(models.IntegerField(choices=ENSURING_CHOICES))
     detailed_info = models.TextField()
+    type = models.IntegerField(choices=TYPE_CHOICES, default=TYPE_CONSUMER)
 
     class Meta:
         verbose_name = 'Credit templates'

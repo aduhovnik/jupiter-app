@@ -90,6 +90,7 @@ class CreditView(ModelViewSet):
             return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
         if not template.issue_online:
             return Response('Данный кредит нельзя открыть онлайн', status=status.HTTP_400_BAD_REQUEST)
+        self.serializer_class.leave_create_claim_validate(request.data)
         res = fin_models.Credit.create_online(client, template, money_amount,
                                               duration, account_id)
         info = 'Экспресс кредит открыт' if res[0] else res[1]
@@ -121,6 +122,7 @@ class CreditView(ModelViewSet):
         account = fin_models.Account.objects.get(pk=account_id)
         if account.status in fin_models.Account.INOPERABLE_STATUSES:
             return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
+        self.serializer_class.leave_create_claim_validate(request.data)
         fin_models.Credit.create_claim(client, template, money_amount, duration,
                                        ensuring_method, money_destination, account_id)
         return Response('Заявка подана', status=status.HTTP_200_OK)

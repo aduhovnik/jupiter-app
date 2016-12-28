@@ -139,8 +139,8 @@ class SignUpTestCase(APITestCase):
             "last_name": fake.last_name(),
             "email": fake.email(),
             "profile": {
-                "identification_number": fake.pystr(min_chars=14, max_chars=14),
-                "passport_number": fake.pystr(min_chars=9, max_chars=9)
+                "identification_number": "1111111A222BC3",
+                "passport_number": "KH1111111"
             }
         }
 
