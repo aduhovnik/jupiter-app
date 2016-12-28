@@ -7,18 +7,19 @@
 
       <ul class="nav nav-tabs" role="tablist" id="tabsHeader">
         <li role="presentation" class="active">
-           <a href="#tabProfile" aria-controls="tabProfile" role="tab" data-toggle="tab">
-             Личные данные
-           </a>
-        </li>
-        <li role="presentation">
           <a href="#tabStatistics" aria-controls="tabStatistics" role="tab" data-toggle="tab">
             Статистика
           </a>
         </li>
+        <li role="presentation">
+           <a href="#tabProfile" aria-controls="tabProfile" role="tab" data-toggle="tab">
+             Личные данные
+           </a>
+        </li>
       </ul>
 
       <div class="tab-content">
+
         <div class="tab-pane row-offset-0 active" id="tabStatistics">
           <h3>Платежеспособность:</h3>
           <div ng-init="ctrl.getScoringValue()">
@@ -297,6 +298,7 @@
             </div>
           </form>
         </div>
+
       </div>
     </div>
   </section>

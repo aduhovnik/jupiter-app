@@ -5,9 +5,10 @@
     <table class="table table-bordered text-large">
       <tr>
         <th width="25%">Номер</th>
-        <th width="25%">Остаток</th>
+        <th width="25%" ng-if="user.isAdmin()">Клиент</th>
+        <th width="15%">Остаток</th>
         <th width="15%">Статус</th>
-        <th></th>
+        <th width="15%"></th>
       </tr>
 
       <tr>
@@ -17,11 +18,17 @@
                      ng-model="ctrl.filterParams.number"
                      ng-keypress="ctrl.updateFilterParams($event.keyCode)">
           </th>
+          <th ng-if="user.isAdmin()">
+            <input type="text"
+                   class="form-control"
+                   ng-model="ctrl.filterParams.name"
+                   ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+          </th>
           <th>
-              <!--<input type="text"-->
-                     <!--class="form-control"-->
-                     <!--ng-model="ctrl.filterParams.residue"-->
-                     <!--ng-keypress="ctrl.updateFilterParams($event.keyCode)">-->
+              <input type="text"
+                     class="form-control"
+                     ng-model="ctrl.filterParams.residue"
+                     ng-keypress="ctrl.updateFilterParams($event.keyCode)">
           </th>
           <th>
               <div class="'dropdown">
@@ -41,6 +48,11 @@
 
       <tr ng-repeat="account in ctrl.data">
         <td>{{account.number}}</td>
+        <td ng-if="user.isAdmin()">
+          <a class="link"
+             href="/clients/{{account.client.id}}/">
+              {{account.client.first_name}}
+          </a></td>
         <td>{{account.residue}}</td>
         <td>{{ctrl.accountStatuses[account.status]}}</td>
         <td>
