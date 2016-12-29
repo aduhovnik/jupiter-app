@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import factory
+import factory, random
 from django.contrib.auth import get_user_model
 from factory.fuzzy import FuzzyInteger
 from faker import Faker
@@ -13,8 +13,15 @@ fake = Faker()
 
 class UserProfileFactory(factory.DjangoModelFactory):
 
-    identification_number = factory.sequence(lambda n: fake.ssn())
-    passport_number = factory.sequence(lambda n: fake.ssn())
+    identification_number = factory.lazy_attribute(lambda obj: str(random.randrange(1000000, 9999999)) +
+                                                   chr(ord('A')+random.randint(0, 25)) +
+                                                   str(random.randrange(100, 999)) +
+                                                   chr(ord('A')+random.randint(0, 25)) +
+                                                   chr(ord('A')+random.randint(0, 25)) +
+                                                   str(random.randrange(0, 9)))
+    passport_number = factory.sequence(lambda obj:
+                                       ['AB', 'BM', 'HB', 'KH', 'MP', 'MC', 'KB', 'PP'][random.randint(0, 7)] +
+                                       str(random.randrange(1000000, 9999999)))
     phone = factory.sequence(lambda n: fake.phone_number())
     address = factory.sequence(lambda n: fake.address())
     age = FuzzyInteger(20, 70)
