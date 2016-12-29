@@ -15,7 +15,7 @@ function CreditApplicationController(
     ctrl.accounts = null;
     ctrl.duration = null;
     ctrl.amount = null;
-    ctrl.ensuringMethod = null;
+    ctrl.ensuringMethod = "0"; // fine by default
     ctrl.moneyDestination = "0"; // into account by default
 
     this.getData = function () {

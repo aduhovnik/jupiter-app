@@ -18,6 +18,7 @@
           <option></option>
           <option ng-repeat="account in ctrl.accounts"
                   value="{{account.id}}">
+            <!--TODO: extract stringifying an account to a function-->
             {{account.number}}
             ({{ctrl.accountStatuses[account.status]}}, Остаток: {{account.residue}} {{account.residue_currency}})
           </option>
@@ -54,19 +55,19 @@
                id="duration-control">
       </div>
 
-      <div ng-if="!ctrl.template.issue_online" class="form-group">
-        <label for="ensuring-method-control">Способ обеспечения:</label>
-        <select class="form-control"
-                ng-model="ctrl.ensuringMethod"
-                id="ensuring-method-control"
-                required>
-          <option></option>
-          <option ng-repeat="(code, method) in ctrl.ensuringMethods"
-                  value="{{code}}">
-            {{method}}
-          </option>
-        </select>
-      </div>
+      <!--<div ng-if="!ctrl.template.issue_online" class="form-group">-->
+        <!--<label for="ensuring-method-control">Способ обеспечения:</label>-->
+        <!--<select class="form-control"-->
+                <!--ng-model="ctrl.ensuringMethod"-->
+                <!--id="ensuring-method-control"-->
+                <!--required>-->
+          <!--<option></option>-->
+          <!--<option ng-repeat="(code, method) in ctrl.ensuringMethods"-->
+                  <!--value="{{code}}">-->
+            <!--{{method}}-->
+          <!--</option>-->
+        <!--</select>-->
+      <!--</div>-->
 
       <div class="form-group">
         <div class="row-offset-0 col-md-offset-5 col-md-2">
