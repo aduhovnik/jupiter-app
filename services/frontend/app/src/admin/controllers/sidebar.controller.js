@@ -12,7 +12,7 @@ function SidebarController($location, $scope) {
 
     this.initItems = function() {
         if ($scope.user.isAdmin()) {
-            ctrl._addItem('/overview/', 'Сводка');
+            // ctrl._addItem('/overview/', 'Сводка');
             ctrl._addItem('/clients/', 'Клиенты');
             ctrl._addItem('/accounts/', 'Cчета');
             ctrl._addItem('/credit-templates/', 'Планы кредитов');
@@ -22,7 +22,7 @@ function SidebarController($location, $scope) {
             ctrl._addItem('/transactions/', 'Транзакции');
         }
         if ($scope.user.isClient()) {
-            ctrl._addItem('/overview/', 'Сводка');
+            // ctrl._addItem('/overview/', 'Сводка');
             ctrl._addItem('/clients/me/', "Мой профайл");
             ctrl._addItem('/accounts/', 'Мои счета');
             ctrl._addItem('/credits/', 'Мои кредиты');

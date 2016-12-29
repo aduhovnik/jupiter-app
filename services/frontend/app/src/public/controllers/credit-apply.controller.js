@@ -3,11 +3,12 @@ module.controller("CreditApplicationController", CreditApplicationController);
 
 
 function CreditApplicationController(
-    $http, $routeParams, ensuringMethods, moneyDestinations, $error, $auth, $location
+    $http, $routeParams, ensuringMethods, moneyDestinations, $error, $auth, $location, accountStatuses
 ) {
     var ctrl = this;
     ctrl.ensuringMethods = ensuringMethods;
     ctrl.moneyDestinations = moneyDestinations;
+    ctrl.accountStatuses = accountStatuses;
 
     ctrl.template = null;
     ctrl.account_id = null;

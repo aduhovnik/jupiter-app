@@ -18,7 +18,8 @@
           <option></option>
           <option ng-repeat="account in ctrl.accounts"
                   value="{{account.id}}">
-            {{account.number}} (Остаток: {{account.residue}} {{account.residue_currency}})
+            {{account.number}}
+            ({{ctrl.accountStatuses[account.status]}}, Остаток: {{account.residue}} {{account.residue_currency}})
           </option>
         </select>
       </div>

@@ -2,13 +2,16 @@ module = angular.module('jupiter.public');
 module.controller('DepositApplicationController', DepositApplicationController);
 
 
-function DepositApplicationController($http, $routeParams, $auth, $error, $location, currencies) {
+function DepositApplicationController(
+    $http, $routeParams, $auth, $error, $location, currencies, accountStatuses
+) {
     var ctrl = this;
 
     ctrl.template = null;
     ctrl.errors = null;
     ctrl.accounts = null;
     ctrl.currencies = currencies;
+    ctrl.accountStatuses = accountStatuses;
 
     ctrl.account_id = null;
     ctrl.currency = null;
