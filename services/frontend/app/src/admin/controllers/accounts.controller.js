@@ -111,4 +111,22 @@ function AccountsController($http, $auth, $error, $location, $url, accountStatus
             }
         );
     };
+
+    this.closeRequest = function(id) {
+        var url = $auth.addUrlAuth('/api/accounts/' + id + '/leave_close_claim/');
+        $http.post(url, {
+            target_account_id: id
+        }).then(
+            function success(response) {
+                ctrl.getAccounts();
+                ctrl.errors = null;
+                ctrl.success = response.data;
+            },
+            function error(response) {
+                ctrl.errors = response.data;
+                ctrl.success = null;
+                $error.onError(response);
+            }
+        );
+    }
 }

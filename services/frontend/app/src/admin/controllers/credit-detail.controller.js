@@ -31,8 +31,7 @@ function CreditDetailController(
     };
 
     ctrl.canClose = function() {
-        return $scope.user.isClient() &&
-                ctrl.credit.status === 0;
+        return $scope.user.isClient() && (ctrl.credit.status === 0 || ctrl.credit.status === 2);
     };
 
     ctrl.close = function() {
@@ -64,7 +63,7 @@ function CreditDetailController(
         var method = value ?  "confirm_create_claim" : "reject_create_claim";
         var url = "/api/credits/" + $routeParams["id"] + "/" + method + "/";
         $http.patch($auth.addUrlAuth(url), {
-            cause: cause
+            cause: cause || ''
         }).then(function success(response) {
             $route.reload();
         }, function error(response) {

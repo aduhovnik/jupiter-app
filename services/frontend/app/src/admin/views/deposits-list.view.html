@@ -65,19 +65,19 @@
         {{deposit.amount}} {{deposit.amount_currency}}
       </td>
       <td>
-          <a class="link"
-             href="/deposit-templates/{{deposit.template.id}}/">
-             {{deposit.template.name}}
-          </a>
-        </td>
-        <td>
-          {{ctrl.depositStatuses[deposit.status]}}
-        </td>
-        <td>
-          <a href="/deposits/{{deposit.id}}/" class="col-md-12 text-small btn btn-info button">
-            Детальная информация
-          </a>
-        </td>
+        <a class="link"
+           href="/deposit-templates/{{deposit.template.id}}/">
+           {{deposit.template.name}}
+        </a>
+      </td>
+      <td>
+        {{ctrl.depositStatuses[deposit.status]}}
+      </td>
+      <td>
+        <a href="/deposits/{{deposit.id}}/" class="col-md-12 text-small btn btn-info button">
+          Детальная информация
+        </a>
+      </td>
     </tr>
     </table>
  </section>

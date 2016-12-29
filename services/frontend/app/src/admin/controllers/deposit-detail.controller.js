@@ -41,4 +41,36 @@ function DepositDetailController(
             ctrl.errors = response.data;
         });
     };
+
+    ctrl.canResolveCreate = function() {
+        return $scope.user.isAdmin() && ctrl.deposit.status === 3;
+    };
+
+    ctrl.canResolveClose = function() {
+        return $scope.user.isAdmin() && ctrl.deposit.status === 4;
+    };
+
+    ctrl.resolveCreateClaim = function(value, cause) {
+        var method = value ?  "confirm_create_claim" : "reject_create_claim";
+        var url = "/api/deposits/" + $routeParams["id"] + "/" + method + "/";
+        $http.patch($auth.addUrlAuth(url), {
+            cause: cause || ''
+        }).then(function success(response) {
+            $route.reload();
+        }, function error(response) {
+            ctrl.errors = response.data
+        });
+    };
+
+    ctrl.resolveCloseClaim = function(value, cause) {
+        var method = value ?  "confirm_close_claim" : "reject_close_claim";
+        var url = "/api/deposits/" + $routeParams["id"] + "/" + method + "/";
+        $http.patch($auth.addUrlAuth(url), {
+            cause: cause || ''
+        }).then(function success(response) {
+            $route.reload();
+        }, function error(response) {
+            ctrl.errors = response.data
+        });
+    };
 }
