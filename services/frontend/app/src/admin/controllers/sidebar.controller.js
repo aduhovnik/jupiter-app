@@ -20,6 +20,7 @@ function SidebarController($location, $scope) {
             ctrl._addItem('/transactions/', 'Транзакции');
             ctrl._addItem('/credit-templates/', 'Планы кредитов');
             ctrl._addItem('/deposit-templates/', 'Планы депозитов');
+            ctrl._addItem('/finance-settings/', 'Настройки скоринга');
         }
         if ($scope.user.isClient()) {
             // ctrl._addItem('/overview/', 'Сводка');

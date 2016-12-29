@@ -20,6 +20,13 @@ class FinanceSettingsSerializer(serializers.ModelSerializer):
             raise ValidationError('warning_level is required field')
         if not 'danger_level' in scoring_settings:
             raise ValidationError('danger_level is required field')
+
+        try:
+            scoring_settings['warning_level'] = float(scoring_settings['warning_level'])
+            scoring_settings['danger_level'] = float(scoring_settings['danger_level'])
+        except Exception:
+            raise ValidationError('Число в неверном формате')
+
         if scoring_settings['warning_level'] <= scoring_settings['danger_level']:
             raise ValidationError('danger_level must be less than warning_level')
         if not 0 <= scoring_settings['warning_level'] <= 1:
