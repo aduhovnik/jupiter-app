@@ -77,7 +77,7 @@ class DepositTemplateFactory(factory.DjangoModelFactory):
 class DepositFactory(ProductFactory):
 
     amount = factory.sequence(lambda n: fake.pyint())
-    status = factory.fuzzy.FuzzyInteger(0, 2)
+    status = FuzzyChoice(dict(Deposit.STATUS_CHOICES))
     start_date = factory.sequence(lambda n: fake.date())
     capitalization = FuzzyChoice(dict(DepositTemplate.CAPITALIZATION_CHOICES))
     closing = FuzzyChoice(dict(DepositTemplate.CLOSING_CHOICES))
@@ -110,7 +110,7 @@ class CreditFactory(ProductFactory):
     next_payment_term = factory.sequence(lambda n: fake.date())
     duration = factory.sequence(lambda n: fake.pyint())
     start_date = factory.sequence(lambda n: fake.date())
-    status = FuzzyInteger(100, 100000)
+    status = FuzzyChoice(dict(Credit.STATUS_CHOICES))
     fine_percentage = FuzzyFloat(100)
     method_of_ensuring = FuzzyChoice(dict(CreditTemplate.ENSURING_CHOICES))
     money_destination = FuzzyChoice(dict(Credit.MONEY_DESTINATION))

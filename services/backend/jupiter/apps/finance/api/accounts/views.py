@@ -163,3 +163,15 @@ class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
         account_number = request.data['account_number']
         res, info = fin_models.Account.assign(client, account_number)
         return Response(info, status=status.HTTP_200_OK if res else status.HTTP_400_BAD_REQUEST)
+
+    @list_route(methods=['GET'])
+    def info(self, request, *args, **kwargs):
+        accounts = self.get_queryset()
+        data = {
+            "total_count": accounts.count(),
+            "states_count": {
+                str(status[0]): accounts.filter(status=status[0]).count()
+                for status in fin_models.Account.STATUS_CHOICES
+            }
+        }
+        return Response(data=data)

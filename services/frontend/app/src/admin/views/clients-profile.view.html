@@ -7,52 +7,79 @@
 
       <ul class="nav nav-tabs" role="tablist" id="tabsHeader">
         <li role="presentation" class="active">
-          <a href="#tabStatistics" aria-controls="tabStatistics" role="tab" data-toggle="tab">
+           <a href="#tabProfile"
+              aria-controls="tabProfile"
+              role="tab"
+              data-toggle="tab">
+             Личные данные
+           </a>
+        </li>
+        <li role="presentation"
+            ng-if="user.isAdmin()">
+          <a href="#tabStatistics"
+             aria-controls="tabStatistics"
+             role="tab"
+             data-toggle="tab">
             Статистика
           </a>
         </li>
-        <li role="presentation">
-           <a href="#tabProfile" aria-controls="tabProfile" role="tab" data-toggle="tab">
-             Личные данные
-           </a>
+        <li role="presentation"
+            ng-if="user.isClient()">
+          <a href="#tabChangePassword"
+             aria-controls="tabChangePassword"
+             role="tab"
+             data-toggle="tab">
+            Изменение пароля
+          </a>
         </li>
       </ul>
 
       <div class="tab-content">
+        <div ng-if="user.isAdmin()"
+             class="tab-pane row-offset-0"
+             id="tabStatistics">
+          <div ng-class="ctrl.scoringResult.level === 'success' ? 'panel panel-success' :
+                         ctrl.scoringResult.level === 'warning' ? 'panel panel-warning' :
+                         ctrl.scoringResult.level === 'danger' ? 'panel panel-danger' :
+                         'panel panel-default'"
+               ng-init="ctrl.getScoringValue()">
+            <div class="panel-heading">
+              <h3 class="panel-title">Платежеспособность:</h3>
+            </div>
 
-        <div class="tab-pane row-offset-0 active" id="tabStatistics">
-          <h3>Платежеспособность:</h3>
-          <div ng-init="ctrl.getScoringValue()">
-            <span ng-if="ctrl.scoringValue >= 0.7"
-                  class="alert alert-success col-md-12"
-                  role="alert">
-              <b>Платежеспособность высокая:</b>
-              вероятность выплат по кредитам без штрафов - {{ctrl.scoringValue * 100}}%
-            </span>
+            <div class="panel-body">
+              <span ng-if="ctrl.scoringResult.level === 'success'">
+                <b>Платежеспособность высокая:</b>
+                вероятность выплат по кредитам без штрафов -
+                {{ctrl.scoringResult.scoring_result * 100}}%
+              </span>
 
-            <span ng-if="ctrl.scoringValue >= 0.4 && ctrl.scoringValue < 0.7"
-                  class="alert alert-warning col-md-12"
-                  role="alert">
-              <b>Платежеспособность средняя:</b>
-              вероятность выплат по кредитам без штрафов - {{ctrl.scoringValue * 100}}%
-            </span>
+              <span ng-if="ctrl.scoringResult.level === 'warning'">
+                <b>Платежеспособность средняя:</b>
+                вероятность выплат по кредитам без штрафов -
+                {{ctrl.scoringResult.scoring_result * 100}}%
+              </span>
 
-            <span ng-if="ctrl.scoringValue < 0.4"
-                  class="alert alert-danger col-md-12"
-                  role="alert">
-              <b>Платежеспособность низкая:</b>
-              вероятность выплат по кредитам без штрафов - {{ctrl.scoringValue * 100}}%
-            </span>
+              <span ng-if="ctrl.scoringResult.level === 'danger'">
+                <b>Платежеспособность низкая:</b>
+                вероятность выплат по кредитам без штрафов -
+                {{ctrl.scoringResult.scoring_result * 100}}%
+              </span>
+            </div>
           </div>
-          <h3>Статистика:</h3>
-          <div ng-init="ctrl.getClientStatistics()">
-            <div>
-              <h4>
+
+
+          <div class="panel panel-default"
+             ng-init="ctrl.getClientStatistics()">
+            <div class="panel-heading">
+              <h3 class="panel-title">
                 Общее количество кредитов:
                 {{ctrl.statistics.credits.total_count}}
                 <a class="link" href="/credits/?client_id={{ctrl.data.id}}"> (Просмотреть)</a>
-              </h4>
-              <table width="100%" class="table table-bordered">
+              </h3>
+            </div>
+            <div class="panel-body" style="padding-bottom: 10px;">
+              <table width="100%" class="table table-bordered table-responsive">
                 <tr>
                   <th width="45%">Статус</th>
                   <th width="45%">Количество</th>
@@ -69,14 +96,33 @@
                   </td>
                 </tr>
               </table>
-            </div>
 
-            <div>
-              <h4>
+              <h5>
+                Просрочек выплат более 30 дней:
+                {{ctrl.data.profile.number_of_times_30_59_days_late}}
+              </h5>
+
+              <h5>
+                Просрочек выплат более 60 дней:
+                {{ctrl.data.profile.number_of_times_60_89_days_late}}
+              </h5>
+
+              <h5>
+                Просрочек выплат более 90 дней:
+                {{ctrl.data.profile.number_of_times_90_more_days_late}}
+              </h5>
+            </div>
+          </div>
+
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3 class="panel-title">
                 Общее количество вкладов:
                 {{ctrl.statistics.deposits.total_count}}
                 <a class="link" href="/deposits/?client_id={{ctrl.data.id}}"> (Просмотреть)</a>
-              </h4>
+              </h3>
+            </div>
+            <div class="panel-body" style="padding-bottom: 0px;">
               <table width="100%" class="table table-bordered">
                 <tr>
                   <th width="45%">Статус</th>
@@ -87,7 +133,7 @@
                   <td>{{status}}</td>
                   <td>{{ctrl.statistics.deposits.states_count[code]}}</td>
                   <td>
-                    <a href="/credits/?client_id={{ctrl.data.id}}&status={{code}}"
+                    <a href="/deposits/?client_id={{ctrl.data.id}}&status={{code}}"
                        class="btn btn-info button">
                       Просмотреть
                     </a>
@@ -95,13 +141,17 @@
                 </tr>
               </table>
             </div>
+          </div>
 
-            <div>
-              <h4>
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <h3>
                 Общее количество транзакций:
                 {{ctrl.statistics.transactions.total_count}}
                 <a class="link" href="/transactions/?client_id={{ctrl.data.id}}"> (Просмотреть)</a>
-              </h4>
+              </h3>
+            </div>
+            <div class="panel-body" style="padding-bottom: 0px;">
               <table width="100%" class="table table-bordered">
                 <tr>
                   <th width="45%">Статус</th>
@@ -123,12 +173,18 @@
           </div>
         </div>
 
-        <div class="tab-pane row-offset-0" id="tabProfile">
+        <div class="tab-pane row-offset-0 active" id="tabProfile">
           <form ng-submit="ctrl.updateClient()">
             <div class="alert alert-danger"
                  role="alert"
-                 ng-if="ctrl.errors">
-              <b>{{ctrl.errors}}</b>
+                 ng-if="ctrl.profile_errors">
+              <b>{{ctrl.profile_errors}}</b>
+            </div>
+
+            <div class="alert alert-danger"
+                 role="alert"
+                 ng-if="ctrl.profile_success">
+              <b>{{ctrl.profile_success}}</b>
             </div>
 
             <div class="form-group">
@@ -299,6 +355,57 @@
           </form>
         </div>
 
+        <div ng-if="user.isClient()"
+             class="tab-pane row-offset-0"
+             id="tabChangePassword">
+          <form ng-submit="ctrl.changePassword()">
+            <div class="alert alert-danger"
+                 role="alert"
+                 ng-if="ctrl.password_errors">
+                <b>{{ctrl.password_errors}}</b>
+            </div>
+
+            <div class="alert alert-success"
+                 role="alert"
+                 ng-if="ctrl.password_success">
+              <b>{{ctrl.password_success}}</b>
+            </div>
+
+            <div class="form-group">
+              <label for="oldPasswordInput">Старый пароль</label>
+              <input id="oldPasswordInput"
+                     class="form-control"
+                     type="password"
+                     ng-model="ctrl.changePasswordData.old_password"
+                     placeholder="Старый пароль">
+            </div>
+
+            <div class="form-group">
+              <label for="newPasswordInput">Новый пароль</label>
+              <input id="newPasswordInput"
+                     class="form-control"
+                     type="password"
+                     ng-model="ctrl.changePasswordData.new_password"
+                     placeholder="Новый пароль">
+            </div>
+
+            <div class="form-group">
+              <label for="newPasswordConfirmInput">Новый пароль</label>
+              <input id="newPasswordConfirmInput"
+                     class="form-control"
+                     type="password"
+                     ng-model="ctrl.changePasswordData.new_password_confirm"
+                     placeholder="Новый пароль">
+            </div>
+
+            <div class="row-offset-0">
+              <button type="submit"
+                      class="form-control btn btn-info button">
+                 Изменить пароль
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
     </div>
   </section>

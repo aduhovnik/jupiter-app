@@ -9,7 +9,7 @@ GROUPS = [
         "name": CLIENTS_GROUP,
         "permissions": [
             'manage_himself',
-            'change_password_user'
+            'change_password_user',
 
             'view_credit',
             'leave_create_claim_credit',
@@ -38,7 +38,8 @@ GROUPS = [
             'manage_himself',
             'view_user',
             'change_user',
-            'delete_user'
+            'delete_user',
+            'change_password_user',
 
             'view_account',
             'confirm_create_claim_account',

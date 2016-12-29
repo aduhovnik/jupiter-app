@@ -114,10 +114,12 @@ function ClientsController($http, $error, $auth, $routeParams,
         $http.patch($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/'), ctrl.data).then(
             function success(response) {
                 ctrl.getClient();
-                ctrl.errors = null;
+                ctrl.profile_errors = null;
+                ctrl.profile_success = 'Профайл успешно изменен'
             },
             function error(response) {
-                ctrl.errors = response.data;
+                ctrl.profile_errors = response.data;
+                ctrl.profile_success = null;
                 $error.onError(response);
             }
         )
@@ -126,7 +128,8 @@ function ClientsController($http, $error, $auth, $routeParams,
     this.getScoringValue = function () {
         $http.get($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/scoring/')).then(
             function success(response) {
-                ctrl.scoringValue = response.data['scoring_result'];
+                ctrl.scoringResult = response.data;
+                console.log(ctrl.scoringResult)
                 ctrl.errors = null;
             },
             function error(response) {
@@ -147,5 +150,22 @@ function ClientsController($http, $error, $auth, $routeParams,
                 $error.onError(response);
             }
         )
-    }
+    };
+
+    ctrl.changePasswordData = {};
+    this.changePassword = function() {
+        var url = $auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/change_password/');
+        $http.post(url, ctrl.changePasswordData).then(
+            function success(response) {
+                ctrl.getClient();
+                ctrl.password_errors = null;
+                ctrl.password_success = 'Пароль успешно изменен'
+            },
+            function error(response) {
+                ctrl.password_errors = response.data;
+                ctrl.password_success = null;
+                $error.onError(response);
+            }
+        )
+    };
 }

@@ -189,6 +189,18 @@ class CreditView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
         else:
             raise ValidationError('Кредит не выплачен. погасите задолженность.')
 
+    @list_route(methods=['GET'])
+    def info(self, request, *args, **kwargs):
+        credits = self.get_queryset()
+        data = {
+            "total_count": credits.count(),
+            "states_count": {
+                str(status[0]): credits.filter(status=status[0]).count()
+                for status in fin_models.Credit.STATUS_CHOICES
+            }
+        }
+        return Response(data=data)
+
 
 class CreditTemplateView(ReadOnlyModelViewSet):
     queryset = fin_models.CreditTemplate.objects.all()

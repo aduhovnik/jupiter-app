@@ -69,15 +69,15 @@ class User(AbstractUser):
         permissions = (
             ('view_user', 'Can view users'),
             ('manage_himself', 'Can manage himself'),
-            ('user_change_password', 'Can change password')
+            ('change_password_user', 'Can change password')
         )
 
 
 class UserProfile(models.Model):
 
     user = models.OneToOneField(User, related_name='profile')
-    identification_number = models.CharField(max_length=30)
-    passport_number = models.CharField(max_length=20)
+    identification_number = models.CharField(max_length=30, unique=True)
+    passport_number = models.CharField(max_length=20, unique=True)
     address = models.CharField(max_length=300, null=True)
     phone = models.CharField(max_length=200, null=True)
     age = models.IntegerField(null=True)

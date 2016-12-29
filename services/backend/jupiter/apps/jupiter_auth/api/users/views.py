@@ -5,11 +5,12 @@ from django.contrib.auth import get_user_model
 from django.template.loader import render_to_string
 from rest_framework import status
 from rest_framework.response import Response
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.exceptions import ValidationError
 from core.utils import send_mail
 from core.api.generic.views import ModelViewSet
 from finance.models import Credit, Deposit, Transaction
+from jupiter_auth.models import UserProfile
 from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
 from jupiter_auth.api.users.permissions import ManageSelfPermission
 from jupiter_auth.api.users.serializers import UserSerializer, ChangePasswordSerializer
@@ -111,8 +112,19 @@ class UserView(ModelViewSet):
                 }
             }
         }
-
         return Response(data=statistics)
+
+    @list_route(methods=['GET'])
+    def info(self, request, *args, **kwargs):
+        users = self.get_queryset()
+        data = {
+            "total_count": users.count(),
+            "states_count": {
+                "True": users.filter(is_active=True).count(),
+                "False": users.filter(is_active=False).count(),
+            }
+        }
+        return Response(data=data)
 
     @detail_route(methods=['POST'])
     def change_password(self, request, *args, **kwargs):

@@ -6,10 +6,6 @@ db:
     - PGPORT=6000
 
 
-redis:
-  image: redis
-
-
 scoring:
   image: jupiterapp/scoring
 

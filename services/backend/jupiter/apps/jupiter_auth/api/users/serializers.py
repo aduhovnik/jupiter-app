@@ -43,11 +43,7 @@ class UserProfileSerializer(ModelSerializer):
             errors['passport_number'] = 'Номер паспорта должен иметь формат (AB|BM|HB|KH|MP|MC|KB|PP) ЦЦЦЦЦЦЦ.'
         if re.match('^\d{7}[A-Z]{1}\d{3}[A-Z]{2}\d{1}$', identification_number) is None:
             errors['identification_number'] = 'Идентификационный номер должен подходить под формат ЦЦЦЦЦЦЦ Б ЦЦЦ ББ Ц.'
-        if UserProfile.objects.filter(passport_number=passport_number):
-            errors['passport_number'] = 'Данный номер пасспорта уже присутствует в базе. Проверьте вводимые данные.'
-        if UserProfile.objects.filter(identification_number=identification_number):
-            errors['identification_number'] = 'Данный идентификационный номер уже присутствует в базе. ' \
-                                              'Проверьте вводимые данные.'
+
         if len(errors):
             raise ValidationError(errors)
         return value

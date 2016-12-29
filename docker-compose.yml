@@ -4,10 +4,6 @@ db:
     - POSTGRES_PASSWORD=jupiter
     - POSTGRES_USER=jupiter
 
-redis:
-  image: redis
-
-
 backend:
   image: jupiterapp/backend
 

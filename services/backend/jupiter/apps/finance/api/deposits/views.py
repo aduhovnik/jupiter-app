@@ -208,6 +208,18 @@ class DepositView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
         else:
             raise ValidationError('Недостаточно средств на счете')
 
+    @list_route(methods=['GET'])
+    def info(self, request, *args, **kwargs):
+        deposits = self.get_queryset()
+        data = {
+            "total_count": deposits.count(),
+            "states_count": {
+                str(status[0]): deposits.filter(status=status[0]).count()
+                for status in fin_models.Deposit.STATUS_CHOICES
+            }
+        }
+        return Response(data=data)
+
 
 class DepositTemplateView(ReadOnlyModelViewSet):
     queryset = fin_models.DepositTemplate.objects.all()
