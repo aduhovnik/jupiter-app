@@ -42,4 +42,73 @@ function AccountsController($http, $auth, $error, $location, $url, accountStatus
             }
         );
     };
+
+    ctrl.account_data = {
+        account_number: ""
+    };
+
+    this.assignAccount = function () {
+        var url = $auth.addUrlAuth('/api/accounts/assign/');
+        $http.post(url, ctrl.account_data).then(
+            function success(response) {
+                ctrl.getAccounts();
+                ctrl.errors = null;
+                ctrl.success = 'Счет успешно добавлен'
+            },
+            function error(response) {
+                ctrl.data = [];
+                ctrl.errors = response.data;
+                ctrl.success = null;
+                $error.onError(response);
+            }
+        );
+    };
+
+    this.createRequest = function () {
+        var url = $auth.addUrlAuth('/api/accounts/leave_create_claim/');
+        $http.post(url, {}).then(
+            function success(response) {
+                ctrl.getAccounts();
+                ctrl.errors = null;
+                ctrl.success = response.data
+            },
+            function error(response) {
+                ctrl.errors = response.data;
+                ctrl.success = null;
+                $error.onError(response);
+            }
+        );
+    };
+
+    this.confirmCreateRequest = function (id) {
+        var url = $auth.addUrlAuth('/api/accounts/' + id + '/confirm_create_claim/');
+        $http.post(url, {}).then(
+            function success(response) {
+                ctrl.getAccounts();
+                ctrl.errors = null;
+                ctrl.success = response.data
+            },
+            function error(response) {
+                ctrl.errors = response.data;
+                ctrl.success = null;
+                $error.onError(response);
+            }
+        );
+    };
+
+    this.rejectCreateRequest = function (id) {
+        var url = $auth.addUrlAuth('/api/accounts/' + id + '/reject_create_claim/');
+        $http.post(url, {}).then(
+            function success(response) {
+                ctrl.getAccounts();
+                ctrl.errors = null;
+                ctrl.success = response.data
+            },
+            function error(response) {
+                ctrl.errors = response.data;
+                ctrl.success = null;
+                $error.onError(response);
+            }
+        );
+    };
 }

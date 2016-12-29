@@ -24,6 +24,7 @@ class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
 
     def get_queryset(self):
         queryset = super(AccountView, self).get_queryset()
+        queryset = queryset.filter(status__in=[0, 3, 4])
         if self.request.user.is_superuser:
             return queryset
         if get_or_create_admins_group() in self.request.user.groups.all():
@@ -38,17 +39,16 @@ class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
         """
         :param request:
         {
-            "amount": money_amount, in BYN
         }
         dummy - money from the wind
         admin can confirm it
         """
-        first_contribution = request.data['amount']
+        first_contribution = 0
         client = request.user
         fin_models.Account.create(False, client, first_contribution)
         return Response('Заявка подана')
 
-    @detail_route(methods=['PATCH'])
+    @detail_route(methods=['POST'])
     def confirm_create_claim(self, request, *args, **kwargs):
         account = self.get_object()
         if account.status == account.STATUS_ACTIVE:
@@ -66,16 +66,12 @@ class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
                 return Response('Создание счета подтверждено', status=status.HTTP_200_OK)
             raise ValidationError('Создание счета отклонено банком')
 
-    @detail_route(methods=['PATCH'])
+    @detail_route(methods=['POST'])
     def reject_create_claim(self, request, *args, **kwargs):
         """
-        :param request:
-        {
-            "cause", cause of rejection
-        }
         """
         account = self.get_object()
-        cause = request.data['cause']
+        cause = ''
         if account.status != account.STATUS_REQUESTED_CREATING:
             raise ValidationError('Заявка на создание счета была обработана ранее.')
         else:
@@ -88,26 +84,23 @@ class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
             account.reject(cause)
             return Response('Создание счета отклонено')
 
-    @detail_route(methods=['PATCH'])
+    @detail_route(methods=['POST'])
     def leave_close_claim(self, request, *args, **kwargs):
-        """
-        :param request:
-        {
-            "target_account_id": account_id
-        }
-        """
         account = self.get_object()
-        target_account_id = request.data['target_account_id']
+        if account.status == fin_models.Account.STATUS_REQUESTED_CREATING:
+            account.delete()
+            return Response('Заявка на открытие удалена')
+
         if account.status in account.INOPERABLE_STATUSES:
             raise ValidationError('Счет не может может быть закрыт.')
         if account.status == account.STATUS_REQUESTED_CLOSING:
             raise ValidationError('Заявка на закрытие уже была подана.')
-        if account.leave_close_claim(target_account_id):
+        if account.leave_close_claim(request.data['target_account_id']):
             return Response('Заявка на закрытие отправлена.')
         else:
             raise ValidationError('Счет не может быть закрыт.')
 
-    @detail_route(methods=['PATCH'])
+    @detail_route(methods=['POST'])
     def confirm_close_claim(self, request, *args, **kwargs):
         account = self.get_object()
         if account.status in account.INOPERABLE_STATUSES:
@@ -125,16 +118,12 @@ class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
         else:
             raise ValidationError('Заявка на закрытие не была подана.')
 
-    @detail_route(methods=['PATCH'])
+    @detail_route(methods=['POST'])
     def reject_close_claim(self, request, *args, **kwargs):
         """
-        :param request:
-        {
-            "cause", cause of rejection
-        }
         """
         account = self.get_object()
-        cause = request.data['cause']
+        cause = ''
         if account.status in account.INOPERABLE_STATUSES:
             raise ValidationError('Счет не может быть закрыт.')
         if account.status != account.STATUS_REQUESTED_CLOSING:

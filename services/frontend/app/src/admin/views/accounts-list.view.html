@@ -1,6 +1,19 @@
 <div ng-controller="AccountsController as ctrl"
      ng-init="ctrl.getAccounts()">
- <section>
+ <div>
+    <div class="col-md-12 row-offset-0">
+      <div class="alert alert-danger"
+           role="alert"
+           ng-if="ctrl.errors">
+          <b>{{ctrl.errors}}</b>
+    </div>
+
+      <div class="alert alert-success"
+         role="alert"
+         ng-if="ctrl.success">
+        <b>{{ctrl.success}}</b>
+      </div>
+
     <h1>Счета</h1>
     <table class="table table-bordered text-large">
       <tr>
@@ -8,7 +21,7 @@
         <th width="25%" ng-if="user.isAdmin()">Клиент</th>
         <th width="15%">Остаток</th>
         <th width="15%">Статус</th>
-        <th width="15%"></th>
+        <th width="20%"></th>
       </tr>
 
       <tr>
@@ -43,7 +56,7 @@
                   </select>
               </div>
           </th>
-          <th></th>
+        <th></th>
       </tr>
 
       <tr ng-repeat="account in ctrl.data">
@@ -56,9 +69,71 @@
         <td>{{account.residue}}</td>
         <td>{{ctrl.accountStatuses[account.status]}}</td>
         <td>
-          <a href="#" class="button btn btn-info">Детальная информация</a>
+          <div ng-if="user.isClient()">
+            <a ng-click="ctrl.closeRequest(account.id)"
+               ng-if="account.status == 0"
+               class="link">
+               Закрыть счет
+            </a>
+            <a ng-click="ctrl.closeRequest(account.id)"
+               ng-if="account.status == 4"
+               class="link">
+               Отменить заявку
+            </a>
+          </div>
+
+          <div ng-if="user.isAdmin()">
+            <a ng-click="ctrl.confirmCreateRequest(account.id)"
+                    ng-if="account.status == 4"
+                    class="text-small btn btn-success button">
+              Подтвердить
+            </a>
+
+            <a ng-click="ctrl.rejectCreateRequest(account.id)"
+                    ng-if="account.status == 4"
+                    class="text-small btn btn-danger button">
+              Отклонить
+            </a>
+          </div>
         </td>
       </tr>
     </table>
+   </div>
+
+    <div class="col-md-12 row-offset-0"
+         ng-if="user.isClient()">
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          <h4 class="panel-title">Управление счетами</h4>
+        </div>
+
+        <div class="panel-body">
+          <form ng-submit="ctrl.assignAccount()">
+            <div class="form-group">
+              <label for="accountInput">Номер счета</label>
+              <input id="accountInput"
+                     class="form-control"
+                     type="text"
+                     ng-model="ctrl.account_data.account_number"
+                     placeholder="Номер счета">
+            </div>
+
+            <div class="row-offset-0">
+              <button type="submit"
+                      class="form-control btn btn-info button">
+                 Привязать счет
+              </button>
+            </div>
+
+            <div class="row-offset-0">
+              <a ng-click="ctrl.createRequest()"
+                 class="link">
+                 Оставить заявку на открытие счета
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
  </section>
 </div>

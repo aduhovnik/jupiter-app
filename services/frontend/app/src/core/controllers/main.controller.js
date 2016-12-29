@@ -6,8 +6,7 @@ function MainController($location, $scope) {
     this.redirect = function() {
         var path;
         if ($scope.user.isAuthenticated()) {
-            path = $scope.user.isAdmin() ? "/clients/" : "/clients/me";
-            $location.path("/overview/");
+            path = $scope.user.isAdmin() ? "/overview/" : "/clients/me";
         } else {
             path = "/landing/";
         }

@@ -325,7 +325,7 @@ class Account(Product):
         if not (target_account_id is None):
             self.target_account_id = target_account_id
         self.close_claim = True
-        self.STATUS_ACTIVE = Account.STATUS_REQUESTED_CLOSING
+        self.status = Account.STATUS_REQUESTED_CLOSING
         self.save()
         return True
 

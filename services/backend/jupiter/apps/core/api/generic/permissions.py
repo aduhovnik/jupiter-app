@@ -37,6 +37,7 @@ class JupiterPermission(DjangoModelPermissions):
         app_label = model_cls._meta.app_label
 
         perm = "{}.{}_{}".format(app_label, view.action, model_name)
+        print perm, request.user, request.user.has_perm(perm)
         if request.user.has_perm(perm):
             return True
         else:
