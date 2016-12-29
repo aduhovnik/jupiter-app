@@ -84,6 +84,40 @@
           </div>
         </form>
       </div>
+
+      <div ng-if="ctrl.canResolve()">
+        <form ng-submit="ctrl.resolveClaim(value, cause)">
+          <div class="form-group">
+            <div class="radio">
+              <label>
+                <input type="radio" ng-model="value" name="resolve" value="true" checked>
+                Подтвердить
+              </label>
+            </div>
+            <div class="radio">
+              <label>
+                <input type="radio" ng-model="value" name="resolve">
+                Отклонить
+              </label>
+            </div>
+          </div>
+          <div class="form-group" ng-if="!value">
+            <label for="cause-control">Причина:</label>
+            <textarea id="cause-control"
+                      class="form-control"
+                      ng-model="cause"></textarea>
+          </div>
+          <div class="form-group">
+          <div class="row-offset-0 col-md-offset-5 col-md-2">
+            <button type="submit"
+                    class="form-control btn btn-info button">
+              Отправить
+            </button>
+          </div>
+          </div>
+        </form>
+
+      </div>
     </div>
   </section>
 </div>

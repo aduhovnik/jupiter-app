@@ -54,5 +54,21 @@ function CreditDetailController(
         }, function error(response) {
             ctrl.errors = response.data;
         });
-    }
+    };
+
+    ctrl.canResolve = function() {
+        return $scope.user.isAdmin() && ctrl.credit.status === 5;
+    };
+
+    ctrl.resolveClaim = function(value, cause) {
+        var method = value ?  "confirm_create_claim" : "reject_create_claim";
+        var url = "/api/credits/" + $routeParams["id"] + "/" + method + "/";
+        $http.patch($auth.addUrlAuth(url), {
+            cause: cause
+        }).then(function success(response) {
+            $route.reload();
+        }, function error(response) {
+            ctrl.errors = response.data
+        });
+    };
 }
