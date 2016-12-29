@@ -23,6 +23,7 @@ urls = {
     '/credits/': 'src/admin/views/credits-list.view.html',
     '/credits/:id/': 'src/admin/views/credit-detail.view.html',
     '/deposits/': 'src/admin/views/deposits-list.view.html',
+    '/deposits/:id/': 'src/admin/views/deposit-detail.view.html',
     '/transactions/': 'src/admin/views/transactions-list.view.html'
 };
 
