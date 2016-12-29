@@ -76,8 +76,8 @@ class User(AbstractUser):
 class UserProfile(models.Model):
 
     user = models.OneToOneField(User, related_name='profile')
-    identification_number = models.CharField(max_length=30, unique=True)
-    passport_number = models.CharField(max_length=20, unique=True)
+    identification_number = models.CharField(max_length=30)
+    passport_number = models.CharField(max_length=20)
     address = models.CharField(max_length=300, null=True)
     phone = models.CharField(max_length=200, null=True)
     age = models.IntegerField(null=True)

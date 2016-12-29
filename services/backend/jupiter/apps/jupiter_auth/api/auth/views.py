@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import json
 from base64 import b64decode, b64encode
 from django.contrib.auth import get_user_model
 from django.template.loader import render_to_string
@@ -77,10 +76,11 @@ class PasswordResetView(GenericViewSet):
         data = serializer.validated_data
 
         try:
+            assert data['key'][-1] == '='
             key = b64decode(data['key'])
             pk, username = key.strip("\"\'").split(':')
             user = self.get_queryset().get(pk=pk, username=username)
-        except (TypeError, ValueError, get_user_model().DoesNotExist):
+        except (TypeError, AssertionError, ValueError, get_user_model().DoesNotExist):
             raise ValidationError('Неверный ключ')
 
         if data['new_password'] != data['new_password_confirm']:

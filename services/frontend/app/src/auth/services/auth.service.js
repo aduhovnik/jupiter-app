@@ -51,6 +51,29 @@ function AuthService($http, $url, $localStorage, $location) {
         )
     };
 
+    this.passwordReset = function(data, onSuccess, onError) {
+        $http.post('api/password/reset/', data).then(
+            function success(response) {
+                onSuccess(response);
+            },
+            function error(response) {
+                onError(response);
+                console.log(response);
+            }
+        )
+    };
+
+    this.passwordResetConfirm = function(data, onSuccess, onError) {
+        $http.post('api/password/confirm/', data).then(
+            function success(response) {
+                onSuccess(response);
+            },
+            function error(response) {
+                onError(response);
+            }
+        )
+    };
+
     this.addUrlAuth = function(url) {
         var token = $localStorage.token;
         return $url.query(url, 'token', token);

@@ -16,15 +16,16 @@ function UserService($localStorage, clientsGroupName, adminsGroupName) {
 
     this.isAdmin = function() {
         service.user = $localStorage.user;
-        return service.user.groups.some(function(group, i, groups) {
+        return service.user && service.user.groups.some(function(group, i, groups) {
             return group.name == adminsGroupName;
         });
     };
 
     this.isClient = function() {
         service.user = $localStorage.user;
-        return !service.isAdmin() && service.user.groups.some(function(group, i, groups) {
-            return group.name == clientsGroupName;
+        return service.user && !service.isAdmin() && service.user.groups.some(
+            function(group, i, groups) {
+                return group.name == clientsGroupName;
         });
     };
 }

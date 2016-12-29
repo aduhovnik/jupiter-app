@@ -5,6 +5,9 @@ urls = {
 
     "/sign-in/": "src/auth/views/sign-in.view.html",
     '/sign-up/': "src/auth/views/sign-up.view.html",
+    '/password-reset/': "src/auth/views/password-reset.view.html",
+    '/password-reset-confirm': "src/auth/views/password-reset-confirm.view.html",
+
 
     '/credit-templates/:id/': 'src/public/views/credit-template-detail.view.html',
     '/credit-templates/:id/apply/': 'src/public/views/credit-apply.view.html',
