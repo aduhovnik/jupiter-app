@@ -13,19 +13,7 @@
             <div class="alert alert-danger"
                role="alert"
                ng-if="c.errors">
-              <div ng-if="c.errors.username">
-                <b>Имя пользователя:</b>
-                {{c.errors.username[0]}}
-              </div>
-
-              <div ng-if="c.errors.password">
-                <b>Пароль:</b>
-                {{c.errors.password[0]}}
-              </div>
-
-              <div ng-if="c.errors.length">
-                <b>{{c.errors[0]}}</b>
-              </div>
+                <b>{{c.errors}}</b>
             </div>
 
             <div class="alert alert-success"

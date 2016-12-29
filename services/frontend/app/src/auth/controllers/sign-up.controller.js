@@ -20,6 +20,7 @@ function SignUpController($auth, $error) {
                 ctrl.success = true;
             },
             function error(response) {
+                ctrl.success = false;
                 ctrl.errors = response.data;
                 $error.onError(response);
             }
