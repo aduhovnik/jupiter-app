@@ -21,6 +21,7 @@ urls = {
     '/clients/': 'src/admin/views/clients-list.view.html',
     '/clients/:id/': 'src/admin/views/clients-profile.view.html',
     '/credits/': 'src/admin/views/credits-list.view.html',
+    '/credits/:id/': 'src/admin/views/credit-detail.view.html',
     '/deposits/': 'src/admin/views/deposits-list.view.html',
     '/transactions/': 'src/admin/views/transactions-list.view.html'
 };
