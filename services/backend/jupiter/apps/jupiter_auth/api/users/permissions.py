@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-from core.api.generic.permissions import ViewPermission
+from core.api.generic.permissions import JupiterPermission
 
 
-class ManageSelfPermission(ViewPermission):
+class ManageSelfPermission(JupiterPermission):
 
     perm = 'jupiter_auth.manage_himself'
 

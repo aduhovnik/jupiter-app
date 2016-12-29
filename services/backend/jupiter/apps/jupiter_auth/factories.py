@@ -34,10 +34,6 @@ class UserProfileFactory(factory.DjangoModelFactory):
     job = factory.sequence(lambda n: "{}, {}".format(fake.company(), fake.job()))
     user = factory.SubFactory('jupiter_auth.factories.UserFactory', profile=None)
 
-    number_of_times_90_more_days_late = FuzzyInteger(0, 8)
-    number_of_times_30_59_days_late = FuzzyInteger(0, 5)
-    number_of_times_60_89_days_late = FuzzyInteger(0, 2)
-
     class Meta:
         model = UserProfile
 

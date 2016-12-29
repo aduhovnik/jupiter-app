@@ -1,16 +1,19 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+
 import finance.api.contracts.serializers as serializers
 import finance.models as fin_models
-from core.api.generic.views import ModelViewSet
+from core.api.generic.views import ModelViewSet, GenericViewSet
 from jupiter_auth.authentication import TokenAuthentication
 from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
 
 
-class ContractView(ModelViewSet):
+class ContractView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     queryset = fin_models.Contract.objects.all()
     serializer_class = serializers.ContractSerializer
+    authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
         queryset = super(ContractView, self).get_queryset()

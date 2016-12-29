@@ -7,6 +7,7 @@ db:
   ports:
     - "6000:6000"
 
+
 backend:
   image: jupiterapp/backend
   ports:
@@ -24,6 +25,7 @@ backend:
     - SENDGRID_TOKEN=U0cuT0xoRXBNd3JSOGVJcVFJUG05MjItQS44RllmSWhnV19EbFRTUk4wRkw5QTZBUUMxWXFhbkF4eDA0ZW1DU25rc293
   links:
     - db:db
+
 
 frontend:
   image: jupiterapp/frontend

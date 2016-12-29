@@ -56,10 +56,10 @@ def get_score(data_dict):
         scoring value
     """
     data_dict['DebtRatio'] = \
-        sum(data_dict['credit_monthly_payments']) / data_dict['MonthlyIncome']
+        sum(data_dict['credit_monthly_payments']) / (data_dict['MonthlyIncome'] + 1)
 
     data_dict['RevolvingUtilizationOfUnsecuredLines'] = \
-        sum(data_dict['credits_residue']) / sum(data_dict['credit_limits'])
+        (sum(data_dict['credits_residue']) + 1) / (sum(data_dict['credit_limits']) + 1)
 
     data_dict['MonthlyIncome'] = \
         data_dict['MonthlyIncome'] * 4.0 * 3263 / 959.0

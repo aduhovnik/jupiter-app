@@ -9,17 +9,24 @@ GROUPS = [
         "name": CLIENTS_GROUP,
         "permissions": [
             'manage_himself',
+            'change_password_user'
+
             'view_credit',
-            'add_credit',
-            'change_credit',
-            'add_account',
-            'change_credit',
-            'view_account',
-            'add_account',
-            'change_account',
+            'leave_create_claim_credit',
+            'open_online_credit',
+            'make_payment_credit',
+            'close_credit',
+
             'view_deposit',
-            'add_deposit',
-            'change_deposit',
+            'leave_create_claim_deposit',
+            'leave_close_claim_deposit',
+            'put_money_deposit',
+
+            'view_account',
+            'leave_create_claim_account',
+            'leave_close_claim_account',
+            'assign_account',
+
             'view_contract',
             'view_transaction',
         ]
@@ -27,22 +34,32 @@ GROUPS = [
     {
         "name": ADMINS_GROUP,
         "permissions": [
+            'create_user'
             'manage_himself',
             'view_user',
-            'view_credit',
-            'add_credit',
-            'change_credit',
-            'add_account',
-            'change_credit',
+            'change_user',
+            'delete_user'
+
             'view_account',
-            'add_account',
-            'change_account',
+            'confirm_create_claim_account',
+            'reject_create_claim_account',
+            'confirm_close_claim_account',
+            'reject_close_claim_account',
+
+            'view_credit',
+            'confirm_create_claim_credit',
+            'reject_create_claim_credit',
+
             'view_deposit',
-            'add_deposit',
-            'change_deposit',
+            'confirm_create_claim_deposit',
+            'reject_create_claim_deposit',
+            'confirm_close_claim_deposit',
+            'reject_close_claim_deposit',
+
             'view_contract',
             'view_transaction',
-            'change_user',
+            'view_financesettings',
+            'change_financesettings'
         ]
     }
 ]

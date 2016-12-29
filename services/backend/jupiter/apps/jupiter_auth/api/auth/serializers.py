@@ -43,3 +43,10 @@ class SignUpSerializer(serializers.ModelSerializer):
             'first_name',
             'last_name',
         )
+
+
+class PasswordResetSerializer(serializers.Serializer):
+
+    key = serializers.CharField(required=True, write_only=True)
+    new_password = serializers.CharField(required=True, write_only=True)
+    new_password_confirm = serializers.CharField(required=True, write_only=True)

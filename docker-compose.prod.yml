@@ -5,8 +5,14 @@ db:
     - POSTGRES_USER=jupiter
     - PGPORT=6000
 
+
+redis:
+  image: redis
+
+
 scoring:
   image: jupiterapp/scoring
+
 
 backend:
   image: jupiterapp/backend
@@ -20,9 +26,11 @@ backend:
     - SCORING_HOST=scoring
     - SCORING_PORT=8001
     - SENDGRID_TOKEN=U0cuT0xoRXBNd3JSOGVJcVFJUG05MjItQS44RllmSWhnV19EbFRTUk4wRkw5QTZBUUMxWXFhbkF4eDA0ZW1DU25rc293
+    - SITE_HOST = https://jupiter-group.tk/
   links:
     - db:db
     - scoring:scoring
+
 
 frontend:
   image: jupiterapp/frontend

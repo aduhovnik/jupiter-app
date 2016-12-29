@@ -2,6 +2,8 @@
 from __future__ import absolute_import, unicode_literals
 
 from rest_framework.decorators import detail_route, list_route
+from rest_framework.exceptions import ValidationError
+from rest_framework.mixins import RetrieveModelMixin, ListModelMixin
 from rest_framework.response import Response
 from rest_framework import status
 from core.utils import send_mail
@@ -10,14 +12,15 @@ from rest_framework.exceptions import ValidationError
 
 import finance.api.accounts.serializers as serializers
 import finance.models as fin_models
-from core.api.generic.views import ModelViewSet
+from core.api.generic.views import ModelViewSet, GenericViewSet
 from jupiter_auth.authentication import TokenAuthentication
 from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
 
 
-class AccountView(ModelViewSet):
+class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     queryset = fin_models.Account.objects.all()
     serializer_class = serializers.AccountSerializer
+    authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
         queryset = super(AccountView, self).get_queryset()
@@ -43,16 +46,15 @@ class AccountView(ModelViewSet):
         first_contribution = request.data['amount']
         client = request.user
         fin_models.Account.create(False, client, first_contribution)
-        return Response('Заявка подана', status=status.HTTP_200_OK)
+        return Response('Заявка подана')
 
     @detail_route(methods=['PATCH'])
     def confirm_create_claim(self, request, *args, **kwargs):
         account = self.get_object()
         if account.status == account.STATUS_ACTIVE:
-            return Response('Заявка на создание счета уже была обработана ранее.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на создание счета уже была обработана ранее.')
         if account.status != account.STATUS_REQUESTED_CREATING:
-            return Response('Заявка на создание не была подана, либо операции со счетом невозможны',
-                            status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Операции со счетом невозможны')
         else:
             if account.confirm():
                 message = render_to_string('account/create_confirm_email.html')
@@ -62,7 +64,7 @@ class AccountView(ModelViewSet):
                 except Exception as e:
                     raise ValidationError('Ошибка при отправке письма: {}'.format(e))
                 return Response('Создание счета подтверждено', status=status.HTTP_200_OK)
-            return Response('Создание счета отклонено банком', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Создание счета отклонено банком')
 
     @detail_route(methods=['PATCH'])
     def reject_create_claim(self, request, *args, **kwargs):
@@ -75,7 +77,7 @@ class AccountView(ModelViewSet):
         account = self.get_object()
         cause = request.data['cause']
         if account.status != account.STATUS_REQUESTED_CREATING:
-            return Response('Заявка на создание счета была обработана ранее.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на создание счета была обработана ранее.')
         else:
             message = render_to_string('account/create_reject_email.html')
             try:
@@ -84,7 +86,7 @@ class AccountView(ModelViewSet):
             except Exception as e:
                 raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             account.reject(cause)
-            return Response('Создание счета отклонено', status=status.HTTP_200_OK)
+            return Response('Создание счета отклонено')
 
     @detail_route(methods=['PATCH'])
     def leave_close_claim(self, request, *args, **kwargs):
@@ -97,21 +99,21 @@ class AccountView(ModelViewSet):
         account = self.get_object()
         target_account_id = request.data['target_account_id']
         if account.status in account.INOPERABLE_STATUSES:
-            return Response('Счет не может быть закрыт, т.к. находится в неоперабельном статусе.')
+            raise ValidationError('Счет не может может быть закрыт.')
         if account.status == account.STATUS_REQUESTED_CLOSING:
-            return Response('Заявка на закрытие уже была подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие уже была подана.')
         if account.leave_close_claim(target_account_id):
-            return Response('Заявка на закрытие отправлена.', status=status.HTTP_200_OK)
+            return Response('Заявка на закрытие отправлена.')
         else:
-            return Response('Счет не может быть закрыт.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Счет не может быть закрыт.')
 
     @detail_route(methods=['PATCH'])
     def confirm_close_claim(self, request, *args, **kwargs):
         account = self.get_object()
         if account.status in account.INOPERABLE_STATUSES:
-            return Response('Счет не может быть закрыт, т.к. находится в неоперабельном статусе.')
+            raise ValidationError('Счет не может быть закрыт.')
         if account.status != account.STATUS_REQUESTED_CLOSING:
-            return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие не была подана.')
         if account.close_confirm():
             message = render_to_string('account/close_confirm_email.html')
             try:
@@ -121,7 +123,7 @@ class AccountView(ModelViewSet):
                 raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             return Response('Закрытие подтверждено, деньги переведены.', status=status.HTTP_200_OK)
         else:
-            return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие не была подана.')
 
     @detail_route(methods=['PATCH'])
     def reject_close_claim(self, request, *args, **kwargs):
@@ -134,9 +136,9 @@ class AccountView(ModelViewSet):
         account = self.get_object()
         cause = request.data['cause']
         if account.status in account.INOPERABLE_STATUSES:
-            return Response('Счет не может быть закрыт, т.к. находится в неоперабельном статусе.')
+            raise ValidationError('Счет не может быть закрыт.')
         if account.status != account.STATUS_REQUESTED_CLOSING:
-            return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие не была подана.')
         if account.close_reject(cause):
             message = render_to_string('account/close_reject_email.html')
             try:
@@ -146,7 +148,7 @@ class AccountView(ModelViewSet):
                 raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             return Response('Закрытие отклонено.', status=status.HTTP_200_OK)
         else:
-            return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие не была подана.')
 
     @list_route(methods=['POST'])
     def assign(self, request, *args, **kwargs):

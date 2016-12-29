@@ -7,12 +7,14 @@ db:
   ports:
     - "6000:6000"
 
+
 scoring:
   image: jupiterapp/scoring
   ports:
     - "8001:8001"
   volumes:
     - ./services/scoring:/scoring
+
 
 backend:
   image: jupiterapp/backend
@@ -33,9 +35,11 @@ backend:
     - RUNSERVER=false
     - SLEEP=true
     - SENDGRID_TOKEN=U0cuT0xoRXBNd3JSOGVJcVFJUG05MjItQS44RllmSWhnV19EbFRTUk4wRkw5QTZBUUMxWXFhbkF4eDA0ZW1DU25rc293
+    - SITE_HOST = http://localhost/
   links:
     - db:db
     - scoring:scoring
+
 
 frontend:
   image: jupiterapp/frontend

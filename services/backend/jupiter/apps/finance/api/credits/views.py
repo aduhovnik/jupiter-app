@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
-import json
-from os import environ
-from urllib2 import urlopen
+from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import RetrieveModelMixin
+
 from rest_framework import status
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.response import Response
+from core.api.generic.views import ReadOnlyModelViewSet, GenericViewSet
 from rest_framework.exceptions import ValidationError
 from core.utils import send_mail
 from django.template.loader import render_to_string
@@ -18,9 +19,10 @@ from jupiter_auth.authentication import TokenAuthentication
 from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
 
 
-class CreditView(ModelViewSet):
+class CreditView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     queryset = fin_models.Credit.objects.all()
     serializer_class = serializers.CreditSerializer
+    authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
         queryset = super(CreditView, self).get_queryset()
@@ -47,27 +49,25 @@ class CreditView(ModelViewSet):
         amount = request.data['amount']
         account_id = request.data["account_id"]
         if credit.status in fin_models.Credit.INOPERABLE_STATUSES:
-            return Response('Операции с кредитом невозможны.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Операции с кредитом невозможны.')
         if not fin_models.Account.objects.filter(pk=account_id):
-            return Response('Указанного счета не существует.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Указанного счета не существует.')
+
         account = fin_models.Account.objects.get(pk=account_id)
         if request.user != account.client:
-            return Response('Вы не можете использовать чужой расчетный счет.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Вы не можете использовать чужой расчетный счет.')
         if account.status in fin_models.Account.INOPERABLE_STATUSES:
             return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
 
         if account.get_money(amount):
             if credit.pay(amount):
                 credit.save()
-                return Response('Оплачено.', status=status.HTTP_200_OK)
+                return Response('Оплачено.')
             else:
                 account.put_money(amount)
-                return Response(
-                    'Отклонено банком. Ваш счет не подтвержден или не активен.',
-                    status=status.HTTP_400_BAD_REQUEST
-                )
+                raise ValidationError('Отклонено банком. Ваш счет не подтвержден или не активен.')
         else:
-            return Response('Недостаточно средств на счете', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Недостаточно средств на счете')
 
     @list_route(methods=['POST'])
     def open_online(self, request, *args, **kwargs):
@@ -87,15 +87,18 @@ class CreditView(ModelViewSet):
         duration = request.data['duration']
         account_id = request.data['account_id']
         if not fin_models.Account.objects.filter(pk=account_id):
-            return Response('Указанного счета не существует.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Указанного счета не существует.')
+
         account = fin_models.Account.objects.get(pk=account_id)
         if account.status in fin_models.Account.INOPERABLE_STATUSES:
-            return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Операции с указанным счетом невозможны.')
         if not template.issue_online:
-            return Response('Данный кредит нельзя открыть онлайн', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Данный кредит нельзя открыть онлайн')
+
         self.serializer_class.leave_create_claim_validate(request.data)
-        res = fin_models.Credit.create_online(client, template, money_amount,
-                                              duration, account_id)
+        res = fin_models.Credit.create_online(
+            client, template, money_amount, duration, account_id
+        )
         info = 'Экспресс кредит открыт' if res[0] else res[1]
         return Response(info, status=status.HTTP_200_OK if res[0] else status.HTTP_400_BAD_REQUEST)
 
@@ -121,20 +124,24 @@ class CreditView(ModelViewSet):
         money_destination = request.data['money_destination']
         account_id = request.data['account_id']
         if not fin_models.Account.objects.filter(pk=account_id):
-            return Response('Указанного счета не существует.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Указанного счета не существует.')
+
         account = fin_models.Account.objects.get(pk=account_id)
         if account.status in fin_models.Account.INOPERABLE_STATUSES:
-            return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Операции с указанным счетом невозможны.')
+
         self.serializer_class.leave_create_claim_validate(request.data)
-        fin_models.Credit.create_claim(client, template, money_amount, duration,
-                                       ensuring_method, money_destination, account_id)
-        return Response('Заявка подана', status=status.HTTP_200_OK)
+        fin_models.Credit.create_claim(
+            client, template, money_amount, duration,
+            ensuring_method, money_destination, account_id
+        )
+        return Response('Заявка подана')
 
     @detail_route(methods=['PATCH'])
     def confirm_create_claim(self, request, *args, **kwargs):
         credit = self.get_object()
         if credit.status != credit.STATUS_REQUESTED:
-            return Response('Заявка на создание кредита была обработана ранее.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на создание кредита была обработана ранее.')
         else:
             if credit.confirm():
                 message = render_to_string('credit/create_confirm_email.html')
@@ -145,7 +152,7 @@ class CreditView(ModelViewSet):
                     raise ValidationError('Ошибка при отправке письма: {}'.format(e))
                 return Response('Создание кредита подтверждено', status=status.HTTP_200_OK)
             else:
-                return Response('Отклонено банком', status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError('Отклонено банком')
 
     @detail_route(methods=['PATCH'])
     def reject_create_claim(self, request, *args, **kwargs):
@@ -158,7 +165,7 @@ class CreditView(ModelViewSet):
         credit = self.get_object()
         cause = request.data['cause']
         if credit.status != credit.STATUS_REQUESTED:
-            return Response('Заявка на создание кредита была обработана ранее.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на создание кредита была обработана ранее.')
         else:
             message = render_to_string('credit/create_reject_email.html')
             try:
@@ -167,7 +174,7 @@ class CreditView(ModelViewSet):
             except Exception as e:
                 raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             credit.reject(cause)
-            return Response('Создание кредита отклонено', status=status.HTTP_200_OK)
+            return Response('Создание кредита отклонено')
 
     @detail_route(methods=['PATCH'])
     def close(self, request, *args, **kwargs):
@@ -176,11 +183,11 @@ class CreditView(ModelViewSet):
         """
         credit = self.get_object()
         if credit.status in fin_models.Credit.INOPERABLE_STATUSES:
-            return Response('Операции с кредитом невозможны.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Операции с кредитом невозможны.')
         if credit.close():
             return Response('Кредит закрыт', status=status.HTTP_200_OK)
         else:
-            return Response('Кредит не выплачен. погасите задолженность.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Кредит не выплачен. погасите задолженность.')
 
 
 class CreditTemplateView(ReadOnlyModelViewSet):

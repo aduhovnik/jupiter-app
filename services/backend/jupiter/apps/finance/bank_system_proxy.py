@@ -3,9 +3,9 @@ from __future__ import absolute_import, unicode_literals
 
 import json
 import random
+import urllib2
 from Crypto.Cipher import AES
 from Crypto.Hash import SHA512
-
 from finance.bank_system_gateway import perform_bank_operation
 
 
@@ -146,14 +146,16 @@ class BankSystemProxy(object):
         return cls._send_request(obj)
 
     @classmethod
-    def get_currency_rate(cls):
-        """
-        emulate calling bank api
-        """
-        rates = {'BYN': 1.0,
-                 'USD': 1.97,
-                 'EUR': 2.05}
-        return rates
+    def get_currency_rates(cls):
+        url = 'http://www.nbrb.by/API/ExRates/Rates?Periodicity=0'
+        try:
+            data = json.loads(urllib2.urlopen(url).read())
+            return {
+                cur['Cur_Abbreviation']: cur['Cur_Scale'] * cur['Cur_OfficialRate']
+                for cur in data
+            }
+        except Exception:
+            return None
 
     @classmethod
     def sign(cls, message):

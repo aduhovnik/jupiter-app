@@ -119,13 +119,25 @@ def create_clients(count=50):
         Token.objects.create(user=client)
         client_group = get_or_create_clients_group()
         client.groups.add(client_group)
+
+        if simple_event(40):
+            client.profile.number_of_times_90_more_days_late = random.randint(0, 8)
+            client.profile.number_of_times_30_59_days_late = random.randint(0, 5)
+            client.profile.number_of_times_60_89_days_late = random.randint(0, 2)
+            client.save()
+
     for i in range(2):
-        client = UserFactory(username='{}{}'.format(CLIENT_NAME_WITH_MANY_STUFF, i),
-                             password='{}{}'.format(CLIENT_NAME_WITH_MANY_STUFF, i))
+        client = UserFactory(
+            username='{}{}'.format(CLIENT_NAME_WITH_MANY_STUFF, i),
+            password='{}{}'.format(CLIENT_NAME_WITH_MANY_STUFF, i)
+        )
         Token.objects.create(user=client)
         client_group = Group.objects.get(name='Clients')
         client.groups.add(client_group)
-
+        client.profile.number_of_times_90_more_days_late = random.randint(3, 8)
+        client.profile.number_of_times_30_59_days_late = random.randint(2, 5)
+        client.profile.number_of_times_60_89_days_late = random.randint(0, 2)
+        client.save()
 
 def create_accounts():
     for client in User.objects.all():
@@ -209,7 +221,7 @@ def create_deposits():
                     continue
                 account = accounts[0]
                 account_max_amount = float(account.residue.amount) / \
-                                    BankSystemProxy.get_currency_rate()[currency]
+                                    BankSystemProxy.get_currency_rates()[currency]
                 amount = min(random.randint(300, 20000), account_max_amount)
                 deposit = Deposit.create(client,
                                          template,
@@ -289,7 +301,7 @@ def close_deposit(deposit):
     for account in accounts:
         if poor_account.residue.amount > account.residue.amount:
             poor_account = account
-    money_in_byn = BankSystemProxy.get_currency_rate()[deposit.currency] * float(deposit.amount.amount)
+    money_in_byn = BankSystemProxy.get_currency_rates()[deposit.currency] * float(deposit.amount.amount)
     account.put_money(money_in_byn)
     deposit.status = deposit.STATUS_CLOSED
     deposit.save()

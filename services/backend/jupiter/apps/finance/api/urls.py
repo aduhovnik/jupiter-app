@@ -7,6 +7,7 @@ from finance.api.accounts.views import AccountView
 from finance.api.contracts.views import ContractView
 from finance.api.credits.views import CreditView, CreditTemplateView
 from finance.api.deposits.views import DepositView, DepositTemplateView
+from finance.api.settings.views import FinanceSettingsView
 from finance.api.transactions.views import TransactionView
 
 
@@ -18,6 +19,7 @@ router.register('deposits/templates', DepositTemplateView, base_name='deposit-te
 router.register('deposits', DepositView, base_name='deposits')
 router.register('credits/templates', CreditTemplateView, base_name='credit-templates')
 router.register('credits', CreditView, base_name='credits')
+router.register('settings', FinanceSettingsView, base_name='finance-settings')
 
 
 urlpatterns = [

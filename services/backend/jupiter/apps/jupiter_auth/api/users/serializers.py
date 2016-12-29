@@ -86,3 +86,10 @@ class UserSerializer(ModelSerializer):
             'groups',
             'is_active',
         )
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+
+    old_password = serializers.CharField(required=True, write_only=True)
+    new_password = serializers.CharField(required=True, write_only=True)
+    new_password_confirm = serializers.CharField(required=True, write_only=True)

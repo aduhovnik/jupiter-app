@@ -1,13 +1,66 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, unicode_literals
 
+import json
+from os import environ
+from urllib2 import Request, urlopen
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-
 from finance.utils import money_field
+from finance.models import Credit, FinanceSettings
 
 
 class User(AbstractUser):
+
+    email = models.EmailField(blank=False, null=False, unique=True)
+    first_name = models.CharField(max_length=300, null=False, blank=False)
+
+    def get_scoring(self):
+        user_credits = Credit.objects.filter(client=self)
+
+        scoring_data = {
+            "age": self.profile.age,
+            "credit_monthly_payments": [
+                float(value) for value in
+                user_credits.values_list('minimum_monthly_pay', flat=True)
+                if value > 0
+            ],
+            "credits_residue": [
+                float(value) for value in
+                user_credits.values_list('residue', flat=True)
+                if value > 0
+            ],
+            "credit_limits": [
+                float(value) for value in
+                user_credits.values_list('total_sum', flat=True)
+                if value > 0
+            ],
+            "MonthlyIncome": float(self.profile.income.amount),
+            "NumberOfDependents": self.profile.dependants,
+            "NumberOfTime30-59DaysPastDueNotWorse": self.profile.number_of_times_30_59_days_late,
+            "NumberOfTime60-89DaysPastDueNotWorse": self.profile.number_of_times_60_89_days_late,
+            "NumberOfTimes90DaysLate": self.profile.number_of_times_90_more_days_late,
+            "NumberRealEstateLoansOrLines": user_credits.count() * 0.2,
+            "NumberOfOpenCreditLinesAndLoans": user_credits.count()
+        }
+
+        scoring_host = environ.get("SCORING_HOST", 'scoring')
+        scoring_port = environ.get("SCORING_PORT", 'scoring')
+        url = 'http://{}:{}/api/credits/scoring/'.format(scoring_host, scoring_port)
+        req = Request(
+            url, data=json.dumps(scoring_data),
+            headers={"Content-Type": "application/json"}
+        )
+        data = json.loads(urlopen(req).read())
+
+        s = FinanceSettings.get_instance().scoring
+        if 0 <= data['scoring_result'] <= s.get('danger_level', 0.3):
+            data['level'] = 'danger'
+        elif s.get('danger_level', 0.3) <= data['scoring_result'] <= s.get('warning_level', 0.5):
+            data['level'] = 'warning'
+        else:
+            data['level'] = 'success'
+        return data
 
     class Meta:
         swappable = 'AUTH_USER_MODEL'
@@ -16,6 +69,7 @@ class User(AbstractUser):
         permissions = (
             ('view_user', 'Can view users'),
             ('manage_himself', 'Can manage himself'),
+            ('user_change_password', 'Can change password')
         )
 
 

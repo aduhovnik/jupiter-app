@@ -2,6 +2,9 @@
 from __future__ import absolute_import, unicode_literals
 
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
+from rest_framework.mixins import ListModelMixin
+from rest_framework.mixins import RetrieveModelMixin
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
 from core.utils import send_mail
@@ -11,13 +14,14 @@ from rest_framework.exceptions import ValidationError
 import finance.models as fin_models
 import finance.api.deposits.serializers as serializers
 from jupiter_auth.authentication import TokenAuthentication
-from core.api.generic.views import ModelViewSet, ReadOnlyModelViewSet
+from core.api.generic.views import ModelViewSet, ReadOnlyModelViewSet, GenericViewSet
 from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
 
 
-class DepositView(ModelViewSet):
+class DepositView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
     queryset = fin_models.Deposit.objects.all()
     serializer_class = serializers.DepositSerializer
+    authentication_classes = (TokenAuthentication,)
 
     def get_queryset(self):
         queryset = super(DepositView, self).get_queryset()
@@ -52,22 +56,26 @@ class DepositView(ModelViewSet):
         currency = request.data['currency']
         account_id = request.data['account_id']
         if not fin_models.Account.objects.filter(pk=account_id):
-            return Response('Указанного счета не существует.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Указанного счета не существует.')
+
         account = fin_models.Account.objects.get(pk=account_id)
         if account.status in fin_models.Account.INOPERABLE_STATUSES:
-            return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
-        deposit = fin_models.Deposit.create(client, template, money_amount, duration,
-                                            percentage, currency, account_id)
+            raise ValidationError('Операции с указанным счетом невозможны.')
+
+        deposit = fin_models.Deposit.create(
+            client, template, money_amount, duration,
+            percentage, currency, account_id
+        )
         if deposit is None:
-            return Response('На указаном счете недостаточно денег', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('На указаном счете недостаточно денег')
         else:
-            return Response('Заявка подана. Указанный счет временно заморожен.', status=status.HTTP_200_OK)
+            return Response('Заявка подана. Указанный счет временно заморожен.')
 
     @detail_route(methods=['PATCH'])
     def confirm_create_claim(self, request, *args, **kwargs):
         deposit = self.get_object()
         if deposit.status != deposit.STATUS_REQUESTED_CREATING:
-            return Response('Заявка на создание депозита уже была обработана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на создание депозита уже была обработана.')
         else:
             if deposit.confirm():
                 message = render_to_string('deposit/create_confirm_email.html')
@@ -78,7 +86,7 @@ class DepositView(ModelViewSet):
                     raise ValidationError('Ошибка при отправке письма: {}'.format(e))
                 return Response('Создание депозита подтверждено', status=status.HTTP_200_OK)
             else:
-                return Response('Отклонено банком.', status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError('Отклонено банком.')
 
     @detail_route(methods=['PATCH'])
     def reject_create_claim(self, request, *args, **kwargs):
@@ -91,7 +99,7 @@ class DepositView(ModelViewSet):
         deposit = self.get_object()
         cause = request.data['cause']
         if deposit.status != deposit.STATUS_REQUESTED_CREATING:
-            return Response('Заявка на создание депозита уже была обработана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на создание депозита уже была обработана.')
         else:
             message = render_to_string('deposit/create_reject_email.html')
             try:
@@ -100,7 +108,7 @@ class DepositView(ModelViewSet):
             except Exception as e:
                 raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             deposit.reject(cause)
-            return Response('Создание депозита отклонено', status=status.HTTP_200_OK)
+            return Response('Создание депозита отклонено')
 
     @detail_route(methods=['PATCH'])
     def leave_close_claim(self, request, *args, **kwargs):
@@ -112,15 +120,16 @@ class DepositView(ModelViewSet):
         """
         deposit = self.get_object()
         if deposit.status in deposit.INOPERABLE_STATUSES:
-            return Response('Операции с депозитом невозможны', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Операции с депозитом невозможны')
         if deposit.status == deposit.STATUS_REQUESTED_CLOSING:
-            return Response('Заявка на закрытие депозита уже подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие депозита уже подана.')
+
         target_account_id = request.data['target_account_id']
         if not fin_models.Account.objects.filter(pk=target_account_id):
-            return Response('Указанного счета не существует.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Указанного счета не существует.')
         account = fin_models.Account.objects.get(pk=target_account_id)
         if account.status in fin_models.Account.INOPERABLE_STATUSES:
-            return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Операции с указанным счетом невозможны.')
         res, info = deposit.leave_close_claim(target_account_id)
         return Response(info, status=status.HTTP_200_OK if res else status.HTTP_400_BAD_REQUEST)
 
@@ -128,7 +137,7 @@ class DepositView(ModelViewSet):
     def confirm_close_claim(self, request, *args, **kwargs):
         deposit = self.get_object()
         if deposit.status != deposit.STATUS_REQUESTED_CLOSING:
-            return Response('Заявка на закрытие депозита не подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие депозита не подана.')
         if deposit.close_confirm():
             message = render_to_string('deposit/create_confirm_email.html')
             try:
@@ -138,7 +147,7 @@ class DepositView(ModelViewSet):
                 raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             return Response('Закрытие подтверждено, деньги переведены.', status=status.HTTP_200_OK)
         else:
-            return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие не была подана.')
 
     @detail_route(methods=['PATCH'])
     def reject_close_claim(self, request, *args, **kwargs):
@@ -150,7 +159,7 @@ class DepositView(ModelViewSet):
         """
         deposit = self.get_object()
         if deposit.status != deposit.STATUS_REQUESTED_CLOSING:
-            return Response('Заявка на закрытие депозита не подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие депозита не подана.')
         cause = request.data['cause']
         if deposit.close_reject(cause):
             message = render_to_string('deposit/close_reject_email.html')
@@ -161,7 +170,7 @@ class DepositView(ModelViewSet):
                 raise ValidationError('Ошибка при отправке письма: {}'.format(e))
             return Response('Закрытие отклонено.', status=status.HTTP_200_OK)
         else:
-            return Response('Заявка на закрытие не была подана.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Заявка на закрытие не была подана.')
 
     @detail_route(methods=['POST'])
     def put_money(self, request, *args, **kwargs):
@@ -174,28 +183,30 @@ class DepositView(ModelViewSet):
         """
         deposit = self.get_object()
         if deposit.status != deposit.STATUS_ACTIVE:
-            return Response('Операции с депозитом невозможны', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Операции с депозитом невозможны')
         if not deposit.additional_contributions:
-            return Response('Данный депозит не позволяет дополнительных начислений.')
+            raise ValidationError('Данный депозит не позволяет дополнительных начислений.')
+
         amount = request.data['amount']
         account_id = request.data["account_id"]
         if not fin_models.Account.objects.filter(pk=account_id):
-            return Response('Указанного счета не существует.', status-status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Указанного счета не существует.')
+
         account = fin_models.Account.objects.get(pk=account_id)
         if request.user != account.client:
-            return Response('Невозможно использование чужого счета.', status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Невозможно использование чужого счета.')
         if account.status in fin_models.Account.INOPERABLE_STATUSES:
-            return Response('Операции с указанным счетом невозможны.', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Операции с указанным счетом невозможны.')
+
         if account.get_money(amount):
             if deposit.additional_contribution(amount):
                 deposit.save()
-                return Response('Дополнительные средства перечислены.', status=status.HTTP_200_OK)
+                return Response('Дополнительные средства перечислены.')
             else:
                 account.put_money(amount)
-                return Response('Отклонено банком. Ваш счет не подтвержден или не активен.',
-                                status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError('Отклонено банком. Ваш счет не подтвержден или не активен.')
         else:
-            return Response('Недостаточно средств на счете', status=status.HTTP_400_BAD_REQUEST)
+            raise ValidationError('Недостаточно средств на счете')
 
 
 class DepositTemplateView(ReadOnlyModelViewSet):

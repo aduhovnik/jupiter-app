@@ -34,6 +34,8 @@ class TokenAuthentication(BaseAuthentication):
         key = get_token(request)
         try:
             token = Token.objects.select_related('user').get(key=key)
+            if not token.user:
+                raise AuthenticationFailed('Incorrect token')
             return token.user, token
         except Token.DoesNotExist:
             raise AuthenticationFailed('Incorrect token')

@@ -3,16 +3,18 @@ from __future__ import absolute_import, unicode_literals
 
 import datetime
 import random
+import logging
 from decimal import Decimal
 
 from dateutil.relativedelta import relativedelta
+from django.db import models
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField, ArrayField
-from django.db import models
-
 from finance.utils import money_field, percentage_field
 from finance.bank_system_proxy import BankSystemProxy
-from jupiter_auth.models import User, UserProfile
+
+
+logger = logging.getLogger('jupiter')
 
 
 class Product(models.Model):
@@ -160,6 +162,13 @@ class Account(Product):
         verbose_name_plural = 'Checking accounts'
         permissions = (
             ('view_account', 'Can view account'),
+            ('leave_create_claim_account', 'Can leave create claim'),
+            ('confirm_create_claim_account', 'Can confirm create claim'),
+            ('reject_create_claim_account', 'Can reject create claim'),
+            ('leave_close_claim_account', 'Can leave close claim'),
+            ('confirm_close_claim_account', 'Can confirm close claim'),
+            ('reject_close_claim_account', 'Can reject close claim'),
+            ('assign_account', 'Can assign account')
         )
 
     @classmethod
@@ -453,6 +462,13 @@ class Deposit(Product):
         verbose_name_plural = 'Deposits'
         permissions = (
             ('view_deposit', 'Can view deposit'),
+            ('leave_create_claim_deposit', 'Can leave create claim'),
+            ('confirm_create_claim_deposit', 'Can confirm create claim'),
+            ('reject_create_claim_deposit', 'Can reject create claim'),
+            ('leave_close_claim_deposit', 'Can leave close claim'),
+            ('confirm_close_claim_deposit', 'Can confirm close claim'),
+            ('reject_close_claim_deposit', 'Can reject close claim'),
+            ('put_money_deposit', 'Can put money on deposit')
         )
 
     @classmethod
@@ -461,7 +477,7 @@ class Deposit(Product):
         Deposit claim, them admin should allow it
         Currencies: BYN, USD, EUR
         """
-        need_byn = BankSystemProxy.get_currency_rate()[currency] * money_amount
+        need_byn = BankSystemProxy.get_currency_rates()[currency] * money_amount
         account = Account.objects.get(pk=account_id)
         if account.residue.amount >= need_byn:
             deposit = cls.objects.create(
@@ -511,7 +527,7 @@ class Deposit(Product):
         self.is_active = True
         self.status = Deposit.STATUS_ACTIVE
         account = Account.objects.get(pk=self.source_account_id)
-        money_in_byn = BankSystemProxy.get_currency_rate()[self.currency] * float(self.amount.amount)
+        money_in_byn = BankSystemProxy.get_currency_rates()[self.currency] * float(self.amount.amount)
         account.status = Account.STATUS_ACTIVE
         account.get_money(money_in_byn)
         account.save()
@@ -576,7 +592,7 @@ class Deposit(Product):
         end_date = self.start_date + relativedelta(months=self.duration)
         if self.next_capitalize_term < min(end_date, cur_date):  # last capitalize, if need
             self._update_amount()
-        money_in_byn = BankSystemProxy.get_currency_rate()[self.currency] * float(self.amount.amount)
+        money_in_byn = BankSystemProxy.get_currency_rates()[self.currency] * float(self.amount.amount)
         account = Account.objects.get(pk=self.target_account_id)
         account.put_money(money_in_byn)
         self.status = self.STATUS_CLOSED
@@ -605,7 +621,7 @@ class Deposit(Product):
             return False
         if not self.additional_contributions:
             return False
-        money_in_cur = float(money_amount) / BankSystemProxy.get_currency_rate()[self.currency]
+        money_in_cur = float(money_amount) / BankSystemProxy.get_currency_rates()[self.currency]
         self.amount.amount += Decimal(money_in_cur)
         self.save()
         Transaction.objects.create(client=self.client,
@@ -737,6 +753,12 @@ class Credit(Product):
         verbose_name_plural = 'Credits'
         permissions = (
             ('view_credit', 'Can view credit'),
+            ('make_payment_credit', 'Can make payment'),
+            ('open_online_credit', 'Can open online'),
+            ('leave_create_claim_credit', 'Can leave craate claim'),
+            ('confirm_create_claim_credit', 'Can confirm create claim'),
+            ('reject_create_claim_credit', 'Can reject create claim'),
+            ('close_credit', 'Can close credit')
         )
 
     def close(self):
@@ -868,6 +890,8 @@ class Credit(Product):
     def create_online(cls, client, template, money_amount,
                       duration, account_id=None):
 
+
+
         bank_confirmation = BankSystemProxy.credit_create(client.id,
                                                           template.id,
                                                           money_amount,
@@ -876,8 +900,7 @@ class Credit(Product):
         if not bank_confirmation:
             return False, 'Отказано банком'
 
-        # PLACEHOLDER FOR CREDIT SCORING
-        if not cls._credit_scoring():
+        if client.get_scoring()['level'] != 'success':
             return False, 'Ваша заявка отклонена кредитным скорингом'
 
         monthly_pay = cls._min_monthly_pay(money_amount, template.annual_percentage_rate, duration)
@@ -1026,3 +1049,52 @@ class Credit(Product):
         for _ in range(duration):
             mult = (mult + Decimal(1.0)) / coef
         return payment / mult
+
+
+class FinanceSettings(models.Model):
+
+    SCORING_DEFAULT = {
+        "warning_level": 0.6,
+        "danger_level": 0.3,
+    }
+
+    CURRENCIES_DEFAULT = [
+        'BYN',
+        'USD',
+        'EUR',
+        'RUB',
+    ]
+
+    EXCHANGE_RATES_DEFAULT = {
+        'BYN': 1.0,
+        'USD': 1.9519,
+        'EUR': 2.043,
+        'RUB': 3.2182,
+    }
+
+    scoring = JSONField(null=False, default=SCORING_DEFAULT)
+    currencies = ArrayField(models.CharField(max_length=3), default=CURRENCIES_DEFAULT)
+    exchange_rates = JSONField(null=False, default=EXCHANGE_RATES_DEFAULT)
+
+    @classmethod
+    def get_instance(cls):
+        instance = FinanceSettings.objects.first()
+        if not instance:
+            instance = cls.objects.create()
+        return instance
+
+    def update_exchange_rates(self):
+        rates = BankSystemProxy.get_currency_rates()
+        if not rates:
+            logger.warning('Error while updation currency info')
+
+        self.exchange_rates = rates
+        self.currencies = rates.keys()
+        self.save()
+
+    class Meta:
+        verbose_name = 'Finance settings'
+        verbose_name_plural = 'Finance settings'
+        permissions = (
+            ('view_financesettings', 'Can view finance settings'),
+        )
