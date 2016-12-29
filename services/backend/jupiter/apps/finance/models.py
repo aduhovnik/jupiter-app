@@ -477,7 +477,7 @@ class Deposit(Product):
         Deposit claim, them admin should allow it
         Currencies: BYN, USD, EUR
         """
-        need_byn = BankSystemProxy.get_currency_rates()[currency] * money_amount
+        need_byn = FinanceSettings.get_instance().exchange_rates[currency] * money_amount
         account = Account.objects.get(pk=account_id)
         if account.residue.amount >= need_byn:
             deposit = cls.objects.create(
@@ -527,7 +527,8 @@ class Deposit(Product):
         self.is_active = True
         self.status = Deposit.STATUS_ACTIVE
         account = Account.objects.get(pk=self.source_account_id)
-        money_in_byn = BankSystemProxy.get_currency_rates()[self.currency] * float(self.amount.amount)
+        money_in_byn = FinanceSettings.get_instance().exchange_rates[self.currency] * \
+                       float(self.amount.amount)
         account.status = Account.STATUS_ACTIVE
         account.get_money(money_in_byn)
         account.save()
@@ -592,7 +593,7 @@ class Deposit(Product):
         end_date = self.start_date + relativedelta(months=self.duration)
         if self.next_capitalize_term < min(end_date, cur_date):  # last capitalize, if need
             self._update_amount()
-        money_in_byn = BankSystemProxy.get_currency_rates()[self.currency] * float(self.amount.amount)
+        money_in_byn = FinanceSettings.get_instance().exchange_rates[self.currency] * float(self.amount.amount)
         account = Account.objects.get(pk=self.target_account_id)
         account.put_money(money_in_byn)
         self.status = self.STATUS_CLOSED
@@ -621,7 +622,8 @@ class Deposit(Product):
             return False
         if not self.additional_contributions:
             return False
-        money_in_cur = float(money_amount) / BankSystemProxy.get_currency_rates()[self.currency]
+        money_in_cur = float(money_amount) / \
+                       FinanceSettings.get_instance().exchange_rates[self.currency]
         self.amount.amount += Decimal(money_in_cur)
         self.save()
         Transaction.objects.create(client=self.client,

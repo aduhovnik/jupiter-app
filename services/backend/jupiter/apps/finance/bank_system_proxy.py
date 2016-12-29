@@ -154,7 +154,7 @@ class BankSystemProxy(object):
                 cur['Cur_Abbreviation']: cur['Cur_Scale'] * cur['Cur_OfficialRate']
                 for cur in data
             }
-        except Exception:
+        except Exception as e:
             return None
 
     @classmethod

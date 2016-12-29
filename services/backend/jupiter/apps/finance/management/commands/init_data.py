@@ -3,7 +3,8 @@ from __future__ import absolute_import, unicode_literals
 
 import logging, random, datetime, pytz
 from dateutil.relativedelta import relativedelta
-from finance.models import Credit, CreditTemplate, Deposit, DepositTemplate, Account, Transaction
+from finance.models import Credit, CreditTemplate, Deposit, DepositTemplate, Account, Transaction, \
+    FinanceSettings
 from jupiter_auth.models import User, UserProfile
 from jupiter_auth.factories import UserFactory
 from django.core.management import BaseCommand
@@ -221,7 +222,7 @@ def create_deposits():
                     continue
                 account = accounts[0]
                 account_max_amount = float(account.residue.amount) / \
-                                    BankSystemProxy.get_currency_rates()[currency]
+                    FinanceSettings.get_instance().exchange_rates[currency]
                 amount = min(random.randint(300, 20000), account_max_amount)
                 deposit = Deposit.create(client,
                                          template,
@@ -301,7 +302,8 @@ def close_deposit(deposit):
     for account in accounts:
         if poor_account.residue.amount > account.residue.amount:
             poor_account = account
-    money_in_byn = BankSystemProxy.get_currency_rates()[deposit.currency] * float(deposit.amount.amount)
+    money_in_byn = FinanceSettings.get_instance().exchange_rates[deposit.currency] * \
+                   float(deposit.amount.amount)
     account.put_money(money_in_byn)
     deposit.status = deposit.STATUS_CLOSED
     deposit.save()
