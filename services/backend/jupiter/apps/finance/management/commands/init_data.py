@@ -151,7 +151,7 @@ def create_accounts():
                     accounts_count = 50
             for i in range(accounts_count):
                 is_heavy_account = simple_event(10)
-                money_range = random.randint(3000, 15000) if is_heavy_account else \
+                money_range = random.randint(3000, 10000) if is_heavy_account else \
                     random.randint(300, 3000)
                 Account.create(True, client, money_range)
 
@@ -162,22 +162,22 @@ def create_credits():
         "Европа": 1000,
         "Калисто": 1000,
         "Ио": 500,
-        "Адреаста": 20000,
-        "Ганимед": 50000,
-        "Ганимед+": 50000,
+        "Адреаста": 15000,
+        "Ганимед": 20000,
+        "Ганимед+": 20000,
     }
     max_amount = {
         "Европа": 15000,
         "Калисто": 5000,
         "Ио": 3000,
-        "Адреаста": 50000,
-        "Ганимед": 100000,
-        "Ганимед+": 100000,
+        "Адреаста": 30000,
+        "Ганимед": 50000,
+        "Ганимед+": 50000,
     }
     for client in User.objects.all():
         if get_or_create_clients_group() in client.groups.all():
             credits_count = 1
-            have_several_credits = simple_event(70)
+            have_several_credits = simple_event(60)
             if have_several_credits:
                 credits_count = random.randint(2, 8)
             if CLIENT_NAME_WITH_MANY_STUFF in client.username:
@@ -190,6 +190,8 @@ def create_credits():
                 if len(accounts) == 0:
                     continue
                 account = accounts[0]
+                if amount < 10:
+                    break
                 credit = Credit.create_claim(client,
                                              template,
                                              amount,
@@ -246,7 +248,7 @@ def pay_for_credit(credit):
             richest_account = account
     if richest_account.residue.amount == 0:
         return
-    amount = random.randint(0, int(richest_account.residue.amount/2))
+    amount = random.randint(0, min(credit.residue.amount, int(richest_account.residue.amount/2)))
     richest_account.get_money(amount)
     credit.pay(amount)
 
