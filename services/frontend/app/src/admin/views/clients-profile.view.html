@@ -4,13 +4,13 @@
   <section>
     <h1 class="text-center">Профайл</h1>
     <div class="row-offset-0">
-
       <ul class="nav nav-tabs" role="tablist" id="tabsHeader">
         <li role="presentation" class="active">
            <a href="#tabProfile"
               aria-controls="tabProfile"
               role="tab"
-              data-toggle="tab">
+              data-toggle="tab"
+              class="tab-link">
              Личные данные
            </a>
         </li>
@@ -19,7 +19,8 @@
           <a href="#tabStatistics"
              aria-controls="tabStatistics"
              role="tab"
-             data-toggle="tab">
+             data-toggle="tab"
+             class="tab-link">
             Статистика
           </a>
         </li>
@@ -28,7 +29,8 @@
           <a href="#tabChangePassword"
              aria-controls="tabChangePassword"
              role="tab"
-             data-toggle="tab">
+             data-toggle="tab"
+             class="tab-link">
             Изменение пароля
           </a>
         </li>
@@ -37,7 +39,8 @@
       <div class="tab-content">
         <div ng-if="user.isAdmin()"
              class="tab-pane row-offset-0"
-             id="tabStatistics">
+             id="tabStatistics"
+             role="tabpanel">
           <div ng-class="ctrl.scoringResult.level === 'success' ? 'panel panel-success' :
                          ctrl.scoringResult.level === 'warning' ? 'panel panel-warning' :
                          ctrl.scoringResult.level === 'danger' ? 'panel panel-danger' :
@@ -173,7 +176,9 @@
           </div>
         </div>
 
-        <div class="tab-pane row-offset-0 active" id="tabProfile">
+        <div class="tab-pane row-offset-0 active"
+             id="tabProfile"
+             role="tabpanel">
           <form ng-submit="ctrl.updateClient()">
             <div class="alert alert-danger"
                  role="alert"
@@ -363,7 +368,8 @@
 
         <div ng-if="user.isClient()"
              class="tab-pane row-offset-0"
-             id="tabChangePassword">
+             id="tabChangePassword"
+             role="tabpanel">
           <form ng-submit="ctrl.changePassword()">
             <div class="alert alert-danger"
                  role="alert"

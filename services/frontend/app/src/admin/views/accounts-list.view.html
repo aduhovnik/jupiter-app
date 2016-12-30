@@ -70,14 +70,14 @@
         <td>{{ctrl.accountStatuses[account.status]}}</td>
         <td>
           <div ng-if="user.isClient()">
-            <a ng-click="ctrl.closeRequest(account.id)"
+            <a ng-click="ctrl.unassignAccount(account.id)"
                ng-if="account.status == 0"
-               class="link">
+               class="text-small btn btn-success button col-md-12">
                Закрыть счет
             </a>
-            <a ng-click="ctrl.closeRequest(account.id)"
+            <a ng-click="ctrl.unassignAccount(account.id)"
                ng-if="account.status == 4"
-               class="link">
+               class="text-small btn btn-success button col-md-12">
                Отменить заявку
             </a>
           </div>

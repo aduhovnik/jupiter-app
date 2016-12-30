@@ -24,13 +24,17 @@ class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
 
     def get_queryset(self):
         queryset = super(AccountView, self).get_queryset()
-        queryset = queryset.filter(status__in=[0, 3, 4])
         if self.request.user.is_superuser:
             return queryset
         if get_or_create_admins_group() in self.request.user.groups.all():
             return queryset
         elif get_or_create_clients_group() in self.request.user.groups.all():
-            return queryset.filter(client=self.request.user)
+            statuses = [
+                fin_models.Account.STATUS_ACTIVE,
+                fin_models.Account.STATUS_DISABLED,
+                fin_models.Account.STATUS_REQUESTED_CREATING
+            ]
+            return queryset.filter(client=self.request.user, status__in=statuses)
         else:
             return queryset.none()
 
@@ -85,7 +89,7 @@ class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
             return Response('Создание счета отклонено')
 
     @detail_route(methods=['POST'])
-    def leave_close_claim(self, request, *args, **kwargs):
+    def unassign(self, request, *args, **kwargs):
         account = self.get_object()
         if account.status == fin_models.Account.STATUS_REQUESTED_CREATING:
             account.delete()
@@ -93,51 +97,10 @@ class AccountView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
 
         if account.status in account.INOPERABLE_STATUSES:
             raise ValidationError('Счет не может может быть закрыт.')
-        if account.status == account.STATUS_REQUESTED_CLOSING:
-            raise ValidationError('Заявка на закрытие уже была подана.')
-        if account.leave_close_claim(request.data['target_account_id']):
+        if account.unassign():
             return Response('Заявка на закрытие отправлена.')
         else:
             raise ValidationError('Счет не может быть закрыт.')
-
-    @detail_route(methods=['POST'])
-    def confirm_close_claim(self, request, *args, **kwargs):
-        account = self.get_object()
-        if account.status in account.INOPERABLE_STATUSES:
-            raise ValidationError('Счет не может быть закрыт.')
-        if account.status != account.STATUS_REQUESTED_CLOSING:
-            raise ValidationError('Заявка на закрытие не была подана.')
-        if account.close_confirm():
-            message = render_to_string('account/close_confirm_email.html')
-            try:
-                send_mail('no-reply@jupiter-group.com', account.client.email,
-                          'Ваша заявка на закрытие счета подтверждена.', message)
-            except Exception as e:
-                raise ValidationError('Ошибка при отправке письма: {}'.format(e))
-            return Response('Закрытие подтверждено, деньги переведены.', status=status.HTTP_200_OK)
-        else:
-            raise ValidationError('Заявка на закрытие не была подана.')
-
-    @detail_route(methods=['POST'])
-    def reject_close_claim(self, request, *args, **kwargs):
-        """
-        """
-        account = self.get_object()
-        cause = ''
-        if account.status in account.INOPERABLE_STATUSES:
-            raise ValidationError('Счет не может быть закрыт.')
-        if account.status != account.STATUS_REQUESTED_CLOSING:
-            raise ValidationError('Заявка на закрытие не была подана.')
-        if account.close_reject(cause):
-            message = render_to_string('account/close_reject_email.html')
-            try:
-                send_mail('no-reply@jupiter-group.com', account.client.email,
-                          'Ваша заявка на закрытие счета отклонена.', message)
-            except Exception as e:
-                raise ValidationError('Ошибка при отправке письма: {}'.format(e))
-            return Response('Закрытие отклонено.', status=status.HTTP_200_OK)
-        else:
-            raise ValidationError('Заявка на закрытие не была подана.')
 
     @list_route(methods=['POST'])
     def assign(self, request, *args, **kwargs):

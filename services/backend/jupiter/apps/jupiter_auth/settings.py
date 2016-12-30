@@ -24,7 +24,7 @@ GROUPS = [
 
             'view_account',
             'leave_create_claim_account',
-            'leave_close_claim_account',
+            'unassign_account',
             'assign_account',
 
             'view_contract',
@@ -44,8 +44,6 @@ GROUPS = [
             'view_account',
             'confirm_create_claim_account',
             'reject_create_claim_account',
-            'confirm_close_claim_account',
-            'reject_close_claim_account',
 
             'view_credit',
             'confirm_create_claim_credit',

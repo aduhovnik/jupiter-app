@@ -27,7 +27,7 @@
 
       <div class="form-group">
         <label for="amount-control">
-          Сумма, в белоруских рублях
+          Сумма
           (минимум {{ctrl.template.min_amount.fixed}}, максимум {{ctrl.template.max_amount.fixed}}):
         </label>
         <!--TODO: use other methods of determining min and max amounts-->
@@ -55,19 +55,19 @@
                id="duration-control">
       </div>
 
-      <!--<div ng-if="!ctrl.template.issue_online" class="form-group">-->
-        <!--<label for="ensuring-method-control">Способ обеспечения:</label>-->
-        <!--<select class="form-control"-->
-                <!--ng-model="ctrl.ensuringMethod"-->
-                <!--id="ensuring-method-control"-->
-                <!--required>-->
-          <!--<option></option>-->
-          <!--<option ng-repeat="(code, method) in ctrl.ensuringMethods"-->
-                  <!--value="{{code}}">-->
-            <!--{{method}}-->
-          <!--</option>-->
-        <!--</select>-->
-      <!--</div>-->
+      <div ng-if="!ctrl.template.issue_online" class="form-group">
+        <label for="ensuring-method-control">Способ обеспечения:</label>
+        <select class="form-control"
+                ng-model="ctrl.ensuringMethod"
+                id="ensuring-method-control"
+                required>
+          <option></option>
+          <option ng-repeat="(code, method) in ctrl.ensuringMethods"
+                  value="{{code}}">
+            {{method}}
+          </option>
+        </select>
+      </div>
 
       <div class="form-group">
         <div class="row-offset-0 col-md-offset-5 col-md-2">

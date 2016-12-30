@@ -56,7 +56,22 @@ function AccountsController($http, $auth, $error, $location, $url, accountStatus
                 ctrl.success = 'Счет успешно добавлен'
             },
             function error(response) {
-                ctrl.data = [];
+                ctrl.errors = response.data;
+                ctrl.success = null;
+                $error.onError(response);
+            }
+        );
+    };
+
+    this.unassignAccount = function (id) {
+        var url = $auth.addUrlAuth('/api/accounts/' + id + '/unassign/');
+        $http.post(url, ctrl.account_data).then(
+            function success(response) {
+                ctrl.getAccounts();
+                ctrl.errors = null;
+                ctrl.success = 'Счет успешно удален'
+            },
+            function error(response) {
                 ctrl.errors = response.data;
                 ctrl.success = null;
                 $error.onError(response);

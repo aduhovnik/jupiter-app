@@ -3,17 +3,24 @@ from __future__ import absolute_import, unicode_literals
 
 import logging, random, datetime, pytz
 from dateutil.relativedelta import relativedelta
-from finance.models import Credit, CreditTemplate, Deposit, DepositTemplate, Account, Transaction, \
-    FinanceSettings
+from django.contrib.auth.models import Group
+
 from jupiter_auth.models import User, UserProfile
 from jupiter_auth.factories import UserFactory
 from django.core.management import BaseCommand
-from django.contrib.auth.models import Group
 from rest_framework.authtoken.models import Token
 from finance.tasks import daily_tasks
 from finance.fixtures import init_deposit_templates, init_credit_templates
-from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
-from finance.bank_system_proxy import BankSystemProxy
+from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group, init_groups
+from finance.models import (
+    Credit,
+    CreditTemplate,
+    Deposit,
+    DepositTemplate,
+    Account,
+    Transaction,
+    FinanceSettings
+)
 
 
 logger = logging.getLogger('jupiter')
@@ -22,14 +29,13 @@ logger = logging.getLogger('jupiter')
 class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
-        if DepositTemplate.objects.count() == 0:
-            init_deposit_templates()
-        if CreditTemplate.objects.count() == 0:
-            init_credit_templates()
         del_everything()
-        create_admins(5)
+        init_groups()
+        init_deposit_templates()
+        init_credit_templates()
+        create_admins(3)
         logger.info('Admins generated.')
-        create_clients(30)
+        create_clients(10)
         logger.info('Clients generated.')
         create_accounts()
         logger.info('Clients accounts generated.')
@@ -102,9 +108,12 @@ def del_everything():
     Account.objects.all().delete()
     Deposit.objects.all().delete()
     Transaction.objects.all().delete()
+    Group.objects.all().delete()
+    CreditTemplate.objects.all().delete()
+    DepositTemplate.objects.all().delete()
 
 
-def create_admins(count=5):
+def create_admins(count=3):
     for i in range(count):
         admin = UserFactory(username='admin{}'.format(i), password='admin{}'.format(i))
         Token.objects.create(user=admin)
@@ -114,7 +123,7 @@ def create_admins(count=5):
     admin.save()
 
 
-def create_clients(count=50):
+def create_clients(count=10):
     for i in range(count):
         client = UserFactory(username='client{}'.format(i), password='client{}'.format(i))
         Token.objects.create(user=client)
@@ -127,28 +136,11 @@ def create_clients(count=50):
             client.profile.number_of_times_60_89_days_late = random.randint(0, 2)
             client.save()
 
-    for i in range(2):
-        client = UserFactory(
-            username='{}{}'.format(CLIENT_NAME_WITH_MANY_STUFF, i),
-            password='{}{}'.format(CLIENT_NAME_WITH_MANY_STUFF, i)
-        )
-        Token.objects.create(user=client)
-        client_group = Group.objects.get(name='Clients')
-        client.groups.add(client_group)
-        client.profile.number_of_times_90_more_days_late = random.randint(3, 8)
-        client.profile.number_of_times_30_59_days_late = random.randint(2, 5)
-        client.profile.number_of_times_60_89_days_late = random.randint(0, 2)
-        client.save()
 
 def create_accounts():
     for client in User.objects.all():
         if get_or_create_clients_group() in client.groups.all():
-            accounts_count = 1
-            have_several_accounts = simple_event(30)
-            if have_several_accounts:
-                accounts_count += random.randint(0, 5)
-                if CLIENT_NAME_WITH_MANY_STUFF in client.username:
-                    accounts_count = 50
+            accounts_count = random.randint(5, 10)
             for i in range(accounts_count):
                 is_heavy_account = simple_event(10)
                 money_range = random.randint(3000, 10000) if is_heavy_account else \
@@ -176,12 +168,7 @@ def create_credits():
     }
     for client in User.objects.all():
         if get_or_create_clients_group() in client.groups.all():
-            credits_count = 1
-            have_several_credits = simple_event(60)
-            if have_several_credits:
-                credits_count = random.randint(2, 8)
-            if CLIENT_NAME_WITH_MANY_STUFF in client.username:
-                credits_count = 30
+            credits_count = random.randint(2, 8)
             for i in range(credits_count):
                 template_id = random_element(templates_ids)
                 template = CreditTemplate.objects.get(pk=template_id)
@@ -191,7 +178,7 @@ def create_credits():
                     continue
                 account = accounts[0]
                 if amount < 10:
-                    break
+                    continue
                 credit = Credit.create_claim(client,
                                              template,
                                              amount,
@@ -207,12 +194,7 @@ def create_deposits():
     templates_ids = [t.id for t in DepositTemplate.objects.all()]
     for client in User.objects.all():
         if get_or_create_clients_group() in client.groups.all():
-            deposits_count = 1
-            have_several_deposits = simple_event(80)
-            if have_several_deposits:
-                deposits_count += random.randint(2, 6)
-            if CLIENT_NAME_WITH_MANY_STUFF in client.username:
-                deposits_count = 20
+            deposits_count = random.randint(2, 6)
             for i in range(deposits_count):
                 template_id = random_element(templates_ids)
                 template = DepositTemplate.objects.get(pk=template_id)

@@ -22,11 +22,6 @@ function ClientsController($http, $error, $auth, $routeParams,
         $scope.passportExpiresPickerOpened = !$scope.passportExpiresPickerOpened;
     };
 
-    $('#tabsHeader li a').click(function (e) {
-        e.preventDefault();
-        $(this).tab('show')
-    });
-
     ctrl.filterParams = $location.search();
     this.updateFilterParams = function(keyCode) {
         if (keyCode === 13) {
@@ -70,10 +65,20 @@ function ClientsController($http, $error, $auth, $routeParams,
             function success(response) {
                 ctrl.data = response.data;
                 ctrl.errors = null;
+
+                $('.tab-link').click(function (e) {
+                    e.preventDefault();
+                    $(this).tab('show')
+                });
             },
             function error(response) {
                 ctrl.errors = response.data;
                 $error.onError(response);
+
+                $('.tab-link').click(function (e) {
+                    e.preventDefault();
+                    $(this).tab('show')
+                });
             }
         );
     };

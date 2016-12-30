@@ -48,6 +48,12 @@ class CreditView(ListModelMixin, RetrieveModelMixin, GenericViewSet):
         credit = self.get_object()
         amount = request.data['amount']
         account_id = request.data["account_id"]
+
+        try:
+            amount = float(amount)
+        except Exception as e:
+            raise ValidationError('Сумма должна быть числом')
+
         if credit.status in fin_models.Credit.INOPERABLE_STATUSES:
             raise ValidationError('Операции с кредитом невозможны.')
         if not fin_models.Account.objects.filter(pk=account_id):

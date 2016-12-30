@@ -134,14 +134,12 @@ class Account(Product):
     STATUS_DISABLED = 2
     STATUS_REJECTED = 3
     STATUS_REQUESTED_CREATING = 4
-    STATUS_REQUESTED_CLOSING = 5
     STATUS_CHOICES = [
         (STATUS_ACTIVE, 'Active'),
         (STATUS_CLOSED, 'Closed'),
         (STATUS_DISABLED, 'Disabled'),
         (STATUS_REJECTED, 'Rejected'),
         (STATUS_REQUESTED_CREATING, 'Create claim leaved'),
-        (STATUS_REQUESTED_CLOSING, 'Close claim leaved'),
     ]
 
     INOPERABLE_STATUSES = [
@@ -165,9 +163,7 @@ class Account(Product):
             ('leave_create_claim_account', 'Can leave create claim'),
             ('confirm_create_claim_account', 'Can confirm create claim'),
             ('reject_create_claim_account', 'Can reject create claim'),
-            ('leave_close_claim_account', 'Can leave close claim'),
-            ('confirm_close_claim_account', 'Can confirm close claim'),
-            ('reject_close_claim_account', 'Can reject close claim'),
+            ('unassign_account', 'Can unassign account'),
             ('assign_account', 'Can assign account')
         )
 
@@ -219,23 +215,33 @@ class Account(Product):
         assign account by account_number to client
         """
         if Account.objects.filter(number=account_number):
-            return False, 'Этот счет уже используется.'
-        res, money_amount = BankSystemProxy.account_assign_to_user(client, account_number)
-        if not res:
-            return False, 'Отказано банком. Проверте счет.'
-        account = Account.objects.create(
-            number=account_number,
-            is_active=True,
-            residue=money_amount,
-            status=Account.STATUS_ACTIVE,
-            client=client
-        )
-        account.save()
+            account = Account.objects.filter(number=account_number).first()
+            if account.status == Account.STATUS_CLOSED:
+                account.status = Account.STATUS_ACTIVE
+                account.save()
+            else:
+                return False, 'Этот счет уже используется.'
+        else:
+            res, money_amount = BankSystemProxy.account_assign_to_user(client, account_number)
+            if not res:
+                return False, 'Отказано банком. Проверте счет.'
+
+            account = Account.objects.create(
+                number=account_number,
+                is_active=True,
+                residue=money_amount,
+                status=Account.STATUS_ACTIVE,
+                client=client
+            )
+            account.save()
+
         info_text = 'Счет успешно привязан.'
-        Transaction.objects.create(client=client,
-                                   product=account,
-                                   info=info_text,
-                                   type=Transaction.TYPE_ACCOUNT_ASSIGNED)
+        Transaction.objects.create(
+            client=client,
+            product=account,
+            info=info_text,
+            type=Transaction.TYPE_ACCOUNT_ASSIGNED
+        )
         return True, info_text
 
     def confirm(self):
@@ -315,55 +321,16 @@ class Account(Product):
             return True
         return False
 
-    def leave_close_claim(self, target_account_id=None):
+    def unassign(self):
         """
         :param target_account_id:
         account_id, where money will be sent
         """
         if self.status in Account.INOPERABLE_STATUSES:
             return False
-        if not (target_account_id is None):
-            self.target_account_id = target_account_id
         self.close_claim = True
-        self.status = Account.STATUS_REQUESTED_CLOSING
-        self.save()
-        return True
-
-    def close_confirm(self):
-        if self.status != self.STATUS_REQUESTED_CLOSING:
-            return False
-        if not self.close_claim:
-            return False
-        if self.residue.amount > 0.1 and self.target_account_id != -1:
-            target_account = Account.objects.get(pk=self.target_account_id)
-            target_account.put_money(self.residue.amount)
-
-        bank_confirmation = BankSystemProxy.account_closing(self.id)
-        if not bank_confirmation:
-            self.close_reject('Отклонено банком.')
-            return False
-
         self.status = Account.STATUS_CLOSED
-        self.close_claim = False
         self.save()
-        Transaction.objects.create(client=self.client,
-                                   product=self,
-                                   info='Счет закрыт, деньги переведены на счет {}.'.format(self.target_account_id),
-                                   type=Transaction.TYPE_ACCOUNT_CONFIRM_CLOSE)
-        return True
-
-    def close_reject(self, cause):
-        if self.status != self.STATUS_REQUESTED_CLOSING:
-            return False
-        if not self.close_claim:
-            return False
-        self.close_claim = False
-        self.status = Account.STATUS_ACTIVE
-        self.save()
-        Transaction.objects.create(client=self.client,
-                                   product=self,
-                                   info='Закрытие счета отклонено. Причина: {}.'.format(cause),
-                                   type=Transaction.TYPE_ACCOUNT_REJECT_CLOSE)
         return True
 
 

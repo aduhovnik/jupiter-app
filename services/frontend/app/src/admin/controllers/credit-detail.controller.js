@@ -21,17 +21,19 @@ function CreditDetailController(
         }, function error(response) {
             ctrl.errors = response.data;
         });
+
         url = "/api/accounts/";
         $http.get($auth.addUrlAuth(url)).then(function success(response) {
             ctrl.accounts = response.data;
         }, function error(response) {
-            // TODO: join errors
             ctrl.errors = response.data;
         });
     };
 
     ctrl.canClose = function() {
-        return $scope.user.isClient() && (ctrl.credit.status === 0 || ctrl.credit.status === 2);
+        return ctrl.credit &&
+               $scope.user.isClient() &&
+               (ctrl.credit.status === 2);
     };
 
     ctrl.close = function() {
@@ -56,7 +58,7 @@ function CreditDetailController(
     };
 
     ctrl.canResolve = function() {
-        return $scope.user.isAdmin() && ctrl.credit.status === 5;
+        return ctrl.credit && $scope.user.isAdmin() && ctrl.credit.status === 5;
     };
 
     ctrl.resolveClaim = function(value, cause) {
