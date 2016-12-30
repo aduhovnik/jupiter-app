@@ -1,13 +1,13 @@
 module = angular.module("jupiter.admin");
 module.controller("AccountsController", AccountsController);
 
-function AccountsController($http, $auth, $error, $location, $url, accountStatuses) {
+function AccountsController($http, $auth, $error, $location, $url,
+                            accountStatuses, clientAccountStatuses) {
     var ctrl = this;
     ctrl.data = [];
     ctrl.filterParams = $location.search();
     ctrl.accountStatuses = accountStatuses;
-
-    // TODO: extract common logic from controllers
+    ctrl.clientAccountStatuses = clientAccountStatuses;
 
     this.updateFilterParams = function(keyCode) {
         if (keyCode === 13) {

@@ -71,6 +71,16 @@ module.constant(
     }
 );
 
+
+module.constant(
+    "clientAccountStatuses",
+    {
+        0: 'Активен',
+        2: 'Заморожен',
+        4: 'Заявка на создание'
+    }
+);
+
 module.constant(
     "ensuringMethods",
     {

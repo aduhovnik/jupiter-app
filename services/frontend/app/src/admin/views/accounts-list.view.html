@@ -49,7 +49,15 @@
                           ng-model="ctrl.filterParams.status"
                           ng-change="ctrl.updateFilterParams(13)">
                       <option></option>
-                      <option ng-repeat="(code, status) in ctrl.accountStatuses"
+
+                      <option ng-if="user.isAdmin()"
+                              ng-repeat="(code, status) in ctrl.accountStatuses"
+                              value="{{code}}">
+                          {{status}}
+                      </option>
+
+                      <option ng-if="user.isClient()"
+                              ng-repeat="(code, status) in ctrl.clientAccountStatuses"
                               value="{{code}}">
                           {{status}}
                       </option>
