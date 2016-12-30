@@ -57,11 +57,9 @@ function TransactionsController($http, $error, $auth, $location,
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.data = [];
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );

@@ -82,9 +82,6 @@ class Command(BaseCommand):
                     format(all, closed, active))
 
 
-CLIENT_NAME_WITH_MANY_STUFF = 'max'
-
-
 def simple_event(probability):
     l, r = 0, 1e4
     cur = random.randint(l, r)
@@ -130,11 +127,16 @@ def create_clients(count=10):
         client_group = get_or_create_clients_group()
         client.groups.add(client_group)
 
-        if simple_event(40):
-            client.profile.number_of_times_90_more_days_late = random.randint(0, 8)
-            client.profile.number_of_times_30_59_days_late = random.randint(0, 5)
-            client.profile.number_of_times_60_89_days_late = random.randint(0, 2)
-            client.save()
+        if simple_event(30):
+            client.profile.number_of_times_90_more_days_late = random.randint(0, 5)
+
+        if simple_event(50):
+            client.profile.number_of_times_30_59_days_late = random.randint(0, 7)
+
+        if simple_event(70):
+            client.profile.number_of_times_60_89_days_late = random.randint(0, 9)
+
+        client.profile.save()
 
 
 def create_accounts():

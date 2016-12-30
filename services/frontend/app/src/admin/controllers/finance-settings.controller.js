@@ -11,11 +11,9 @@ function FinanceSettingsController($http, $auth, $error) {
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.data = [];
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );
@@ -26,12 +24,9 @@ function FinanceSettingsController($http, $auth, $error) {
         $http.patch(url, ctrl.data).then(
             function success(response) {
                 ctrl.getFinanceSettings();
-                ctrl.errors = null;
-                ctrl.success = 'Критические уровни скоринга успешно изменены'
+                $error.onSuccess('Критические уровни скоринга успешно изменены');
             },
             function error(response) {
-                ctrl.errors = response.data;
-                ctrl.success = null;
                 $error.onError(response);
             }
         );

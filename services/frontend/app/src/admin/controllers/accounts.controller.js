@@ -2,7 +2,8 @@ module = angular.module("jupiter.admin");
 module.controller("AccountsController", AccountsController);
 
 function AccountsController($http, $auth, $error, $location, $url,
-                            accountStatuses, clientAccountStatuses) {
+                            accountStatuses, clientAccountStatuses)
+{
     var ctrl = this;
     ctrl.data = [];
     ctrl.filterParams = $location.search();
@@ -33,11 +34,9 @@ function AccountsController($http, $auth, $error, $location, $url,
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.data = [];
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );
@@ -52,12 +51,9 @@ function AccountsController($http, $auth, $error, $location, $url,
         $http.post(url, ctrl.account_data).then(
             function success(response) {
                 ctrl.getAccounts();
-                ctrl.errors = null;
-                ctrl.success = 'Счет успешно добавлен'
+                $error.onSuccess('Счет успешно добавлен');
             },
             function error(response) {
-                ctrl.errors = response.data;
-                ctrl.success = null;
                 $error.onError(response);
             }
         );
@@ -68,12 +64,9 @@ function AccountsController($http, $auth, $error, $location, $url,
         $http.post(url, ctrl.account_data).then(
             function success(response) {
                 ctrl.getAccounts();
-                ctrl.errors = null;
-                ctrl.success = 'Счет успешно удален'
+                $error.onSuccess('Счет успешно удален');
             },
             function error(response) {
-                ctrl.errors = response.data;
-                ctrl.success = null;
                 $error.onError(response);
             }
         );
@@ -83,13 +76,10 @@ function AccountsController($http, $auth, $error, $location, $url,
         var url = $auth.addUrlAuth('/api/accounts/leave_create_claim/');
         $http.post(url, {}).then(
             function success(response) {
+                $error.onSuccess(response.data);
                 ctrl.getAccounts();
-                ctrl.errors = null;
-                ctrl.success = response.data
             },
             function error(response) {
-                ctrl.errors = response.data;
-                ctrl.success = null;
                 $error.onError(response);
             }
         );
@@ -99,13 +89,10 @@ function AccountsController($http, $auth, $error, $location, $url,
         var url = $auth.addUrlAuth('/api/accounts/' + id + '/confirm_create_claim/');
         $http.post(url, {}).then(
             function success(response) {
+                $error.onSuccess(response.data);
                 ctrl.getAccounts();
-                ctrl.errors = null;
-                ctrl.success = response.data
             },
             function error(response) {
-                ctrl.errors = response.data;
-                ctrl.success = null;
                 $error.onError(response);
             }
         );
@@ -115,13 +102,10 @@ function AccountsController($http, $auth, $error, $location, $url,
         var url = $auth.addUrlAuth('/api/accounts/' + id + '/reject_create_claim/');
         $http.post(url, {}).then(
             function success(response) {
+                $error.onSuccess(response.data);
                 ctrl.getAccounts();
-                ctrl.errors = null;
-                ctrl.success = response.data
             },
             function error(response) {
-                ctrl.errors = response.data;
-                ctrl.success = null;
                 $error.onError(response);
             }
         );
@@ -134,11 +118,10 @@ function AccountsController($http, $auth, $error, $location, $url,
         }).then(
             function success(response) {
                 ctrl.getAccounts();
-                ctrl.errors = null;
-                ctrl.success = response.data;
+                $error.onSuccess(response.data);
             },
             function error(response) {
-                ctrl.errors = response.data;
+                ctrl.errors = $error.prettifyErrors(response.data);
                 ctrl.success = null;
                 $error.onError(response);
             }

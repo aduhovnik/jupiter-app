@@ -58,7 +58,6 @@ function AuthService($http, $url, $localStorage, $location) {
             },
             function error(response) {
                 onError(response);
-                console.log(response);
             }
         )
     };

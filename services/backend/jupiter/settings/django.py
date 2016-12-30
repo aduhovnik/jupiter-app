@@ -3,7 +3,8 @@ from __future__ import absolute_import, unicode_literals
 
 import os
 import sys
-from jupiter.utils import collect_applications
+
+from jupiter.utils import collect_applications, to_bool
 
 
 SECRET_KEY = 'fa55uiv$$izc6=0%eu)aixt!2h#!#mjskw4^k=@u5uvdai-u3f'
@@ -21,7 +22,7 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
-DEBUG = os.environ.get('DJANGO_DEBUG', True)
+DEBUG = to_bool(os.environ.get('DJANGO_DEBUG', 'True'))
 
 
 INSTALLED_APPS = [

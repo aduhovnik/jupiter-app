@@ -140,7 +140,8 @@ class SignUpTestCase(APITestCase):
             "email": fake.email(),
             "profile": {
                 "identification_number": "1111111A222BC3",
-                "passport_number": "KH1111111"
+                "passport_number": "KH1111111",
+                "passport_expires": "2018-12-10",
             }
         }
 

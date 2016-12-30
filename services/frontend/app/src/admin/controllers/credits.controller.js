@@ -32,11 +32,9 @@ function CreditsController($http, $auth, $error, $location, $url, creditStatuses
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.data = [];
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );
@@ -47,10 +45,9 @@ function CreditsController($http, $auth, $error, $location, $url, creditStatuses
         $http.get('/api/credits/templates/').then(
             function success(response) {
                 ctrl.templates = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );

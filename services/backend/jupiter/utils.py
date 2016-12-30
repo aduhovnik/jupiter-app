@@ -23,3 +23,7 @@ def collect_urls():
         except ImportError as e:
             print e
     return urls
+
+
+def to_bool(value):
+    return not str(value).lower() in ['false', 'no', '0']

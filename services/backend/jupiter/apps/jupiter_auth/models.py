@@ -4,6 +4,8 @@ from __future__ import absolute_import, unicode_literals
 import json
 from os import environ
 from urllib2 import Request, urlopen
+
+from datetime import date
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from finance.utils import money_field
@@ -12,14 +14,32 @@ from finance.models import Credit, FinanceSettings
 
 class User(AbstractUser):
 
-    email = models.EmailField(blank=False, null=False, unique=True)
     first_name = models.CharField(max_length=300, null=False, blank=False)
+    email = models.EmailField(
+        blank=False,
+        null=False,
+        unique=True,
+    )
 
     def get_scoring(self):
         user_credits = Credit.objects.filter(client=self)
 
+        if self.profile.dependants is None:
+            return False, 'Для использования сервиса скоринга ' \
+                          'нужно указать количество членов семьи'
+
+        if self.profile.income is None:
+            return False, 'Для использования сервиса скоринга ' \
+                          'нужно указать месячный доход'
+
+        if self.profile.age is None and self.profile.birth_date is None:
+            return False, 'Для использования сервиса скоринга ' \
+                          'нужно указать дату рождения'
+
+        age = self.profile.birth_date and (date.today() - self.profile.birth_date).days / 365
+
         scoring_data = {
-            "age": self.profile.age,
+            "age": age or self.profile.age,
             "credit_monthly_payments": [
                 float(value) for value in
                 user_credits.values_list('minimum_monthly_pay', flat=True)
@@ -44,23 +64,29 @@ class User(AbstractUser):
             "NumberOfOpenCreditLinesAndLoans": user_credits.count()
         }
 
+        print scoring_data
+
         scoring_host = environ.get("SCORING_HOST", 'scoring')
         scoring_port = environ.get("SCORING_PORT", 'scoring')
         url = 'http://{}:{}/api/credits/scoring/'.format(scoring_host, scoring_port)
-        req = Request(
-            url, data=json.dumps(scoring_data),
-            headers={"Content-Type": "application/json"}
-        )
-        data = json.loads(urlopen(req).read())
+        try:
+            headers = {"Content-Type": "application/json"}
+            req = Request(url, data=json.dumps(scoring_data), headers=headers)
+            data = json.loads(urlopen(req).read())
+        except Exception:
+            return False, 'Ошибка при обращении к сервису кредитного скоринга'
 
         s = FinanceSettings.get_instance().scoring
-        if 0 <= data['scoring_result'] <= s.get('danger_level', 0.3):
+        danger_level = s.get('danger_level', 0.3)
+        warning_level = s.get('warning_level', 0.5)
+
+        if 0 <= data['scoring_result'] <= danger_level:
             data['level'] = 'danger'
-        elif s.get('danger_level', 0.3) <= data['scoring_result'] <= s.get('warning_level', 0.5):
+        elif danger_level <= data['scoring_result'] <= warning_level:
             data['level'] = 'warning'
         else:
             data['level'] = 'success'
-        return data
+        return True, data
 
     class Meta:
         swappable = 'AUTH_USER_MODEL'
@@ -78,14 +104,14 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, related_name='profile')
     identification_number = models.CharField(max_length=30)
     passport_number = models.CharField(max_length=20)
+    passport_expires = models.DateField(null=False)
     address = models.CharField(max_length=300, null=True)
     phone = models.CharField(max_length=200, null=True)
-    age = models.IntegerField(null=True)
-    passport_expires = models.DateField(null=True)
+    age = models.IntegerField(null=True, default=30)
     birth_date = models.DateField(null=True)
     family_status = models.TextField(null=True)
-    dependants = models.IntegerField(null=True)
-    income = money_field(null=True)
+    dependants = models.IntegerField(default=3)
+    income = money_field(default=1000)
     realty = models.TextField(null=True)
     job = models.TextField(null=True)
     number_of_times_90_more_days_late = models.IntegerField(default=0)

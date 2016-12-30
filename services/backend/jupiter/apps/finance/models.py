@@ -856,26 +856,29 @@ class Credit(Product):
         return True
 
     @classmethod
-    def create_online(cls, client, template, money_amount,
-                      duration, account_id=None):
-
-
-
-        bank_confirmation = BankSystemProxy.credit_create(client.id,
-                                                          template.id,
-                                                          money_amount,
-                                                          duration,
-                                                          float(template.annual_percentage_rate))
+    def create_online(cls, client, template, money_amount, duration, account_id=None):
+        bank_confirmation = BankSystemProxy.credit_create(
+            client.id,
+            template.id,
+            money_amount,
+            duration,
+            float(template.annual_percentage_rate)
+        )
         if not bank_confirmation:
             return False, 'Отказано банком'
 
-        if client.get_scoring()['level'] != 'success':
-            return False, 'Ваша заявка отклонена кредитным скорингом'
+        success, scoring_result = client.get_scoring()
+        if not success:
+            return False, scoring_result
+        elif scoring_result['level'] != 'success':
+            return False, 'Ваша заявка отклонена кредитным скорингом. ' \
+                          'У вас недостаточная платежеспособность'
 
         monthly_pay = cls._min_monthly_pay(money_amount, template.annual_percentage_rate, duration)
         if account_id is None:
             account = Account.create(True, client, 0)
             account_id = account.id
+
         credit = cls.objects.create(
             is_active=True,
             client=client,
@@ -897,6 +900,7 @@ class Credit(Product):
             target_account_id=account_id
         )
         credit.save()
+
         target_account = Account.objects.get(pk=account_id)
         target_account.put_money(money_amount)
         target_account.save()

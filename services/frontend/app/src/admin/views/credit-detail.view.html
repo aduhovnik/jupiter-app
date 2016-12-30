@@ -46,12 +46,6 @@
             <h3 class="panel-title">Оплата</h3>
           </div>
           <div class="panel-body">
-            <div class="alert alert-danger"
-                 role="alert"
-                 ng-if="ctrl.errors">
-              {{ctrl.errors}}
-            </div>
-
             <form class="col-md-12" ng-submit="ctrl.pay(amount, account_id)">
               <div class="form-group">
                 <label for="amount-control">Сумма ({{ctrl.credit.residue_currency}}):</label>
@@ -97,12 +91,6 @@
             <h3 class="panel-title">Подтверждение заявки на открытие</h3>
           </div>
           <div class="panel-body">
-            <div class="alert alert-danger"
-                 role="alert"
-                 ng-if="ctrl.errors">
-              {{ctrl.errors}}
-            </div>
-
             <form ng-submit="ctrl.resolveClaim(value, cause)" ng-init="value='true'">
               <div class="form-group">
                 <div class="radio">

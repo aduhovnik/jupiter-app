@@ -1,4 +1,4 @@
-<div ng-app="jupiter.auth" ng-controller="SignInController as c">
+<div ng-app="jupiter.auth" ng-controller="SignInController as ctrl">
   <div class="container row-offset-4">
     <div class="row col-md-6 col-md-offset-3">
       <div class="panel panel-default">
@@ -7,31 +7,13 @@
         </div>
 
         <div class="panel-body">
-          <form ng-submit="c.signIn()">
-            <div class="alert alert-danger"
-               role="alert"
-               ng-if="c.errors">
-              <div ng-if="c.errors.username">
-                <b>Имя пользователя:</b>
-                {{c.errors.username[0]}}
-              </div>
-
-              <div ng-if="c.errors.password">
-                <b>Пароль:</b>
-                {{c.errors.password[0]}}
-              </div>
-
-              <div ng-if="c.errors.length">
-                <b>{{c.errors[0]}}</b>
-              </div>
-            </div>
-
+          <form ng-submit="ctrl.signIn()">
             <div class="form-group">
               <label for="usernameInput">Имя пользователя</label>
               <input id="usernameInput"
                      class="form-control"
                      type="text"
-                     ng-model="c.credentials.username"
+                     ng-model="ctrl.credentials.username"
                      placeholder="Имя пользователя">
             </div>
 
@@ -40,7 +22,7 @@
               <input id="passwordInput"
                      class="form-control"
                      type="password"
-                     ng-model="c.credentials.password"
+                     ng-model="ctrl.credentials.password"
                      placeholder="Пароль">
             </div>
 

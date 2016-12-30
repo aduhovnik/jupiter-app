@@ -5,6 +5,7 @@ import re
 from django.contrib.auth.models import Group
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
+from rest_framework.validators import UniqueValidator
 
 from jupiter_auth.models import UserProfile
 from rest_framework.serializers import ModelSerializer, ValidationError

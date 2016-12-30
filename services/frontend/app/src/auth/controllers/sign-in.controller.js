@@ -12,10 +12,9 @@ function SignInController($auth, $error) {
         $auth.signIn(
             this.credentials,
             function success(response) {
+                $error.clearErrors();
             },
             function error(response) {
-                console.log(response);
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );

@@ -16,23 +16,33 @@ class FinanceSettingsSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         attrs = super(FinanceSettingsSerializer, self).validate(attrs)
         scoring_settings = attrs['scoring']
-        if not 'warning_level' in scoring_settings:
-            raise ValidationError('warning_level is required field')
-        if not 'danger_level' in scoring_settings:
-            raise ValidationError('danger_level is required field')
+        if 'warning_level' not in scoring_settings:
+            raise ValidationError({'warning_level': 'Это поле обязательное'})
+        if 'danger_level' not in scoring_settings:
+            raise ValidationError({'danger_level': 'Это поле обязательное'})
 
         try:
             scoring_settings['warning_level'] = float(scoring_settings['warning_level'])
+        except Exception:
+            raise ValidationError({'warning_level': 'Число в неверном формате'})
+
+        try:
             scoring_settings['danger_level'] = float(scoring_settings['danger_level'])
         except Exception:
-            raise ValidationError('Число в неверном формате')
+            raise ValidationError({'danger_level': 'Число в неверном формате'})
 
         if scoring_settings['warning_level'] <= scoring_settings['danger_level']:
-            raise ValidationError('danger_level must be less than warning_level')
+            raise ValidationError(
+                {"danger_level": 'Красный уровень должен быть меньше чем желтый'}
+            )
         if not 0 <= scoring_settings['warning_level'] <= 1:
-            raise ValidationError('warning_level mush be in range of [0, 1]')
+            raise ValidationError(
+                {"warning_level": 'Значение должно находиться в интервале [0, 1]'}
+            )
         if not 0 <= scoring_settings['danger_level'] <= 1:
-            raise ValidationError('danger_level mush be in range of [0, 1]')
+            raise ValidationError(
+                {"danger_level": 'Значение должно находиться в интервале [0, 1]'}
+            )
         return attrs
 
     class Meta:

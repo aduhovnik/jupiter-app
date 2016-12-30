@@ -19,10 +19,9 @@ function OverviewController($http, $error, $auth,
         $http.get(url).then(
             function success(response) {
                 ctrl.statistics.users = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );
@@ -31,10 +30,9 @@ function OverviewController($http, $error, $auth,
         $http.get(url).then(
             function success(response) {
                 ctrl.statistics.accounts = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );
@@ -43,10 +41,9 @@ function OverviewController($http, $error, $auth,
         $http.get(url).then(
             function success(response) {
                 ctrl.statistics.deposits = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );
@@ -55,10 +52,9 @@ function OverviewController($http, $error, $auth,
         $http.get(url).then(
             function success(response) {
                 ctrl.statistics.credits = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );

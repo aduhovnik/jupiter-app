@@ -4,7 +4,8 @@ module.controller('ClientsController', ClientsController);
 
 function ClientsController($http, $error, $auth, $routeParams,
                            $scope, $filter, $location, $url,
-                           creditStatuses, depositStatuses, transactionTypes) {
+                           creditStatuses, depositStatuses, transactionTypes)
+{
     var ctrl = this;
     ctrl.creditStatuses = creditStatuses;
     ctrl.depositStatuses = depositStatuses;
@@ -49,11 +50,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.data = [];
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );
@@ -64,7 +63,7 @@ function ClientsController($http, $error, $auth, $routeParams,
         $http.get($auth.addUrlAuth('/api/users/' + $routeParams['id'] + '/')).then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
 
                 $('.tab-link').click(function (e) {
                     e.preventDefault();
@@ -72,7 +71,6 @@ function ClientsController($http, $error, $auth, $routeParams,
                 });
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
 
                 $('.tab-link').click(function (e) {
@@ -87,10 +85,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         $http.get($auth.addUrlAuth('/api/users/' + userId + '/activate/')).then(
             function success(response) {
                 ctrl.getClients();
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         )
@@ -100,10 +97,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         $http.get($auth.addUrlAuth('/api/users/' + userId + '/deactivate/')).then(
             function success(response) {
                 ctrl.getClients();
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         )
@@ -119,12 +115,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         $http.patch($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/'), ctrl.data).then(
             function success(response) {
                 ctrl.getClient();
-                ctrl.profile_errors = null;
-                ctrl.profile_success = 'Профайл успешно изменен'
+                $error.onSuccess('Профайл успешно изменен');
             },
             function error(response) {
-                ctrl.profile_errors = response.data;
-                ctrl.profile_success = null;
                 $error.onError(response);
             }
         )
@@ -134,11 +127,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         $http.get($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/scoring/')).then(
             function success(response) {
                 ctrl.scoringResult = response.data;
-                console.log(ctrl.scoringResult)
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         )
@@ -148,10 +139,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         $http.get($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/statistics/')).then(
             function success(response) {
                 ctrl.statistics = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         )
@@ -163,12 +153,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         $http.post(url, ctrl.changePasswordData).then(
             function success(response) {
                 ctrl.getClient();
-                ctrl.password_errors = null;
-                ctrl.password_success = 'Пароль успешно изменен'
+                $error.onSuccess('Пароль успешно изменен');
             },
             function error(response) {
-                ctrl.password_errors = response.data;
-                ctrl.password_success = null;
                 $error.onError(response);
             }
         )

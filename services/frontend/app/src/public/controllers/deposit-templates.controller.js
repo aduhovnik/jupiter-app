@@ -11,10 +11,10 @@ function DepositTemplatesController($http, $routeParams, $error, currencyNames) 
         $http.get('/api/deposits/templates/').then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
+                ctrl.errors = $error.prettifyErrors(response.data);
                 $error.onError(response);
             }
         );
@@ -27,7 +27,7 @@ function DepositTemplatesController($http, $routeParams, $error, currencyNames) 
             function success(response) {
                 ctrl.data = response.data;
                 ctrl.currency_data = Object.values(ctrl.data.currency);
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             $error.onError
         )

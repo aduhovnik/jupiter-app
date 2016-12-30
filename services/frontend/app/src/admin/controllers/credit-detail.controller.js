@@ -2,11 +2,11 @@ module = angular.module('jupiter.admin');
 module.controller('CreditDetailController', CreditDetailController);
 
 
-function CreditDetailController(
-    $http, $auth, $routeParams, creditStatuses, accountStatuses, $route, $scope
-) {
+function CreditDetailController($http, $auth, $routeParams,
+                                creditStatuses, accountStatuses,
+                                $route, $scope, $error)
+{
     var ctrl = this;
-
     ctrl.credit = null;
     ctrl.errors = null;
     ctrl.accounts = null;
@@ -15,19 +15,26 @@ function CreditDetailController(
 
     ctrl.getData = function() {
         var url ="/api/credits/" + $routeParams["id"] + "/";
-        $http.get($auth.addUrlAuth(url)).then(function success(response) {
-            ctrl.credit = response.data;
-            ctrl.errors = null;
-        }, function error(response) {
-            ctrl.errors = response.data;
-        });
+        $http.get($auth.addUrlAuth(url)).then(
+            function success(response) {
+                ctrl.credit = response.data;
+                $error.clearErrors();
+            },
+            function error(response) {
+                $error.onError(response);
+            }
+        );
 
         url = "/api/accounts/";
-        $http.get($auth.addUrlAuth(url)).then(function success(response) {
-            ctrl.accounts = response.data;
-        }, function error(response) {
-            ctrl.errors = response.data;
-        });
+        $http.get($auth.addUrlAuth(url)).then(
+            function success(response) {
+                ctrl.accounts = response.data;
+                $error.clearErrors();
+            },
+            function error(response) {
+                $error.onError(response);
+            }
+        );
     };
 
     ctrl.canClose = function() {
@@ -38,11 +45,15 @@ function CreditDetailController(
 
     ctrl.close = function() {
         var url = "/api/credits/" + $routeParams["id"] + "/close/";
-        $http.patch($auth.addUrlAuth(url), {}).then(function success(response) {
-            $route.reload();
-        }, function error(response) {
-            ctrl.errors = response.data;
-        });
+        $http.patch($auth.addUrlAuth(url), {}).then(
+            function success(response) {
+                $route.reload();
+                $error.clearErrors();
+            },
+            function error(response) {
+                $error.onError(response);
+            }
+        );
     };
 
     ctrl.pay = function(amount, account_id) {
@@ -50,11 +61,15 @@ function CreditDetailController(
         $http.post($auth.addUrlAuth(url), {
             amount: amount,
             account_id: account_id
-        }).then(function success() {
-            $route.reload();
-        }, function error(response) {
-            ctrl.errors = response.data;
-        });
+        }).then(
+            function success() {
+                $route.reload();
+                $error.clearErrors();
+            },
+            function error(response) {
+                $error.onError(response);
+            }
+        );
     };
 
     ctrl.canResolve = function() {
@@ -66,10 +81,14 @@ function CreditDetailController(
         var url = "/api/credits/" + $routeParams["id"] + "/" + method + "/";
         $http.patch($auth.addUrlAuth(url), {
             cause: cause || ''
-        }).then(function success(response) {
-            $route.reload();
-        }, function error(response) {
-            ctrl.errors = response.data
-        });
+        }).then(
+            function success(response) {
+                $route.reload();
+                $error.clearErrors();
+            },
+            function error(response) {
+                $error.onError(response);
+            }
+        );
     };
 }

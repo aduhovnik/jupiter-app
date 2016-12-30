@@ -23,16 +23,20 @@ function CreditApplicationController(
         $http.get($auth.addUrlAuth(url)).then(
             function success(response) {
                 ctrl.template = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
-            $error.onError
+            function error(response) {
+                $error.onError(response);
+            }
         );
         $http.get($auth.addUrlAuth("/api/accounts/")).then(
             function success(response) {
                 ctrl.accounts = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
-            $error.onError
+            function error(response) {
+                $error.onError(response);
+            }
         );
     };
 
@@ -49,10 +53,14 @@ function CreditApplicationController(
             amount: ctrl.amount,
             ensuring_method: ctrl.ensuringMethod,
             money_destination: ctrl.moneyDestination
-        }).then(function success() {
-            $location.path("/credits/");
-        }, function error(response) {
-            ctrl.errors = response.data;
-        });
+        }).then(
+            function success() {
+                $location.path("/credits/");
+                $error.clearErrors();
+            },
+            function error(response) {
+                $error.onError(response);
+            }
+        );
     };
 }

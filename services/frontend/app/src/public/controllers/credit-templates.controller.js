@@ -10,10 +10,9 @@ function CreditTemplatesController($http, $routeParams, $error) {
         $http.get('/api/credits/templates/').then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );

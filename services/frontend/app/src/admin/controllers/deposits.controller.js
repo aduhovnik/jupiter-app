@@ -7,8 +7,6 @@ function DepositsController($http, $auth, $error, $location, $url, depositStatus
     ctrl.filterParams = $location.search();
     ctrl.depositStatuses = depositStatuses;
 
-    // TODO: extract common logic from controllers
-
     this.updateFilterParams = function(keyCode) {
         if (keyCode === 13) {
             $location.search(ctrl.filterParams);
@@ -34,11 +32,9 @@ function DepositsController($http, $auth, $error, $location, $url, depositStatus
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.data = [];
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );
@@ -49,10 +45,9 @@ function DepositsController($http, $auth, $error, $location, $url, depositStatus
         $http.get('/api/deposits/templates/').then(
             function success(response) {
                 ctrl.templates = response.data;
-                ctrl.errors = null;
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );

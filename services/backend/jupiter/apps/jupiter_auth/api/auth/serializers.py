@@ -22,7 +22,6 @@ class SignUpSerializer(serializers.ModelSerializer):
 
     profile = UserProfileSerializer()
     password = serializers.CharField(write_only=True)
-    email = serializers.EmailField(required=True)
     first_name = serializers.CharField(required=True)
 
     def create(self, validated_data):

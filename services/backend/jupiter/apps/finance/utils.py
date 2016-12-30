@@ -5,12 +5,12 @@ from django.db import models
 from djmoney.models.fields import MoneyField
 
 
-def money_field(*args, **kwargs):
+def money_field(default=0, *args, **kwargs):
     return MoneyField(
         max_digits=15,
         decimal_places=2,
         default_currency='BYN',
-        default=0,
+        default=default,
         *args,
         **kwargs
     )

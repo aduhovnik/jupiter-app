@@ -55,12 +55,96 @@
 <body ng-app="jupiter">
 <div ng-controller="BaseController as baseCtrl">
   <div id="page-content">
-    <div ng-include="'src/core/views/header.view.html'"></div>
-    <div ng-if="user.isAuthenticated()"
+    <div id="page-top" class="index">
+      <div class="container">
+        <nav id="mainNav"
+             class="navbar navbar-default  navbar-custom navbar-fixed-top">
+          <div class="navbar-header">
+            <button type="button"
+                    class="navbar-toggle collapsed"
+                    data-toggle="collapse"
+                    data-target="#navbar-main"
+                    aria-expanded="false">
+              <span class="sr-only">Меню</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-brand" >
+              Жупитер
+            </a>
+          </div>
+
+          <div class="collapse navbar-collapse"
+               id="navbar-main"
+               style="margin-right: 30px;">
+            <ul class="nav navbar-nav navbar-right">
+              <li ng-if="!user.isAuthenticated()">
+                <a href="/deposit-templates/" class="navbar-link">
+                  <span class="glyphicon glyphicon-piggy-bank"></span>
+                  Вклады
+                </a>
+              </li>
+
+              <li ng-if="!user.isAuthenticated()">
+                <a href="/credit-templates/" class="navbar-link">
+                  <span class="glyphicon glyphicon-credit-card"></span>
+                  Кредиты
+                </a>
+              </li>
+
+              <li ng-if="!user.isAuthenticated()">
+                <a href="/sign-in/" class="navbar-link">
+                  <span class="glyphicon glyphicon-log-in"></span>
+                  Войти
+                </a>
+              </li>
+
+              <li ng-if="!user.isAuthenticated()">
+                <a href="/sign-up/" class="navbar-link">
+                  <span class="glyphicon glyphicon-user"></span>
+                  Зарегистрироватся
+                </a>
+              </li>
+
+              <li ng-if="user.isAuthenticated()">
+                <a href="javascript:void(0)" ng-click="auth.signOut()" class="navbar-link">
+                  <span class="glyphicon glyphicon-log-out"></span>
+                  Выйти
+                </a>
+              </li>
+            </ul>
+          </div>
+        </nav>
+      </div>
+    </div>
+
+    <div ng-if="user.isAuthenticated() && !error.globalHTTPError"
          ng-include="'src/admin/views/sidebar.view.html'">
     </div>
+
+    <div class="alert alert-danger errors-alert"
+         role="alert"
+         ng-if="error.errors">
+      <a ng-click="error.hideAlert()" class="link">
+        <span class="glyphicon glyphicon-remove"></span>
+      </a>
+      <div ng-repeat="(field, message) in error.errors">
+        <b>{{field}}:</b> {{message}}
+      </div>
+    </div>
+
+    <div class="alert alert-success errors-alert"
+         role="alert"
+         ng-if="error.success">
+      <a ng-click="error.hideAlert()" class="link">
+        <span class="glyphicon glyphicon-remove"></span>
+      </a>
+      <b>{{error.success}}</b>
+    </div>
+
     <div ng-view
-         ng-class="user.isAuthenticated() ? 'admin-container' : ''">
+         ng-class="user.isAuthenticated() && !error.globalHTTPError ? 'admin-container' : ''">
     </div>
   </div>
 </div>

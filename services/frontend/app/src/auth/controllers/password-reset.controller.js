@@ -18,10 +18,10 @@ function PasswordResetController($auth, $error, $location) {
         $auth.passwordReset(
             this.reset_data,
             function success(response) {
-                $location.path('/password-reset-confirm/')
+                $location.path('/password-reset-confirm/');
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );
@@ -32,10 +32,10 @@ function PasswordResetController($auth, $error, $location) {
         $auth.passwordResetConfirm(
             this.confirm_data,
             function success(response) {
-                $location.path('/sign-in/')
+                $location.path('/sign-in/');
+                $error.clearErrors();
             },
             function error(response) {
-                ctrl.errors = response.data;
                 $error.onError(response);
             }
         );

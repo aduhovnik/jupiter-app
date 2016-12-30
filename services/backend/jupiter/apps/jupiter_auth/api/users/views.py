@@ -77,10 +77,11 @@ class UserView(ModelViewSet):
         if get_or_create_admins_group() in client.groups.all():
             raise ValidationError('Скоринг вычисляется только для клиентов')
 
-        try:
-            return Response(client.get_scoring())
-        except Exception as e:
-            raise ValidationError('Не удалось получить результат скоринга: {}'.format(e))
+        success, scoring_result = client.get_scoring()
+        if success:
+            return Response(scoring_result)
+        else:
+            raise ValidationError(scoring_result)
 
     @detail_route(methods=['GET'])
     def statistics(self, request, *args, **kwargs):

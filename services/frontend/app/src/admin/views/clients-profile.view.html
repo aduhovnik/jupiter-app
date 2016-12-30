@@ -180,12 +180,6 @@
              id="tabProfile"
              role="tabpanel">
           <form ng-submit="ctrl.updateClient()">
-            <div class="alert alert-danger"
-                 role="alert"
-                 ng-if="ctrl.profile_errors">
-              <b>{{ctrl.profile_errors}}</b>
-            </div>
-
             <div class="alert alert-success"
                  role="alert"
                  ng-if="ctrl.profile_success">
@@ -218,8 +212,7 @@
                      class="form-control"
                      type="text"
                      ng-model="ctrl.data.profile.phone"
-                     placeholder="Телефон"
-                     required>
+                     placeholder="Телефон">
             </div>
 
             <div class="form-group">
@@ -236,7 +229,7 @@
                 <span class="input-group-btn">
                   <button type="button"
                           class="btn btn-default"
-                          ng-click="toogleBirthDatePicker($event)">
+                          ng-click="toggleBirthDatePicker($event)">
                     <i class="glyphicon glyphicon-calendar"></i>
                   </button>
                 </span>
@@ -245,16 +238,15 @@
             <hr class="primary">
 
             <div class="form-group">
-              <!--<label for="passportNumberInput">Номер паспорта</label>-->
-              <label>Номер паспорта</label>
-              <br>
-              <span>{{ctrl.data.profile.passport_number}}</span>
-              <!--<input id="passportNumberInput"-->
-                     <!--class="form-control"-->
-                     <!--type="text"-->
-                     <!--ng-model="ctrl.data.profile.passport_number"-->
-                     <!--placeholder="Номер паспорта"-->
-                     <!--required>-->
+              <label for="passportNumberInput">Номер паспорта</label>
+              <input id="passportNumberInput"
+                     class="form-control"
+                     class="form-control"
+                     type="text"
+                     ng-model="ctrl.data.profile.passport_number"
+                     placeholder="Номер паспорта"
+                     required
+                     ng-disabled="user.isClient()">
             </div>
 
             <div class="form-group">
@@ -268,11 +260,13 @@
                        is-open="passportExpiresPickerOpened"
                        ng-required="true"
                        placeholder="Срок действия паспорта"
-                       required>
+                       required
+                       ng-disabled="user.isClient()">
                 <span class="input-group-btn">
                   <button type="button"
                           class="btn btn-default"
-                          ng-click="tooglePassportExpiresPicker($event)">
+                          ng-click="togglePassportExpiresPicker($event)"
+                          ng-disabled="user.isClient()">
                     <i class="glyphicon glyphicon-calendar"></i>
                   </button>
                 </span>
@@ -280,16 +274,15 @@
             </div>
 
             <div class="form-group">
-              <!--<label for="identificationNumberInput">Идентификационный номер</label>-->
-              <label >Идентификационный номер</label>
-              <br>
+              <label for="identificationNumberInput">Идентификационный номер</label>
               <span>{{ctrl.data.profile.identification_number}}</span>
-              <!--<input id="identificationNumberInput"-->
-                     <!--class="form-control"-->
-                     <!--type="text"-->
-                     <!--ng-model="ctrl.data.profile.identification_number"-->
-                     <!--placeholder="Идентификационный номер"-->
-                     <!--required>-->
+              <input id="identificationNumberInput"
+                     class="form-control"
+                     type="text"
+                     ng-model="ctrl.data.profile.identification_number"
+                     placeholder="Идентификационный номер"
+                     required
+                     ng-disabled="user.isClient()">
             </div>
             <hr class="primary">
 
@@ -320,7 +313,8 @@
                      placeholder="Семейное положение">
             </div>
 
-            <div class="form-group">
+            <div class="form-group"
+                 ng-if="user.isAdmin()">
               <label for="dependantsInput">Информация о составе семьи</label>
               <textarea id="dependantsInput"
                         class="form-control"
@@ -329,7 +323,8 @@
               </textarea>
             </div>
 
-            <div class="form-group">
+            <div class="form-group"
+                 ng-if="user.isAdmin()">
               <label for="realtyInput">Информация о недвижимости</label>
               <textarea id="realtyInput"
                         class="form-control"
@@ -338,7 +333,8 @@
               </textarea>
             </div>
 
-            <div class="form-group">
+            <div class="form-group"
+                 ng-if="user.isAdmin()">
               <label for="incomeInput">Информация о доходах</label>
               <textarea id="incomeInput"
                         class="form-control"
@@ -348,7 +344,7 @@
             </div>
             <hr class="primary">
 
-            <div class="row-offset-0 col-md-offset-6 col-md-3">
+            <div class="row-offset-0">
               <button type="submit"
                       class="form-control btn btn-info button">
                 <span class='glyphicon glyphicon-save'></span>
@@ -356,7 +352,7 @@
               </button>
             </div>
 
-            <div class="row-offset-0 col-md-3">
+            <div class="row-offset-0" ng-if="user.isAdmin()">
               <a href="/clients/"
                  class="form-control btn btn-info button">
                 <span class='glyphicon glyphicon-log-out'></span>
@@ -371,12 +367,6 @@
              id="tabChangePassword"
              role="tabpanel">
           <form ng-submit="ctrl.changePassword()">
-            <div class="alert alert-danger"
-                 role="alert"
-                 ng-if="ctrl.password_errors">
-                <b>{{ctrl.password_errors}}</b>
-            </div>
-
             <div class="alert alert-success"
                  role="alert"
                  ng-if="ctrl.password_success">

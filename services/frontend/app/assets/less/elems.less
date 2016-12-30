@@ -38,3 +38,21 @@
   padding: 0;
   border: 0;
 }
+
+.errors-alert {
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  opacity: 0.85;
+  margin: 1px;
+  transition: all 1s;
+
+  &:hover {
+    opacity: 1;
+  }
+
+  a {
+    position: absolute;
+    right: 5px;
+  }
+}

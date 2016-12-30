@@ -1,35 +1,23 @@
 <div ng-controller="AccountsController as ctrl"
      ng-init="ctrl.getAccounts()">
- <div>
+  <div>
     <div class="col-md-12 row-offset-0">
-      <div class="alert alert-danger"
-           role="alert"
-           ng-if="ctrl.errors">
-          <b>{{ctrl.errors}}</b>
-    </div>
+      <h1>Счета</h1>
+      <table class="table table-bordered text-large">
+        <tr>
+          <th width="25%">Номер</th>
+          <th width="25%" ng-if="user.isAdmin()">Клиент</th>
+          <th width="15%">Остаток</th>
+          <th width="15%">Статус</th>
+          <th width="20%"></th>
+        </tr>
 
-      <div class="alert alert-success"
-         role="alert"
-         ng-if="ctrl.success">
-        <b>{{ctrl.success}}</b>
-      </div>
-
-    <h1>Счета</h1>
-    <table class="table table-bordered text-large">
-      <tr>
-        <th width="25%">Номер</th>
-        <th width="25%" ng-if="user.isAdmin()">Клиент</th>
-        <th width="15%">Остаток</th>
-        <th width="15%">Статус</th>
-        <th width="20%"></th>
-      </tr>
-
-      <tr>
+        <tr>
           <th>
-              <input type="text"
-                     class="form-control"
-                     ng-model="ctrl.filterParams.number"
-                     ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+            <input type="text"
+                   class="form-control"
+                   ng-model="ctrl.filterParams.number"
+                   ng-keypress="ctrl.updateFilterParams($event.keyCode)">
           </th>
           <th ng-if="user.isAdmin()">
             <input type="text"
@@ -38,75 +26,75 @@
                    ng-keypress="ctrl.updateFilterParams($event.keyCode)">
           </th>
           <th>
-              <input type="text"
-                     class="form-control"
-                     ng-model="ctrl.filterParams.residue"
-                     ng-keypress="ctrl.updateFilterParams($event.keyCode)">
+            <input type="text"
+                   class="form-control"
+                   ng-model="ctrl.filterParams.residue"
+                   ng-keypress="ctrl.updateFilterParams($event.keyCode)">
           </th>
           <th>
-              <div class="'dropdown">
-                  <select class="form-control"
-                          ng-model="ctrl.filterParams.status"
-                          ng-change="ctrl.updateFilterParams(13)">
-                      <option></option>
+            <div class="'dropdown">
+              <select class="form-control"
+                      ng-model="ctrl.filterParams.status"
+                      ng-change="ctrl.updateFilterParams(13)">
+                <option></option>
 
-                      <option ng-if="user.isAdmin()"
-                              ng-repeat="(code, status) in ctrl.accountStatuses"
-                              value="{{code}}">
-                          {{status}}
-                      </option>
+                <option ng-if="user.isAdmin()"
+                        ng-repeat="(code, status) in ctrl.accountStatuses"
+                        value="{{code}}">
+                  {{status}}
+                </option>
 
-                      <option ng-if="user.isClient()"
-                              ng-repeat="(code, status) in ctrl.clientAccountStatuses"
-                              value="{{code}}">
-                          {{status}}
-                      </option>
-                  </select>
-              </div>
+                <option ng-if="user.isClient()"
+                        ng-repeat="(code, status) in ctrl.clientAccountStatuses"
+                        value="{{code}}">
+                  {{status}}
+                </option>
+              </select>
+            </div>
           </th>
-        <th></th>
-      </tr>
+          <th></th>
+        </tr>
 
-      <tr ng-repeat="account in ctrl.data">
-        <td>{{account.number}}</td>
-        <td ng-if="user.isAdmin()">
-          <a class="link"
-             href="/clients/{{account.client.id}}/">
+        <tr ng-repeat="account in ctrl.data">
+          <td>{{account.number}}</td>
+          <td ng-if="user.isAdmin()">
+            <a class="link"
+               href="/clients/{{account.client.id}}/">
               {{account.client.first_name}}
-          </a></td>
-        <td>{{account.residue}}</td>
-        <td>{{ctrl.accountStatuses[account.status]}}</td>
-        <td>
-          <div ng-if="user.isClient()">
-            <a ng-click="ctrl.unassignAccount(account.id)"
-               ng-if="account.status == 0"
-               class="text-small btn btn-success button col-md-12">
-               Закрыть счет
-            </a>
-            <a ng-click="ctrl.unassignAccount(account.id)"
-               ng-if="account.status == 4"
-               class="text-small btn btn-success button col-md-12">
-               Отменить заявку
-            </a>
-          </div>
+            </a></td>
+          <td>{{account.residue}}</td>
+          <td>{{ctrl.accountStatuses[account.status]}}</td>
+          <td>
+            <div ng-if="user.isClient()">
+              <a ng-click="ctrl.unassignAccount(account.id)"
+                 ng-if="account.status == 0"
+                 class="text-small btn btn-success button col-md-12">
+                Закрыть счет
+              </a>
+              <a ng-click="ctrl.closeRequest(account.id)"
+                 ng-if="account.status == 4"
+                 class="text-small btn btn-success button col-md-12">
+                Отменить заявку
+              </a>
+            </div>
 
-          <div ng-if="user.isAdmin()">
-            <a ng-click="ctrl.confirmCreateRequest(account.id)"
-                    ng-if="account.status == 4"
-                    class="text-small btn btn-success button">
-              Подтвердить
-            </a>
+            <div ng-if="user.isAdmin()">
+              <a ng-click="ctrl.confirmCreateRequest(account.id)"
+                 ng-if="account.status == 4"
+                 class="text-small btn btn-success button">
+                Подтвердить
+              </a>
 
-            <a ng-click="ctrl.rejectCreateRequest(account.id)"
-                    ng-if="account.status == 4"
-                    class="text-small btn btn-danger button">
-              Отклонить
-            </a>
-          </div>
-        </td>
-      </tr>
-    </table>
-   </div>
+              <a ng-click="ctrl.rejectCreateRequest(account.id)"
+                 ng-if="account.status == 4"
+                 class="text-small btn btn-danger button">
+                Отклонить
+              </a>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
 
     <div class="col-md-12 row-offset-0"
          ng-if="user.isClient()">
@@ -129,19 +117,19 @@
             <div class="row-offset-0">
               <button type="submit"
                       class="form-control btn btn-info button">
-                 Привязать счет
+                Привязать счет
               </button>
             </div>
 
             <div class="row-offset-0">
               <a ng-click="ctrl.createRequest()"
                  class="link">
-                 Оставить заявку на открытие счета
+                Оставить заявку на открытие счета
               </a>
             </div>
           </form>
         </div>
       </div>
     </div>
- </section>
-</div>
+    </section>
+  </div>
