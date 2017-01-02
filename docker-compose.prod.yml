@@ -12,6 +12,7 @@ scoring:
 
 backend:
   image: jupiterapp/backend
+  privileged: true
   ports:
     - "8000:8000"
   environment:

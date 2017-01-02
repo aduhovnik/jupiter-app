@@ -6,7 +6,7 @@ from django.conf.urls import url, include
 
 
 def collect_applications():
-    backend_path = os.environ.get('BACKEND_PATH', '..')
+    backend_path = os.environ.get('BACKEND_PATH', '/backend/')
     apps_path = os.path.join(backend_path, 'jupiter/apps')
     apps = []
     for filename in os.listdir(apps_path):
@@ -20,8 +20,8 @@ def collect_urls():
     for app in collect_applications():
         try:
             urls.append(url(r'^', include('{}.api.urls'.format(app))))
-        except ImportError as e:
-            print e
+        except ImportError:
+            pass
     return urls
 
 

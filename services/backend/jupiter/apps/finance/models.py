@@ -823,10 +823,6 @@ class Credit(Product):
         """
         Checks for overdue and updates accordingly. Should be called daily
         """
-        # If new month began - set next payment term, and current_month_percents will be computed
-        # If credit is overdue - set status FINED, then penalty will be calculated
-        # If the entire term of the loan left - then FINED anyway
-        # PS: credit.next_payment_term - is NOT last day, client should pay before this date
         cur_date = datetime.date.today()
         end_date = self.start_date + relativedelta(months=self.duration)
         if end_date <= cur_date:
@@ -836,7 +832,6 @@ class Credit(Product):
                 self.status = Credit.STATUS_FINED
             else:
                 self.next_payment_term += relativedelta(months=1)
-                #  +0.1 - symbolic accrual, need if credit PAYED but NOT
                 self.current_month_percents = self.current_percents() + 0.1
                 self.current_month_pay.amount = 0
         self.save()
@@ -845,11 +840,10 @@ class Credit(Product):
         """
         Recalculates the penalty. Should be called daily
         """
-        # inc by fine_percent from pure RESIDUE+PENALTY, till penalty will be payed
-        # fine_percent got taken from credit template
         if self.status == Credit.STATUS_FINED:
             total = self.residue.amount + self.current_penalty.amount
-            self.current_penalty = self.current_penalty.amount + total * self.fine_percentage / Decimal(100.0)
+            self.current_penalty = self.current_penalty.amount + \
+                                   total * self.fine_percentage / Decimal(100.0)
         self.save()
 
     @classmethod
@@ -1060,11 +1054,12 @@ class FinanceSettings(models.Model):
     def update_exchange_rates(self):
         rates = BankSystemProxy.get_currency_rates()
         if not rates:
-            logger.warning('Error while updation currency info')
-
-        self.exchange_rates = rates
-        self.currencies = rates.keys()
-        self.save()
+            logger.info('Error while updating currency info')
+        else:
+            rates['BYN'] = 1.0
+            self.exchange_rates = rates
+            self.currencies = rates.keys()
+            self.save()
 
     class Meta:
         verbose_name = 'Finance settings'

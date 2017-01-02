@@ -13,3 +13,4 @@ sendgrid==3.6.*
 pytz
 pudb
 simple-crypt
+django-cron

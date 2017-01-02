@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djmoney',
+    'django_cron',
 ] + collect_applications()
 
 
@@ -51,6 +52,7 @@ MIDDLEWARE = [
 
 CRON_CLASSES = [
     "finance.tasks.DailyUpdate",
+    "finance.tasks.SyncCurrencies",
 ]
 
 
