@@ -81,6 +81,13 @@ class Command(BaseCommand):
         logger.info('Generated deposits: {}, active: {}, closed: {}'.
                     format(all, closed, active))
 
+        UserFactory(
+            username='root',
+            password='root',
+            email='root@root.com',
+            is_superuser=True
+        )
+
 
 def simple_event(probability):
     l, r = 0, 1e4

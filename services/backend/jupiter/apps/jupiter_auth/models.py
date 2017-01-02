@@ -10,6 +10,7 @@ from django.contrib.auth.models import AbstractUser
 from django.db import models
 from finance.utils import money_field
 from finance.models import Credit, FinanceSettings
+from jupiter_auth.utils import get_or_create_admins_group
 
 
 class User(AbstractUser):
@@ -22,6 +23,9 @@ class User(AbstractUser):
     )
 
     def get_scoring(self):
+        if self.is_superuser or get_or_create_admins_group() in self.groups.all():
+            return False, 'Скоринг вычисляется только для клиентов'
+
         user_credits = Credit.objects.filter(client=self)
 
         if self.profile.dependants is None:

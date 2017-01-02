@@ -10,10 +10,13 @@ from rest_framework.exceptions import ValidationError
 from core.utils import send_mail
 from core.api.generic.views import ModelViewSet
 from finance.models import Credit, Deposit, Transaction
-from jupiter_auth.models import UserProfile
 from jupiter_auth.utils import get_or_create_clients_group, get_or_create_admins_group
 from jupiter_auth.api.users.permissions import ManageSelfPermission
-from jupiter_auth.api.users.serializers import UserSerializer, ChangePasswordSerializer
+from jupiter_auth.api.users.serializers import (
+    UserSerializer,
+    ChangePasswordSerializer,
+    CreateAdminSerializer
+)
 
 
 class UserView(ModelViewSet):
@@ -25,7 +28,7 @@ class UserView(ModelViewSet):
     def get_queryset(self):
         queryset = super(UserView, self).get_queryset()
         if self.request.user.is_superuser:
-            return queryset
+            return queryset.filter(is_superuser=False)
         elif self.kwargs.get(self.lookup_field) == 'me':
             return queryset.filter(pk=self.request.user.pk)
         elif get_or_create_admins_group() in self.request.user.groups.all():
@@ -132,3 +135,11 @@ class UserView(ModelViewSet):
         user.set_password(data['new_password'])
         user.save()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+    @list_route(methods=['POST'])
+    def create_admin(self, request, *args, **kwargs):
+        serializer = CreateAdminSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)

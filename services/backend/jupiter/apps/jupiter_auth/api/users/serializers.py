@@ -68,7 +68,7 @@ class UserSerializer(ModelSerializer):
     scoring = serializers.SerializerMethodField(read_only=True)
 
     def get_scoring(self, client):
-        if get_or_create_admins_group() in client.groups.all():
+        if client.is_superuser or get_or_create_admins_group() in client.groups.all():
             return None
 
         success, scoring_result = client.get_scoring()
@@ -95,7 +95,29 @@ class UserSerializer(ModelSerializer):
             'profile',
             'groups',
             'is_active',
+            'is_superuser',
             'scoring'
+        )
+
+
+class CreateAdminSerializer(serializers.ModelSerializer):
+
+    password = serializers.CharField(write_only=True, required=True)
+
+    def create(self, validated_data):
+        validated_data['is_active'] = True
+        print validated_data
+        instance = get_user_model().objects.create_user(**validated_data)
+        instance.groups.add(get_or_create_admins_group())
+        return instance
+
+    class Meta:
+        model = get_user_model()
+        fields = (
+            'username',
+            'password',
+            'email',
+            'first_name',
         )
 
 

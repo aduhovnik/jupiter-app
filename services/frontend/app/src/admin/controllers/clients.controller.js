@@ -3,7 +3,7 @@ module.controller('ClientsController', ClientsController);
 
 
 function ClientsController($http, $error, $auth, $routeParams,
-                           $scope, $filter, $location, $url,
+                           $scope, $filter, $location, $url, $route,
                            creditStatuses, depositStatuses, transactionTypes)
 {
     var ctrl = this;
@@ -126,19 +126,6 @@ function ClientsController($http, $error, $auth, $routeParams,
         )
     };
 
-    this.getScoringValue = function (client) {
-        console.log(client);
-        $http.get($auth.addUrlAuth('/api/users/' +  client.id + '/scoring/')).then(
-            function success(response) {
-                ctrl.scoringResult = response.data;
-                $error.clearErrors();
-            },
-            function error(response) {
-                $error.onError(response);
-            }
-        )
-    };
-
     this.getClientStatistics = function () {
         $http.get($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/statistics/')).then(
             function success(response) {
@@ -164,4 +151,30 @@ function ClientsController($http, $error, $auth, $routeParams,
             }
         )
     };
+
+    ctrl.credentials = {};
+    this.createAdmin = function () {
+        $http.post($auth.addUrlAuth('/api/users/create_admin/'), ctrl.credentials).then(
+            function success(response) {
+                $route.reload();
+                $error.onSuccess('Администратор успешно создан');
+            },
+            function error(response) {
+                $error.onError(response);
+            }
+        )
+    };
+
+    this.deleteUser = function (id) {
+        $http.delete($auth.addUrlAuth('/api/users/' + id + '/')).then(
+            function success(response) {
+                $error.onSuccess('Пользователь успешно удален');
+                $location.path('/clients/');
+                $route.reload()
+            },
+            function error(response) {
+                $error.onError(response);
+            }
+        )
+    }
 }
