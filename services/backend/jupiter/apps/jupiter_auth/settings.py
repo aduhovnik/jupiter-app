@@ -34,11 +34,9 @@ GROUPS = [
     {
         "name": ADMINS_GROUP,
         "permissions": [
-            'create_user'
             'manage_himself',
             'view_user',
             'change_user',
-            'delete_user',
             'change_password_user',
 
             'view_account',

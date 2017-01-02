@@ -353,7 +353,7 @@
               </button>
             </div>
 
-            <div class="row-offset-0">
+            <div class="row-offset-0" ng-if="user.user.is_superuser">
               <a ng-click="ctrl.deleteUser(ctrl.data.id)"
                       class="form-control btn btn-danger">
                 <span class='glyphicon glyphicon-remove'></span>
