@@ -2,8 +2,9 @@
      ng-init="ctrl.getData()">
   <section class="text-large">
     <h1>Информация о кредите</h1>
+    <hr class="primary">
 
-    <div class="col-md-12 row-offset-0">
+    <div class="row-offset-0">
       <ul class="list-group">
         <li class="list-group-item" ng-if="user.isAdmin()">
           Клиент: <a href="/clients/{{ctrl.credit.client.id}}/">{{ctrl.credit.client.first_name}}</a>
@@ -76,6 +77,7 @@
                 <div class="row-offset-0">
                   <button type="submit"
                           class="form-control btn btn-info button">
+                    <span class="glyphicon glyphicon-ok"></span>
                     Оплатить
                   </button>
                 </div>
@@ -115,7 +117,8 @@
               <div class="form-group">
                 <div class="row-offset-0">
                   <button type="submit"
-                          class="form-control btn btn-info button">
+                          class="form-control btn btn-success">
+                    <span class="glyphicon glyphicon-ok"></span>
                     Отправить
                   </button>
                 </div>

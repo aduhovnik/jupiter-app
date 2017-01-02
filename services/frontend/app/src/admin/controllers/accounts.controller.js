@@ -5,7 +5,6 @@ function AccountsController($http, $auth, $error, $location, $url,
                             accountStatuses, clientAccountStatuses)
 {
     var ctrl = this;
-    ctrl.data = [];
     ctrl.filterParams = $location.search();
     ctrl.accountStatuses = accountStatuses;
     ctrl.clientAccountStatuses = clientAccountStatuses;
@@ -31,6 +30,7 @@ function AccountsController($http, $auth, $error, $location, $url,
             }
         }
 
+        ctrl.data = null;
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
@@ -85,8 +85,9 @@ function AccountsController($http, $auth, $error, $location, $url,
         );
     };
 
-    this.confirmCreateRequest = function (id) {
-        var url = $auth.addUrlAuth('/api/accounts/' + id + '/confirm_create_claim/');
+    this.confirmCreateRequest = function (account) {
+        var url = $auth.addUrlAuth('/api/accounts/' + account.id + '/confirm_create_claim/');
+        account.processing = true;
         $http.post(url, {}).then(
             function success(response) {
                 $error.onSuccess(response.data);
@@ -98,8 +99,9 @@ function AccountsController($http, $auth, $error, $location, $url,
         );
     };
 
-    this.rejectCreateRequest = function (id) {
-        var url = $auth.addUrlAuth('/api/accounts/' + id + '/reject_create_claim/');
+    this.rejectCreateRequest = function (account) {
+        var url = $auth.addUrlAuth('/api/accounts/' + account.id + '/reject_create_claim/');
+        account.processing = true;
         $http.post(url, {}).then(
             function success(response) {
                 $error.onSuccess(response.data);
@@ -112,7 +114,7 @@ function AccountsController($http, $auth, $error, $location, $url,
     };
 
     this.closeRequest = function(id) {
-        var url = $auth.addUrlAuth('/api/accounts/' + id + '/leave_close_claim/');
+        var url = $auth.addUrlAuth('/api/accounts/' + id + '/unassign/');
         $http.post(url, {
             target_account_id: id
         }).then(

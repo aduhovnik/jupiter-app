@@ -2,8 +2,15 @@
      ng-init="ctrl.getCredits()">
  <section>
     <h1>Кредиты</h1>
-    <table class="table table-bordered text-large">
-      <tr>
+    <hr class="primary">
+
+    <div class="loader"
+         ng-if="!ctrl.data">
+    </div>
+
+    <table class="table table-bordered"
+           ng-if="ctrl.data">
+      <tr class="info">
         <th width="28%" ng-if="user.isAdmin()">Клиент</th>
         <th width="20%">Остаток</th>
         <th width="20%">План</th>
@@ -13,18 +20,18 @@
       <tr>
         <th ng-if="user.isAdmin()">
           <input type="text"
-                 class="form-control"
+                 class="form-control form-control-small"
                  ng-model="ctrl.filterParams.client_name"
                  ng-keypress="ctrl.updateFilterParams($event.keyCode)">
         </th>
         <th>
           <input type="text"
-                 class="form-control"
+                 class="form-control form-control-small"
                  ng-model="ctrl.filterParams.residue"
                  ng-keypress="ctrl.updateFilterParams($event.keyCode)">
         </th>
         <th>
-          <select class="form-control"
+          <select class="form-control form-control-small"
                   ng-model="ctrl.filterParams.template"
                   ng-change="ctrl.updateFilterParams(13)"
                   ng-init="ctrl.getCreditTemplates()">
@@ -37,7 +44,7 @@
         </th>
         <th>
           <div class="dropdown">
-            <select class="form-control"
+            <select class="form-control form-control-small"
                     ng-model="ctrl.filterParams.status"
                     ng-change="ctrl.updateFilterParams(13)">
               <option></option>
@@ -70,7 +77,11 @@
           {{ctrl.creditStatuses[credit.status]}}
         </td>
         <td>
-          <a href="/credits/{{credit.id}}/" class="col-md-12 text-small btn btn-info button">Детальная информация</a>
+          <a href="/credits/{{credit.id}}/"
+             class="stretch text-small btn btn-info button">
+            <span class="glyphicon glyphicon-eye-open"></span>
+            Детальная информация
+          </a>
         </td>
       </tr>
     </table>

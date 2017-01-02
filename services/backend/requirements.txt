@@ -12,3 +12,4 @@ pycrypto==2.6.*
 sendgrid==3.6.*
 pytz
 pudb
+simple-crypt

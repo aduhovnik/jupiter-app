@@ -5,7 +5,9 @@
         <li ng-repeat="item in ctrl.items"
             ng-class="ctrl.valueIfPath(item.url, 'active')"
             class="sidebar-elem">
-            <a href="{{item.url}}">{{item.label}}</a>
+            <a href="{{item.url}}">
+                {{item.label}}
+            </a>
         </li>
     </ul>
 </div>

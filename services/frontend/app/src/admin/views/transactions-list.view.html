@@ -2,8 +2,11 @@
      ng-init="ctrl.getTransactions()">
  <section>
     <h1>Транзакции</h1>
+    <hr class="primary">
 
-    <table class="row-offset-0" width="100%" cellpadding="10">
+    <table class="row-offset-0"
+           width="100%"
+           cellpadding="10">
       <tr>
         <td style="padding-right: 10px">
           <div class="form-group">
@@ -55,8 +58,13 @@
       </tr>
     </table>
 
-    <table class="table table-bordered text-large">
-      <tr>
+    <div class="loader"
+         ng-if="!ctrl.data">
+    </div>
+
+    <table class="table table-bordered"
+           ng-if="ctrl.data">
+      <tr class="info">
           <th width="25%">Тип</th>
           <th width="28%" ng-if="user.isAdmin()">Клиент</th>
           <th width="20%">Проведена</th>
@@ -65,7 +73,7 @@
      <tr>
       <th>
         <div class="dropdown">
-          <select class="form-control"
+          <select class="form-control form-control-small"
                   ng-model="ctrl.filterParams.type"
                   ng-change="ctrl.updateFilterParams(13)">
             <option></option>
@@ -79,7 +87,7 @@
 
       <th ng-if="user.isAdmin()">
         <input type="text"
-               class="form-control"
+               class="form-control form-control-small"
                ng-model="ctrl.filterParams.client_name"
                ng-keypress="ctrl.updateFilterParams($event.keyCode)">
       </th>

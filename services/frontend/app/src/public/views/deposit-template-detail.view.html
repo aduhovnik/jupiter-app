@@ -1,9 +1,10 @@
 <div ng-app="jupiter.public"
      ng-controller="DepositTemplatesController as ctrl"
-     ng-init="ctrl.getDepositTemplate()">
-  <section class="padding-1">
-    <div class="row col-md-10 col-md-offset-1">
-      <div class="row text-center">
+     ng-init="ctrl.getDepositTemplate()"
+     ng-class="!user.isAuthenticated() ? 'public-container' : ''">
+  <section>
+    <div class="col-sm-12">
+      <div class="row">
         <h1>
           {{ctrl.data.name}}
         </h1>
@@ -11,21 +12,21 @@
       <hr class="primary">
 
       <div class="row text-center">
-        <div class="col-md-4 row-bottom-1">
+        <div class="col-sm-4 row-bottom-1">
           <h4>Условие закрытия:</h4>
           <h3>
             <span ng-if="ctrl.data.closing == 0">В любой момент</span>
             <span ng-if="ctrl.data.closing == 1">В конце срока</span>
           </h3>
         </div>
-        <div class="col-md-4 row-bottom-1">
+        <div class="col-sm-4 row-bottom-1">
           <h4>Возможность продления:</h4>
           <h3>
             <span ng-if="ctrl.data.prolongation">Да</span>
             <span ng-if="!ctrl.data.prolongation">Нет</span>
           </h3>
         </div>
-        <div class="col-md-4 row-bottom-1">
+        <div class="col-sm-4 row-bottom-1">
           <h4>Возможность пополнения:</h4>
           <h3>
             <span ng-if="ctrl.data.additional_contributions">Да</span>
@@ -37,7 +38,7 @@
 
       <div class="row text-large">
         <table class="table table-bordered">
-          <tr>
+          <tr class="info">
             <th class="text-center">Валюта</th>
             <th class="text-center">Минимальная сумма</th>
             <th class="text-center">Максимальный срок</th>
@@ -86,20 +87,25 @@
       <hr class="primary">
 
       <div class="row">
-        <div class="col-md-3 col-md-offset-3 row-bottom-1">
+        <div class="col-sm-6 row-bottom-1">
           <a ng-if="user.isClient()"
-             class="btn btn-info button button-stretch"
+             class="btn btn-info button stretch"
              href="/deposit-templates/{{ctrl.data.id}}/apply/">
+            <span class="glyphicon glyphicon-ok"></span>
             Перейти к оформлению
           </a>
           <a ng-if="!user.isAuthenticated()"
-             class="btn btn-info button button-stretch"
+             class="btn btn-info button stretch"
              href="/sign-in/">
+            <span class="glyphicon glyphicon-ok"></span>
             Перейти к оформлению
           </a>
         </div>
-        <div class="col-md-3 row-bottom-1">
-          <a class="btn btn-info button button-stretch" href="/deposit-templates/">
+
+        <div class="col-sm-6 row-bottom-1">
+          <a class="btn btn-info button stretch"
+             href="/deposit-templates/">
+            <span class="glyphicon glyphicon-log-out"></span>
             Назад к списку
           </a>
         </div>

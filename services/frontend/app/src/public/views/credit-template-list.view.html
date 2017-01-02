@@ -1,47 +1,45 @@
 <div ng-app="jupiter.public"
      ng-controller="CreditTemplatesController as ctrl"
-     ng-init="ctrl.getCreditTemplates()">
-  <section class="padding-1">
-    <div class="list-container">
-      <div class="row">
-        <div class="col-lg-12 text-center">
-          <h1>
-            Кредиты
-            <hr class="primary">
-          </h1>
-        </div>
+     ng-init="ctrl.getCreditTemplates()"
+     ng-class="!user.isAuthenticated() ? 'public-container' : ''">
+  <section>
+    <h1>Кредиты</h1>
+    <hr class="primary">
+
+    <div class='panel panel-info'
+         ng-repeat="ct in ctrl.data">
+      <div class="panel-heading">
+        <h5 class="panel-title">
+          <a class="link"
+             href="/credit-templates/{{ct.id}}/">
+            {{ct.name}}
+          </a>
+        </h5>
       </div>
 
-      <div class='row list-item panel panel-default'
-           ng-repeat="ct in ctrl.data">
-        <div class="col-md-3">
+      <div class="panel-body">
+        <div class="col-sm-3">
           <img src="assets/img/credits.icon.png"
-               class="img-responsive list-item-image">
+               class="img-responsive">
         </div>
 
-        <div class="col-md-9">
-          <h3>
-            <a class="link"
-               href="/credit-templates/{{ct.id}}/">
-              {{ct.name}}
-            </a>
-          </h3>
-          <h4>
+        <div class="col-sm-9">
+          <h5>
             Процентная ставка: {{ct.annual_percentage_rate}}%
-          </h4>
-          <h4>
+          </h5>
+          <h5>
             Срок: {{ct.max_duration / 12}} лет
-          </h4>
+          </h5>
           <p>
               {{ct.description}}
           </p>
           <a class="btn btn-info button"
              href="/credit-templates/{{ct.id}}/">
+            <span class="glyphicon glyphicon-eye-open"></span>
             Детальная информация
-            <span class="glyphicon glyphicon-chevron-right"></span>
           </a>
         </div>
-        </div>
       </div>
+    </div>
   </section>
 </div>

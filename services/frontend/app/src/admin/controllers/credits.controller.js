@@ -29,6 +29,7 @@ function CreditsController($http, $auth, $error, $location, $url, creditStatuses
             }
         }
 
+        ctrl.data = null;
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;

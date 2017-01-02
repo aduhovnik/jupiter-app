@@ -72,18 +72,6 @@ class UserView(ModelViewSet):
         return Response(status=status.HTTP_200_OK)
 
     @detail_route(methods=['GET'])
-    def scoring(self, request, *args, **kwargs):
-        client = self.get_object()
-        if get_or_create_admins_group() in client.groups.all():
-            raise ValidationError('Скоринг вычисляется только для клиентов')
-
-        success, scoring_result = client.get_scoring()
-        if success:
-            return Response(scoring_result)
-        else:
-            raise ValidationError(scoring_result)
-
-    @detail_route(methods=['GET'])
     def statistics(self, request, *args, **kwargs):
         client = self.get_object()
         client_credits = Credit.objects.filter(client=client)

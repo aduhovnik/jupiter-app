@@ -10,6 +10,8 @@ from rest_framework.validators import UniqueValidator
 from jupiter_auth.models import UserProfile
 from rest_framework.serializers import ModelSerializer, ValidationError
 
+from jupiter_auth.utils import get_or_create_admins_group
+
 
 class UserProfileSerializer(ModelSerializer):
 
@@ -63,6 +65,17 @@ class UserSerializer(ModelSerializer):
 
     profile = UserProfileSerializer()
     groups = GroupSerializer(many=True, read_only=True)
+    scoring = serializers.SerializerMethodField(read_only=True)
+
+    def get_scoring(self, client):
+        if get_or_create_admins_group() in client.groups.all():
+            return None
+
+        success, scoring_result = client.get_scoring()
+        if success:
+            return scoring_result
+        else:
+            return None
 
     def update(self, obj, validated_data):
         profile_data = validated_data.pop('profile')
@@ -82,6 +95,7 @@ class UserSerializer(ModelSerializer):
             'profile',
             'groups',
             'is_active',
+            'scoring'
         )
 
 

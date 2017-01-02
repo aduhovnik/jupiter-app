@@ -47,6 +47,7 @@ function ClientsController($http, $error, $auth, $routeParams,
             }
         }
 
+        ctrl.data = null;
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;
@@ -81,8 +82,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         );
     };
 
-    this.activateClient = function(userId) {
-        $http.get($auth.addUrlAuth('/api/users/' + userId + '/activate/')).then(
+    this.activateClient = function(client) {
+        client.processing = true;
+        $http.get($auth.addUrlAuth('/api/users/' + client.id + '/activate/')).then(
             function success(response) {
                 ctrl.getClients();
                 $error.clearErrors();
@@ -93,8 +95,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         )
     };
 
-    this.deactivateClient = function(userId) {
-        $http.get($auth.addUrlAuth('/api/users/' + userId + '/deactivate/')).then(
+    this.deactivateClient = function(client) {
+        client.processing = true;
+        $http.get($auth.addUrlAuth('/api/users/' + client.id + '/deactivate/')).then(
             function success(response) {
                 ctrl.getClients();
                 $error.clearErrors();
@@ -123,8 +126,9 @@ function ClientsController($http, $error, $auth, $routeParams,
         )
     };
 
-    this.getScoringValue = function () {
-        $http.get($auth.addUrlAuth('/api/users/' +  $routeParams['id'] + '/scoring/')).then(
+    this.getScoringValue = function (client) {
+        console.log(client);
+        $http.get($auth.addUrlAuth('/api/users/' +  client.id + '/scoring/')).then(
             function success(response) {
                 ctrl.scoringResult = response.data;
                 $error.clearErrors();

@@ -1,11 +1,11 @@
-<div ng-app="jupiter.auth" ng-controller="SignInController as ctrl">
+<div ng-app="jupiter.auth"
+     ng-controller="SignInController as ctrl">
   <div class="container row-offset-4">
-    <div class="row col-md-6 col-md-offset-3">
-      <div class="panel panel-default">
+    <div class="row col-md-6  col-md-offset-3">
+      <div class="panel panel-info">
         <div class="panel-heading">
           <h4 class="panel-title">Вход</h4>
         </div>
-
         <div class="panel-body">
           <form ng-submit="ctrl.signIn()">
             <div class="form-group">
@@ -29,16 +29,15 @@
             <div class="row-offset-0">
               <button type="submit"
                       class="form-control btn btn-info button">
-                 Войти
                 <span class='glyphicon glyphicon-log-in'></span>
+                 Войти
               </button>
             </div>
-
-            <h5 class="row-offset-0">
-              <a class="link" href="/password-reset/">
-                Востановление пароля
-              </a>
-            </h5>
+            <a class="row-offset-0 btn btn-warning form-control"
+               href="/password-reset/">
+              <span class="glyphicon glyphicon-wrench"></span>
+              Востановление пароля
+            </a>
           </form>
         </div>
       </div>

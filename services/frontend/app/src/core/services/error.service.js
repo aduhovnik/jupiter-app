@@ -7,6 +7,7 @@ function ErrorService($location, $timeout) {
     this.onSuccess = function (message) {
         self.success = message;
         self.errors = null;
+        self.globalHTTPError = null;
         $timeout(self.hideAlert, 3000);
     };
 
@@ -27,6 +28,7 @@ function ErrorService($location, $timeout) {
 
     this.clearErrors = function () {
         self.errors = null;
+        self.globalHTTPError = null;
     };
 
     this.hideAlert = function () {

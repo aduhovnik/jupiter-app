@@ -29,6 +29,7 @@ function DepositsController($http, $auth, $error, $location, $url, depositStatus
             }
         }
 
+        ctrl.data = null;
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;

@@ -16,6 +16,7 @@ function OverviewController($http, $error, $auth,
     ctrl.statistics = {};
     this.getInfo = function () {
         var url = $auth.addUrlAuth('/api/users/info/');
+        ctrl.statistics.users = null;
         $http.get(url).then(
             function success(response) {
                 ctrl.statistics.users = response.data;
@@ -25,7 +26,8 @@ function OverviewController($http, $error, $auth,
                 $error.onError(response);
             }
         );
-        
+
+        ctrl.statistics.accounts = null;
         url = $auth.addUrlAuth('/api/accounts/info/');
         $http.get(url).then(
             function success(response) {
@@ -37,6 +39,7 @@ function OverviewController($http, $error, $auth,
             }
         );
 
+        ctrl.statistics.deposits = null;
         url = $auth.addUrlAuth('/api/deposits/info/');
         $http.get(url).then(
             function success(response) {
@@ -48,6 +51,7 @@ function OverviewController($http, $error, $auth,
             }
         );
 
+        ctrl.statistics.credits = null;
         url = $auth.addUrlAuth('/api/credits/info/');
         $http.get(url).then(
             function success(response) {

@@ -70,8 +70,8 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a href="/" class="navbar-brand" >
-              Жупитер
+            <a href="/" class="navbar-brand">
+              <span class="glyphicon glyphicon-home"></span>
             </a>
           </div>
 
@@ -119,7 +119,7 @@
       </div>
     </div>
 
-    <div ng-if="user.isAuthenticated() && !error.globalHTTPError"
+    <div ng-if="user.isAuthenticated()"
          ng-include="'src/admin/views/sidebar.view.html'">
     </div>
 
@@ -144,7 +144,7 @@
     </div>
 
     <div ng-view
-         ng-class="user.isAuthenticated() && !error.globalHTTPError ? 'admin-container' : ''">
+         ng-class="user.isAuthenticated() ? 'admin-container' : ''">
     </div>
   </div>
 </div>

@@ -15,14 +15,17 @@ function PasswordResetController($auth, $error, $location) {
 
     this.passwordReset = function() {
         var ctrl = this;
+        ctrl.processing = true;
         $auth.passwordReset(
             this.reset_data,
             function success(response) {
                 $location.path('/password-reset-confirm/');
                 $error.clearErrors();
+                ctrl.processing = false;
             },
             function error(response) {
                 $error.onError(response);
+                ctrl.processing = false;
             }
         );
     };

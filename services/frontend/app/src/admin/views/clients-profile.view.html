@@ -2,7 +2,9 @@
      ng-controller="ClientsController as ctrl"
      ng-init="ctrl.getClient()">
   <section>
-    <h1 class="text-center">Профайл</h1>
+    <h1>Профайл</h1>
+    <hr class="primary">
+
     <div class="row-offset-0">
       <ul class="nav nav-tabs" role="tablist" id="tabsHeader">
         <li role="presentation" class="active">
@@ -41,32 +43,31 @@
              class="tab-pane row-offset-0"
              id="tabStatistics"
              role="tabpanel">
-          <div ng-class="ctrl.scoringResult.level === 'success' ? 'panel panel-success' :
-                         ctrl.scoringResult.level === 'warning' ? 'panel panel-warning' :
-                         ctrl.scoringResult.level === 'danger' ? 'panel panel-danger' :
-                         'panel panel-default'"
-               ng-init="ctrl.getScoringValue()">
+          <div ng-class="ctrl.data.scoring.level === 'success' ? 'panel panel-success' :
+                         ctrl.data.scoring.level === 'warning' ? 'panel panel-warning' :
+                         ctrl.data.scoring.level === 'danger' ? 'panel panel-danger' :
+                         'panel panel-default'">
             <div class="panel-heading">
-              <h3 class="panel-title">Платежеспособность:</h3>
+              <h5 class="panel-title">Платежеспособность:</h5>
             </div>
 
             <div class="panel-body">
-              <span ng-if="ctrl.scoringResult.level === 'success'">
+              <span ng-if="ctrl.data.scoring.level === 'success'">
                 <b>Платежеспособность высокая:</b>
                 вероятность выплат по кредитам без штрафов -
-                {{ctrl.scoringResult.scoring_result * 100}}%
+                {{ctrl.data.scoring.scoring_result * 100}}%
               </span>
 
-              <span ng-if="ctrl.scoringResult.level === 'warning'">
+              <span ng-if="ctrl.data.scoring.level === 'warning'">
                 <b>Платежеспособность средняя:</b>
                 вероятность выплат по кредитам без штрафов -
-                {{ctrl.scoringResult.scoring_result * 100}}%
+                {{ctrl.data.scoring.scoring_result * 100}}%
               </span>
 
-              <span ng-if="ctrl.scoringResult.level === 'danger'">
+              <span ng-if="ctrl.data.scoring.level === 'danger'">
                 <b>Платежеспособность низкая:</b>
                 вероятность выплат по кредитам без штрафов -
-                {{ctrl.scoringResult.scoring_result * 100}}%
+                {{ctrl.data.scoring.scoring_result * 100}}%
               </span>
             </div>
           </div>
@@ -75,11 +76,11 @@
           <div class="panel panel-default"
              ng-init="ctrl.getClientStatistics()">
             <div class="panel-heading">
-              <h3 class="panel-title">
+              <h5 class="panel-title">
                 Общее количество кредитов:
                 {{ctrl.statistics.credits.total_count}}
                 <a class="link" href="/credits/?client_id={{ctrl.data.id}}"> (Просмотреть)</a>
-              </h3>
+              </h5>
             </div>
             <div class="panel-body" style="padding-bottom: 10px;">
               <table width="100%" class="table table-bordered table-responsive">
@@ -119,11 +120,11 @@
 
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3 class="panel-title">
+              <h5 class="panel-title">
                 Общее количество вкладов:
                 {{ctrl.statistics.deposits.total_count}}
                 <a class="link" href="/deposits/?client_id={{ctrl.data.id}}"> (Просмотреть)</a>
-              </h3>
+              </h5>
             </div>
             <div class="panel-body" style="padding-bottom: 0px;">
               <table width="100%" class="table table-bordered">
@@ -148,11 +149,11 @@
 
           <div class="panel panel-default">
             <div class="panel-heading">
-              <h3>
+              <h5>
                 Общее количество транзакций:
                 {{ctrl.statistics.transactions.total_count}}
                 <a class="link" href="/transactions/?client_id={{ctrl.data.id}}"> (Просмотреть)</a>
-              </h3>
+              </h5>
             </div>
             <div class="panel-body" style="padding-bottom: 0px;">
               <table width="100%" class="table table-bordered">
@@ -346,15 +347,15 @@
 
             <div class="row-offset-0">
               <button type="submit"
-                      class="form-control btn btn-info button">
-                <span class='glyphicon glyphicon-save'></span>
+                      class="form-control btn btn-success">
+                <span class='glyphicon glyphicon-ok'></span>
                 Сохранить
               </button>
             </div>
 
             <div class="row-offset-0" ng-if="user.isAdmin()">
               <a href="/clients/"
-                 class="form-control btn btn-info button">
+                 class="form-control btn btn-warning button">
                 <span class='glyphicon glyphicon-log-out'></span>
                 Назад
               </a>
@@ -402,7 +403,8 @@
 
             <div class="row-offset-0">
               <button type="submit"
-                      class="form-control btn btn-info button">
+                      class="form-control btn btn-success button">
+                 <span class="glyphicon glyphicon-ok"></span>
                  Изменить пароль
               </button>
             </div>

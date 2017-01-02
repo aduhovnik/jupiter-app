@@ -54,6 +54,7 @@ function TransactionsController($http, $error, $auth, $location,
             }
         }
 
+        ctrl.data = null;
         $http.get(url).then(
             function success(response) {
                 ctrl.data = response.data;

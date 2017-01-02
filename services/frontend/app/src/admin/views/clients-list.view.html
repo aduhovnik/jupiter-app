@@ -3,10 +3,16 @@
      ng-init="ctrl.getClients()">
  <section>
   <h1>Клиенты</h1>
+  <hr class="primary">
 
-  <table class="row-offset-0 table table-bordered text-large"
-         align="center">
-    <tr>
+   <div class="loader"
+        ng-if="!ctrl.data">
+   </div>
+
+  <table class="row-offset-0 table table-bordered"
+         align="center"
+         ng-if="ctrl.data">
+    <tr class="info">
       <th width="28%">Имя</th>
       <th width="20%">Личный номер</th>
       <th width="20%">Номер паспорта</th>
@@ -16,25 +22,25 @@
     <tr>
       <th>
         <input type="text"
-               class="form-control"
+               class="form-control form-control-small"
                ng-model="ctrl.filterParams.name"
                ng-keypress="ctrl.updateFilterParams($event.keyCode)">
       </th>
       <th>
         <input type="text"
-               class="form-control"
+               class="form-control form-control-small"
                ng-model="ctrl.filterParams.in"
                ng-keypress="ctrl.updateFilterParams($event.keyCode)">
       </th>
       <th class="text-center">
         <input type="text"
-               class="form-control"
+               class="form-control form-control-small"
                ng-model="ctrl.filterParams.pn"
                ng-keypress="ctrl.updateFilterParams($event.keyCode)">
       </th>
       <th class="text-center">
         <div class="dropdown">
-          <select class="form-control"
+          <select class="form-control form-control-small"
                   ng-model="ctrl.filterParams.state"
                   ng-change="ctrl.updateFilterParams(13)">
             <option></option>
@@ -45,7 +51,10 @@
       </th>
       <th></th>
     </tr>
-    <tr ng-repeat="client in ctrl.data">
+    <tr ng-repeat="client in ctrl.data"
+        ng-class="client.scoring.level === 'success' ? 'success-light' :
+                  client.scoring.level === 'warning' ? 'warning-light' :
+                  client.scoring.level === 'danger' ? 'danger-light' : ''">
       <td class="text-center">
         <a href="/clients/{{client.id}}/"
             class="link">
@@ -63,16 +72,21 @@
         <span ng-if="!client.is_active">Отключен</span>
       </td>
       <td>
-        <a ng-if="!client.is_active"
-           class="col-md-12 button btn btn-info text-small"
-           ng-click="ctrl.activateClient(client.id)">
+        <a ng-if="!client.is_active && !client.processing"
+           class="stretch btn btn-success text-small"
+           ng-click="ctrl.activateClient(client)">
+          <span class="glyphicon glyphicon-plus"></span>
           Активировать
         </a>
-        <a ng-if="client.is_active"
-           class="col-md-12 button btn btn-info text-small"
-           ng-click="ctrl.deactivateClient(client.id)">
+        <a ng-if="client.is_active && !client.processing"
+           class="stretch btn btn-warning text-small"
+           ng-click="ctrl.deactivateClient(client)">
+          <span class="glyphicon glyphicon-remove"></span>
           Отключить
         </a>
+        <div class="loader-small"
+             ng-if="client.processing">
+        </div>
       </td>
     </tr>
   </table>

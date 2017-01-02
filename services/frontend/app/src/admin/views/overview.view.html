@@ -4,7 +4,12 @@
 <section>
   <div ng-if="user.isAdmin()">
     <div class="col-md-6 row-offset-0">
-      <div class="panel panel-danger">
+      <div class="loader"
+           ng-if="!ctrl.statistics.users">
+      </div>
+
+      <div class="panel panel-danger"
+           ng-if="ctrl.statistics.users">
         <div class="panel-heading">
           <h3 class="panel-title">
             Пользователи
@@ -28,7 +33,12 @@
     </div>
 
     <div class="col-md-6 row-offset-0">
-      <div class="panel panel-warning">
+      <div class="loader"
+           ng-if="!ctrl.statistics.accounts">
+      </div>
+
+      <div class="panel panel-warning"
+           ng-if="ctrl.statistics.accounts">
         <div class="panel-heading">
           <h3 class="panel-title">
             Счета
@@ -52,7 +62,12 @@
     </div>
 
     <div class="col-md-6">
-      <div class="panel panel-success">
+      <div class="loader"
+           ng-if="!ctrl.statistics.credits">
+      </div>
+
+      <div class="panel panel-success"
+           ng-if="ctrl.statistics.credits">
         <div class="panel-heading">
           <h3 class="panel-title">
             Кредиты
@@ -76,7 +91,12 @@
     </div>
 
     <div class="col-md-6">
-      <div class="panel panel-info">
+      <div class="loader"
+           ng-if="!ctrl.statistics.deposits">
+      </div>
+
+      <div class="panel panel-info"
+           ng-if="ctrl.statistics.deposits">
         <div class="panel-heading">
           <h3 class="panel-title">
             Вклады

@@ -131,10 +131,10 @@ def create_clients(count=10):
             client.profile.number_of_times_90_more_days_late = random.randint(0, 5)
 
         if simple_event(50):
-            client.profile.number_of_times_30_59_days_late = random.randint(0, 7)
+            client.profile.number_of_times_60_89_days_late = random.randint(0, 7)
 
         if simple_event(70):
-            client.profile.number_of_times_60_89_days_late = random.randint(0, 9)
+            client.profile.number_of_times_30_59_days_late = random.randint(0, 9)
 
         client.profile.save()
 

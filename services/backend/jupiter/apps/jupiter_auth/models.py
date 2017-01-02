@@ -36,10 +36,13 @@ class User(AbstractUser):
             return False, 'Для использования сервиса скоринга ' \
                           'нужно указать дату рождения'
 
-        age = self.profile.birth_date and (date.today() - self.profile.birth_date).days / 365
+        try:
+            age = (date.today() - self.profile.birth_date).days / 365
+        except Exception:
+            age = self.profile.age
 
         scoring_data = {
-            "age": age or self.profile.age,
+            "age": age or 20,
             "credit_monthly_payments": [
                 float(value) for value in
                 user_credits.values_list('minimum_monthly_pay', flat=True)
@@ -63,8 +66,6 @@ class User(AbstractUser):
             "NumberRealEstateLoansOrLines": user_credits.count() * 0.2,
             "NumberOfOpenCreditLinesAndLoans": user_credits.count()
         }
-
-        print scoring_data
 
         scoring_host = environ.get("SCORING_HOST", 'scoring')
         scoring_port = environ.get("SCORING_PORT", 'scoring')
