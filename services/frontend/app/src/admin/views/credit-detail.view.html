@@ -116,11 +116,16 @@
               </div>
               <div class="form-group">
                 <div class="row-offset-0">
-                  <button type="submit"
+                  <button ng-if="!ctrl.processing"
+                          type="submit"
                           class="form-control btn btn-success">
                     <span class="glyphicon glyphicon-ok"></span>
                     Отправить
                   </button>
+
+                  <div class="loader-small"
+                     ng-if="ctrl.processing">
+                  </div>
                 </div>
               </div>
             </form>

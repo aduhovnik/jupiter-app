@@ -305,7 +305,8 @@ class Account(Product):
         """
         if self.status in Account.INOPERABLE_STATUSES:
             return False
-        if self.residue.amount >= required_quantity:
+
+        if self.residue.amount >= Decimal(required_quantity):
             self.residue.amount -= Decimal(required_quantity)
             self.save()
 

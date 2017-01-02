@@ -63,14 +63,17 @@ function DepositDetailController($http, $auth, $routeParams, depositStatuses,
     ctrl.resolveCreateClaim = function(value, cause) {
         var method = value ?  "confirm_create_claim" : "reject_create_claim";
         var url = "/api/deposits/" + $routeParams["id"] + "/" + method + "/";
+        ctrl.processing = true;
         $http.patch($auth.addUrlAuth(url), {
             cause: cause || ''
         }).then(
             function success(response) {
+                ctrl.processing = false;
                 $route.reload();
                 $error.clearErrors();
             },
             function error(response) {
+                ctrl.processing = false;
                 $error.onError(response);
             }
         );
@@ -79,10 +82,29 @@ function DepositDetailController($http, $auth, $routeParams, depositStatuses,
     ctrl.resolveCloseClaim = function(value, cause) {
         var method = value ?  "confirm_close_claim" : "reject_close_claim";
         var url = "/api/deposits/" + $routeParams["id"] + "/" + method + "/";
+        ctrl.processing = true;
         $http.patch($auth.addUrlAuth(url), {
             cause: cause || ''
         }).then(
             function success(response) {
+                ctrl.processing = false;
+                $route.reload();
+                $error.clearErrors();
+            },
+            function error(response) {
+                ctrl.processing = false;
+                $error.onError(response);
+            }
+        );
+    };
+
+    ctrl.pay = function(amount, account_id) {
+        var url = "/api/deposits/" + $routeParams["id"] + "/put_money/";
+        $http.post($auth.addUrlAuth(url), {
+            amount: amount,
+            account_id: account_id
+        }).then(
+            function success() {
                 $route.reload();
                 $error.clearErrors();
             },

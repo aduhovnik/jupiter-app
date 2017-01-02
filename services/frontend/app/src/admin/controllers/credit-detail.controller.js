@@ -79,14 +79,17 @@ function CreditDetailController($http, $auth, $routeParams,
     ctrl.resolveClaim = function(value, cause) {
         var method = value ?  "confirm_create_claim" : "reject_create_claim";
         var url = "/api/credits/" + $routeParams["id"] + "/" + method + "/";
+        ctrl.processing = true;
         $http.patch($auth.addUrlAuth(url), {
             cause: cause || ''
         }).then(
             function success(response) {
+                ctrl.processing = false;
                 $route.reload();
                 $error.clearErrors();
             },
             function error(response) {
+                ctrl.processing = false;
                 $error.onError(response);
             }
         );

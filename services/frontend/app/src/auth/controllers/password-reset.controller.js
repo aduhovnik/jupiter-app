@@ -32,16 +32,18 @@ function PasswordResetController($auth, $error, $location) {
 
     this.passwordResetConfirm = function() {
         var ctrl = this;
+        ctrl.processing = true;
         $auth.passwordResetConfirm(
             this.confirm_data,
             function success(response) {
+                ctrl.processing = false;
                 $location.path('/sign-in/');
                 $error.clearErrors();
             },
             function error(response) {
+                ctrl.processing = false;
                 $error.onError(response);
             }
         );
     };
-
 }

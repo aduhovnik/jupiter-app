@@ -46,6 +46,7 @@ function CreditApplicationController(
         }
         var method = ctrl.template.issue_online ? 'open_online' : 'leave_create_claim';
         var url = '/api/credits/' + method + '/';
+        ctrl.processing = true;
         $http.post($auth.addUrlAuth(url), {
             account_id: ctrl.account_id,
             template_id: ctrl.template.id,
@@ -55,10 +56,12 @@ function CreditApplicationController(
             money_destination: ctrl.moneyDestination
         }).then(
             function success() {
+                ctrl.processing = false;
                 $location.path("/credits/");
                 $error.clearErrors();
             },
             function error(response) {
+                ctrl.processing = false;
                 $error.onError(response);
             }
         );

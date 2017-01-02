@@ -45,6 +45,7 @@ function DepositApplicationController(
             return;
         }
         var plan = ctrl.template.currency[ctrl.currency].percentage[ctrl.plan_index];
+        ctrl.processing = true;
         $http.post($auth.addUrlAuth('/api/deposits/leave_create_claim/'), {
             percentage: plan.percentage,
             account_id: ctrl.account_id,
@@ -54,10 +55,12 @@ function DepositApplicationController(
             duration: plan.term
         }).then(
             function success() {
+                ctrl.processing = false;
                 $location.path('/deposits/');
                 $error.clearErrors();
             },
             function error(response) {
+                ctrl.processing = false;
                 $error.onError(response);
             }
         );

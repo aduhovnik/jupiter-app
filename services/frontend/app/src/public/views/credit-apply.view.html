@@ -62,11 +62,16 @@
       </div>
 
       <div class="form-group">
-        <button type="submit"
+        <button ng-if="!ctrl.processing"
+                type="submit"
                 class="form-control btn btn-info button">
           <span class="glyphicon glyphicon-ok"></span>
           {{ctrl.template.issue_online ? "Подтвердить" : "Подать заявку"}}
         </button>
+
+        <div class="loader-small"
+             ng-if="ctrl.processing">
+        </div>
       </div>
     </form>
   </section>

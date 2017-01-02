@@ -66,13 +66,14 @@
                             ng-model="cause"></textarea>
                 </div>
 
-              <div class="form-group">
-                  <div class="row-offset-0 col-md-2">
-                    <button type="submit"
-                            class="form-control btn btn-info button">
-                      Отправить
-                    </button>
-                  </div>
+                <button ng-if="!ctrl.processing"
+                        type="submit"
+                        class="form-control btn btn-success button">
+                  Отправить
+                </button>
+
+                <div class="loader-small"
+                     ng-if="ctrl.processing">
                 </div>
             </form>
           </div>
@@ -100,6 +101,7 @@
                     </label>
                   </div>
                 </div>
+
                 <div class="form-group" ng-if="!value">
                   <label for="close-cause-control">Причина:</label>
                   <textarea id="close-cause-control"
@@ -107,27 +109,31 @@
                             ng-model="cause"></textarea>
                 </div>
 
-              <div class="form-group">
-                  <div class="row-offset-0">
-                    <button type="submit"
-                            class="form-control btn btn-success">
-                      <span class="glyphicon glyphicon-ok"></span>
-                      Отправить
-                    </button>
-                  </div>
+                <button ng-if="!ctrl.processing"
+                        type="submit"
+                        class="form-control btn btn-success">
+                  <span class="glyphicon glyphicon-ok"></span>
+                  Отправить
+                </button>
+
+                <div class="loader-small"
+                     ng-if="ctrl.processing">
                 </div>
             </form>
           </div>
         </div>
-    </div>
+      </div>
 
-      <div ng-if="user.isClient() && ctrl.deposit.status == 0">
-        <div class="panel panel-info">
+      <div ng-if="user.isClient() &&
+                  ctrl.deposit.status == 0 &&
+                  ctrl.deposit.closing == 0">
+        <div class="panel panel-success">
           <div class="panel-heading">
-            <h3 class="panel-title">Закрытие вклада</h3>
+            <h5 class="panel-title">Закрытие вклада</h5>
           </div>
-
-            <form class="col-md-12" ng-submit="ctrl.close(account_id)">
+          <div class="panel-body">
+            <form class="col-md-12"
+                  ng-submit="ctrl.close(account_id)">
               <div class="form-group">
                 <label for="account-control">Счет:</label>
                 <select class="form-control"
@@ -143,18 +149,59 @@
                 </select>
               </div>
 
-              <div class="form-group">
-                <div class="row-offset-0">
-                  <button type="submit"
-                          class="form-control btn btn-success">
-                    <span class="glyphicon glyphicon-ok"></span>
-                    Отправить заявку
-                  </button>
-                </div>
-              </div>
+              <button type="submit"
+                      class="form-control btn btn-success">
+                <span class="glyphicon glyphicon-ok"></span>
+                Отправить заявку
+              </button>
             </form>
           </div>
         </div>
       </div>
+
+      <div ng-if="user.isClient() &&
+                  ctrl.deposit.status == 0 &&
+                  ctrl.deposit.additional_contributions">
+        <div class="panel panel-success">
+          <div class="panel-heading">
+            <h5 class="panel-title">Пополнение вклада</h5>
+          </div>
+          <div class="panel-body">
+            <form class="col-md-12" ng-submit="ctrl.pay(amount, account_id)">
+              <div class="form-group">
+                <label for="amount-control">Сумма ({{ctrl.deposit.amount_currency}}):</label>
+                <input id="amount-control"
+                       class="form-control"
+                       type="text"
+                       ng-model="amount"
+                       min="0"
+                       required>
+              </div>
+
+              <div class="form-group">
+                <label for="account-control-1">Счет:</label>
+                <select class="form-control"
+                        required
+                        ng-model="account_id"
+                        id="account-control-1">
+                  <option></option>
+                  <option ng-repeat="account in ctrl.accounts" value="{{account.id}}">
+                    {{account.number}}
+                    ({{ctrl.accountStatuses[account.status]}},
+                    Остаток: {{account.residue}} {{account.residue_currency}})
+                  </option>
+                </select>
+              </div>
+
+              <button type="submit"
+                      class="form-control btn btn-success">
+                <span class="glyphicon glyphicon-ok"></span>
+                Пополнить
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 </div>
