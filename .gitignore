@@ -52,6 +52,7 @@ coverage.xml
 # Django stuff:
 *.log
 local_settings.py
+.static/
 
 # Flask stuff:
 instance/
@@ -90,3 +91,15 @@ ENV/
 
 # IDEA files
 .idea
+
+# Docker Compose
+docker-compose.override.yml
+
+# NPM modules
+frontend/app/node_modules/
+
+# Mac shit
+.DS_Store
+
+
+
