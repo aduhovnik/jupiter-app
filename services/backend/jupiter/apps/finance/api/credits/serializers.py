@@ -2,6 +2,8 @@
 from __future__ import absolute_import, unicode_literals
 
 import re
+
+from rest_framework import serializers
 from rest_framework.serializers import ModelSerializer, ValidationError
 import finance.models as fin_models
 from jupiter_auth.api.users.serializers import UserSerializer
@@ -16,6 +18,10 @@ class CreditSerializer(ModelSerializer):
 
     client = UserSerializer()
     template = CreditTemplateSerializer()
+    total = serializers.SerializerMethodField()
+
+    def get_total(self, obj):
+        return (obj.residue + obj.current_penalty + obj.current_month_percents).amount
 
     class Meta:
         model = fin_models.Credit

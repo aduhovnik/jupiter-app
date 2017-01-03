@@ -22,19 +22,48 @@
           </span>
         </li>
         <li class="list-group-item">
-          Активен: {{ctrl.credit.is_active ? "Да" : "Нет"}}
+          Общий остаток:
+          {{ctrl.credit.total}}
+          {{ctrl.credit.residue_currency}}
         </li>
         <li class="list-group-item">
-          Остаток: {{ctrl.credit.residue}} {{ctrl.credit.residue_currency}}
+          Чистый остаток:
+          {{ctrl.credit.residue}}
+          {{ctrl.credit.residue_currency}}
         </li>
         <li class="list-group-item">
-          Штраф: {{ctrl.credit.current_penalty}} {{ctrl.credit.current_penalty_currency}}
+          Проценты:
+          {{ctrl.credit.current_month_percents}}
+          {{ctrl.credit.current_month_percents_currency}}
+        </li>
+        <li class="list-group-item">
+          Штраф:
+          {{ctrl.credit.current_penalty}}
+          {{ctrl.credit.current_penalty_currency}}
+        </li>
+        <li class="list-group-item">
+          Итого выплачено:
+          {{ctrl.credit.total_sum}}
+          {{ctrl.credit.total_sum_currency}}
+        </li>
+        <li class="list-group-item">
+          Рекомендуемый месячный платеж:
+          {{ctrl.credit.minimum_monthly_pay}}
+          {{ctrl.credit.minimum_monthly_pay_currency}}
+        </li>
+        <li class="list-group-item">
+          Выплачано в этом месяце (без учета штрафа):
+          {{ctrl.credit.current_month_pay}}
+          {{ctrl.credit.current_month_pay_currency}}
         </li>
         <li class="list-group-item">
           Платеж ожидается до: {{ctrl.credit.next_payment_term | date : 'dd.MM.yyyy'}}
         </li>
         <li class="list-group-item">
           Открыт: {{ctrl.credit.start_date | date : 'dd.MM.yyyy'}}
+        </li>
+        <li class="list-group-item">
+          Длительность: {{ctrl.credit.duration}} месяцев
         </li>
         <li  class="list-group-item" ng-if="ctrl.credit.description">
           Описание: <p>{{ctrl.credit.description}}</p>
